@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Harmony: Bridging Audio Understanding and Editing through Agentic Collaboration. Audio comparisons with AEC Agent, WavCraft, SmartDJ and MMEDIT.">
+<title>Harmony: Bridging Audio Understanding and Editing through Agentic Collaboration</title>
+<link rel="canonical" href="https://ttchristian.github.io/harmony/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Harmony: Bridging Audio Understanding and Editing through Agentic Collaboration">
+<meta property="og:description" content="Audio editing comparisons across addition, removal, replacement, and volume adjustment.">
+<meta property="og:url" content="https://ttchristian.github.io/harmony/">
+<link rel="icon" href="mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<script defer src="data.js"></script>
+<script defer src="app.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#comparisons">Skip to comparisons</a>
+<header class="site-header wrap">
+<a class="brand" href="index.html" aria-label="Harmony home"><img src="mark.svg" alt="" width="30" height="30">harmony<span class="brand-dot">.</span></a>
+<nav aria-label="Main navigation"><a href="#abstract">Abstract</a><a href="#comparisons">Comparisons</a></nav>
+</header>
+<main>
+<section class="paper-intro wrap">
+<h1>Harmony: Bridging Audio Understanding and Editing<br class="title-break"> through Agentic Collaboration</h1>
+<section class="paper-abstract" id="abstract" aria-labelledby="abstract-title">
+<h2 id="abstract-title">Abstract</h2>
+<p>Natural-language audio editing requires connecting a user’s intent to specific sounds and time regions while preserving surrounding content. Complex requests make this connection demanding: an edit may select one occurrence, depend on a temporal relation, or modify a source that overlaps with other sounds. We introduce Harmony, an agentic framework that bridges audio understanding and editing through collaboration among an LLM planner, an audio-language model, and external tools. Harmony combines two mechanisms. Edit-driven collaborative planning uses targeted questions and tool measurements to determine the target, timing, and operation parameters. Evidence-guided execution uses observations of the first separated or generated audio to trigger bounded corrections before final mixing. Together, these mechanisms connect semantic decisions to waveform operations throughout the editing process. Harmony supports addition, removal, replacement, and volume adjustment. On 420 MMAE examples spanning these operations, Harmony achieves an exact match rate of 22.62%, compared with 13.57% for the strongest baseline, and improves aggregate instruction following and context preservation</p>
+</section>
+<div class="hero-art" aria-label="Illustration of the same audio being edited by different methods"><div class="art-top"><span class="small-label">AUDIO EDITING</span><span class="pill">Comparison</span></div><div class="art-input"><span>Original recording</span><svg viewBox="0 0 330 54" class="decorative-wave" aria-hidden="true"><path d="M0 27h12l4-8 4 16 4-27 4 37 4-28 4 20 4-28 4 36 4-26 4 19 4-35 4 42 4-23 4 14 4-23 4 30 4-17 4 10 4-16 4 22 4-14h25l4-15 4 30 4-44 4 50 4-35 4 20 4-14 4 27 4-42 4 48 4-33 4 18 4-27 4 35 4-21 4 13 4-19 4 26 4-20 4 12 4-8h27l4-10 4 22 4-34 4 39 4-29 4 18 4-13 4 21 4-25 4 18 4-7h18"/></svg></div><div class="art-instruction"><span class="instruction-symbol">↳</span> “Remove the drums. Keep the bass and chords.”</div><div class="art-results"><div class="art-result ours"><span class="result-symbol">H</span><span><strong>Harmony</strong><small>Edited output</small></span><span class="mini-wave">▂▅▃▇▂▅▃▆▂</span></div><div class="art-result"><span class="result-symbol muted">B</span><span><strong>Baseline</strong><small>Edited output</small></span><span class="mini-wave">▂▆▇▃▆▅▇▂▅</span></div></div></div>
+</section>
+<section class="comparison-section wrap" id="comparisons" aria-labelledby="comparison-title">
+<div class="section-heading"><h2 id="comparison-title">Audio Comparisons</h2></div>
+<div class="filter-bar"><div class="task-tabs" role="group" aria-label="Filter by task">
+<button class="tab selected" data-task="all" aria-pressed="true">All tasks <span>12</span></button>
+<button class="tab" data-task="add" aria-pressed="false">Addition</button>
+<button class="tab" data-task="remove" aria-pressed="false">Removal</button>
+<button class="tab" data-task="replace" aria-pressed="false">Replacement</button>
+<button class="tab" data-task="volume" aria-pressed="false">Volume</button>
+</div></div>
+<div id="case-list" class="case-list" aria-live="polite"></div>
+<div id="empty-state" hidden>No examples match this task.</div>
+</section>
+</main>
+<footer class="wrap site-footer"><a class="brand text-only" href="#">harmony.</a></footer>
+<aside class="player-dock" aria-label="Audio playback"><div class="dock-inner wrap"><button id="master-play" class="dock-play" aria-label="Play or pause" disabled>▶</button><div class="now-playing"><strong id="now-method">Select an audio track</strong><span id="now-title">Original · Harmony · Baselines</span></div><button id="restart" class="icon-button" aria-label="Restart audio" title="Restart">↺</button><span class="time" id="elapsed">0:00</span><input id="seek" class="seek" type="range" min="0" max="1" step="0.01" value="0" aria-label="Seek audio" disabled><span class="time" id="duration">0:00</span><label class="volume-control"><span>Shared volume</span><input id="volume" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Shared playback volume"></label></div></aside>
+<div class="toast" id="toast" role="status" hidden></div>
+</body>
+</html>
