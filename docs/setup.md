@@ -43,6 +43,15 @@ The optional legacy video/MMAudio branches remain in frozen sources but are outs
 
 Use the corresponding model project's installation instructions and recorded revision for SAM Audio and Stable Audio. Install matching PyTorch/Torchaudio builds for your CUDA environment; the recorded planner used `2.7.1+cu126`. Do not install every model into one environment by concatenating all observed package lists.
 
+| Component | Upstream setup | Recorded resource |
+|---|---|---|
+| Audio understanding | [Qwen3-Omni](https://github.com/QwenLM/Qwen3-Omni) | `Qwen3-Omni-30B-A3B-Instruct`, served separately |
+| Source separation | [SAM Audio](https://github.com/facebookresearch/sam-audio) | `facebook/sam-audio-large`; source revision in `reproducibility/environments/external_repositories.json` |
+| Audio generation | [Stable Audio 3](https://github.com/Stability-AI/stable-audio-3) | Separate Python 3.10 environment; recorded source revision in the same file |
+| Speech timing | [Whisper large v3 turbo](https://huggingface.co/openai/whisper-large-v3-turbo) | Model revision and hashes in `configs/profiles.json` |
+
+For the planner environment, install `requirements/planner.txt` into `RESOURCE_ROOT/.venvs/mixer`, then install the matching PyTorch/Torchaudio build. The observed versions provide a reproducibility reference; fresh installation of all model environments has not been validated for this release.
+
 The Qwen audio model is served separately through an OpenAI-compatible endpoint. This checkout does not start that server. The configured model aliases are `Qwen3Omni-Perception` and `Qwen3Omni-Instruct`; the endpoint must expose the alias used by the selected profile. The recorded weights are `Qwen3-Omni-30B-A3B-Instruct`.
 
 The planner requests `gpt-5-mini-2025-08-07`; the common execution service requests `gpt-5-mini`. Hosted aliases can change over time. Access credentials and any model access agreements must be supplied separately.

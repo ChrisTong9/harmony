@@ -9,9 +9,10 @@ Changes in this preparation:
 - Configurable resource/checkpoint directories, separate from historical workspace paths.
 - English method, setup, reproduction, and example documentation.
 - An arXiv placeholder without a fabricated identifier or acceptance claim.
-- CPU-only release tests and a GitHub Actions workflow definition.
+- CPU-only release tests and a GitHub Actions workflow.
+- Resource-cache checks before creating an inference output directory.
 
-No backend source or model prompt is edited in this step. Numerical records and evaluation outcomes are unchanged. A hosted Actions run has not been claimed; the workflow is included for a future push.
+No backend source or model prompt is edited in this step. Numerical records and evaluation outcomes are unchanged. The repository badge links to the actual GitHub Actions workflow status.
 
 ## Publication links
 

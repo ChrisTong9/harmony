@@ -5,6 +5,14 @@
       "sha256": "8c781495ede862b4c052bb9392f02022b9c4af0382e4d06af2743af5dc00d051",
       "bytes": 190
     },
+    ".github/ISSUE_TEMPLATE/bug_report.yml": {
+      "sha256": "a1d1b0af96bfc5eaf6242cde21205b6338451866632843c79295d405b52b3872",
+      "bytes": 965
+    },
+    ".github/assets/method.svg": {
+      "sha256": "c6a121a6d97c3633fec709e6bb0161633c1165a3b33372d2e87911c1ebbd1a8d",
+      "bytes": 4995
+    },
     ".github/workflows/checks.yml": {
       "sha256": "b1e16989bcb65870e8b7dcda8adcabb692be981fa47346f920abac4dd08e5125",
       "bytes": 451
@@ -17,13 +25,17 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "bytes": 0
     },
+    "CONTRIBUTING.md": {
+      "sha256": "27a63c9d550acc731250c4d9dfef23598d71915903f630ab51a207461c8e6a61",
+      "bytes": 1136
+    },
     "LICENSE-NOTICE.md": {
       "sha256": "83d1e7b33636ac11464436387582b0e5579248aa59771969134b19001bb0c6a9",
       "bytes": 631
     },
     "README.md": {
-      "sha256": "2b8925464786b18172a9a1dd471da309c7c51bbd9c4994a36ffff2db315ab8d1",
-      "bytes": 5825
+      "sha256": "d4324d6a495b83352161e6f58cd24a0a80b9ff6ea5063fa2b2429b3783032fea",
+      "bytes": 6137
     },
     "app.js": {
       "sha256": "8bbdc4c23eeb022216027cc60547fcee2f1d07d0f1d54c528c87331f48346d4d",
@@ -394,16 +406,16 @@
       "bytes": 2667
     },
     "docs/release-notes.md": {
-      "sha256": "801bd56af15aab78043aee51cb56b9ddf49f26eee8e8595c7f31906a063ada25",
-      "bytes": 1333
+      "sha256": "dedbc4ee018d57fb6352cdbaf1bf431b2fff50d3a35a5b2c286babb7a15a42f0",
+      "bytes": 1379
     },
     "docs/reproducibility.md": {
       "sha256": "c44f0ff3b7e1bc77570a3dcfbcbebc8e6261a3984d661e1465962025e4d6f0f7",
       "bytes": 3571
     },
     "docs/setup.md": {
-      "sha256": "82193d4164f0fe17fef20d36dbe8fe1ff5858c850ad0ac4baf4bf90715335e14",
-      "bytes": 4433
+      "sha256": "c5489e1a600ad4e607fe7625340ccbcc02054b7581f0b32e043927b0c47706a4",
+      "bytes": 5434
     },
     "examples/README.md": {
       "sha256": "becbca34275947c1cafb700f499204d36040e8e3a14a590ef55e3ec5db4c095f",
@@ -3930,8 +3942,8 @@
       "bytes": 54
     },
     "harmony/runtime/driver.py": {
-      "sha256": "326387d100eae9a2b57e40e34524b4f0d19d02589f5569366c47c2cea850fdd5",
-      "bytes": 7188
+      "sha256": "03d4edf662da15d7b449776680d5b54c4ba3fa66515a82669f71def421f00d3d",
+      "bytes": 7285
     },
     "harmony/runtime/service/basic_cli.py": {
       "sha256": "4af50b52f2b12be8d8003120704accf4f2cc65ea06ea729436dd79185d7e56cc",
@@ -14106,8 +14118,8 @@
       "bytes": 15543
     },
     "reproducibility/layout.json": {
-      "sha256": "f2d8d3434cbdc0f4cf7ed42952936142fbdea78508a3eab58ca77ed91a6b3111",
-      "bytes": 3460
+      "sha256": "0929ffff8c36b9346d79cf575f1d7bb769a320f34ad810a9b2e61f8ab0ef8414",
+      "bytes": 3458
     },
     "reproducibility/original_BUILD_RECEIPT.json": {
       "sha256": "953c6f1c1de25f590b3ec18454411ee25d8d05d1c96f578cdb0f9dc04a022956",
@@ -14266,8 +14278,8 @@
       "bytes": 4380
     },
     "tests/test_release.py": {
-      "sha256": "1705fee780e77b9cdadfa3c05fdbd541b4637b9b7de15c316e286c310d4a6d98",
-      "bytes": 5152
+      "sha256": "d1bdafa978f1d347979965a5747441bf2a83a0f142cd203701cc11d6cdcedc87",
+      "bytes": 6433
     }
   }
 }

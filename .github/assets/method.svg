@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="540" viewBox="0 0 1200 540" role="img" aria-labelledby="title desc">
+  <title id="title">Harmony: collaborative planning and evidence-guided execution</title>
+  <desc id="desc">An audio recording and an editing instruction enter collaborative planning. A planner combines audio-language observations with targeted tool evidence. The resulting plan drives editing, followed by inspection and bounded correction when needed, before final mixing.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#506b75"/></marker>
+    <marker id="green-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#23796e"/></marker>
+    <style>
+      text{font-family:Inter,Arial,sans-serif;fill:#19343e}
+      .small{font-size:16px;fill:#526a73}
+      .label{font-size:19px;font-weight:600}
+      .title{font-size:23px;font-weight:700}
+      .line{fill:none;stroke:#506b75;stroke-width:2.2;marker-end:url(#arrow)}
+      .flow{fill:none;stroke:#23796e;stroke-width:2.2;marker-end:url(#green-arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="540" rx="22" fill="#f5f8f8"/>
+  <text x="36" y="43" font-size="14" font-weight="700" letter-spacing="2" fill="#23796e">HARMONY</text>
+  <text x="36" y="76" font-size="26" font-weight="700">From an editing request to a grounded audio operation</text>
+
+  <rect x="30" y="126" width="190" height="304" rx="15" fill="#fff" stroke="#d5e1e2"/>
+  <text x="125" y="161" class="label" text-anchor="middle">Input</text>
+  <g stroke="#23796e" stroke-width="4" stroke-linecap="round">
+    <path d="M64 216v20M78 204v44M92 212v28M106 190v72M120 204v44M134 218v16M148 201v50M162 209v34M176 219v14"/>
+  </g>
+  <text x="125" y="295" class="small" text-anchor="middle">Audio recording</text>
+  <path d="M57 315H193" stroke="#d5e1e2"/>
+  <text x="125" y="347" class="label" text-anchor="middle">Editing request</text>
+  <text x="125" y="375" class="small" text-anchor="middle">What, when, and how</text>
+  <path d="M220 277H253" class="line"/>
+
+  <rect x="258" y="126" width="398" height="304" rx="15" fill="#eaf5f1" stroke="#bad8d0"/>
+  <circle cx="289" cy="156" r="14" fill="#23796e"/><text x="289" y="162" text-anchor="middle" font-size="17" font-weight="700" style="fill:white">A</text>
+  <text x="315" y="164" class="title">Collaborative planning</text>
+  <rect x="362" y="189" width="190" height="52" rx="9" fill="#fff" stroke="#bad8d0"/>
+  <text x="457" y="221" class="label" text-anchor="middle">LLM planner</text>
+  <path d="M415 242 361 284M499 242 555 284" class="flow" marker-start="url(#green-arrow)"/>
+  <rect x="280" y="289" width="166" height="72" rx="9" fill="#fff" stroke="#bad8d0"/>
+  <text x="363" y="318" class="label" text-anchor="middle">Audio-language</text>
+  <text x="363" y="342" class="label" text-anchor="middle">model</text>
+  <rect x="467" y="289" width="166" height="72" rx="9" fill="#fff" stroke="#bad8d0"/>
+  <text x="550" y="318" class="label" text-anchor="middle">Targeted tools</text>
+  <text x="550" y="343" class="small" text-anchor="middle">On demand</text>
+  <text x="457" y="402" class="small" text-anchor="middle">Target source · timing · parameters</text>
+  <path d="M657 277H691" class="line"/>
+
+  <rect x="696" y="126" width="474" height="304" rx="15" fill="#edf2fa" stroke="#c9d5e7"/>
+  <circle cx="727" cy="156" r="14" fill="#48668f"/><text x="727" y="162" text-anchor="middle" font-size="17" font-weight="700" style="fill:white">B</text>
+  <text x="753" y="164" class="title">Evidence-guided execution</text>
+  <rect x="716" y="229" width="146" height="79" rx="9" fill="#fff" stroke="#c9d5e7"/>
+  <text x="789" y="259" class="label" text-anchor="middle">Execute edit</text>
+  <text x="789" y="285" class="small" text-anchor="middle">Apply operation</text>
+  <path d="M863 268H886" class="line"/>
+  <rect x="890" y="229" width="112" height="79" rx="9" fill="#fff" stroke="#c9d5e7"/>
+  <text x="946" y="260" class="label" text-anchor="middle">Inspect</text>
+  <text x="946" y="286" class="small" text-anchor="middle">Evidence</text>
+  <path d="M1003 268H1026" class="line"/>
+  <rect x="1030" y="229" width="120" height="79" rx="9" fill="#fff" stroke="#c9d5e7"/>
+  <text x="1090" y="260" class="label" text-anchor="middle">Mix</text>
+  <text x="1090" y="286" class="small" text-anchor="middle">Final audio</text>
+  <path d="M946 308V347H789V310" class="line"/>
+  <text x="932" y="387" class="small" text-anchor="middle">Bounded correction when needed</text>
+
+  <text x="600" y="483" text-anchor="middle" font-size="18" font-weight="600">Addition     ·     Removal     ·     Replacement     ·     Volume adjustment</text>
+  <text x="600" y="513" text-anchor="middle" class="small">Tool use and correction are selected by the agent for the current request.</text>
+</svg>

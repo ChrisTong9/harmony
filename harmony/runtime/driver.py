@@ -76,6 +76,9 @@ def run(args, root):
     for rel, expected in manifest["files"].items():
         if hashlib.sha256((source / rel).read_bytes()).hexdigest() != expected:
             raise RuntimeError("Pinned source changed: " + rel)
+    cache = (args.checkpoint_cache or resource / config["checkpoint_cache"]).resolve()
+    if not cache.is_dir():
+        raise FileNotFoundError("Model checkpoint cache: " + str(cache))
     out.mkdir(parents=True, exist_ok=True)
     work = out / "working"
     work.mkdir()
@@ -129,9 +132,6 @@ def run(args, root):
             str(resource / "externals/sam-audio"),
         ]
     )
-    cache = (args.checkpoint_cache or resource / config["checkpoint_cache"]).resolve()
-    if not cache.is_dir():
-        raise FileNotFoundError("Model checkpoint cache: " + str(cache))
     (work / ".checkpoints").symlink_to(cache, target_is_directory=True)
     env["HARMONY_CHECKPOINT_CACHE"] = str(cache)
     from urllib.parse import urlparse
@@ -177,5 +177,8 @@ def run(args, root):
     )
     with (out / "execution.log").open("w") as log:
         result = subprocess.run(command, cwd=work, env=env, stdout=log, stderr=subprocess.STDOUT)
-    print("New edit completed:", out / "report.json", "exit", result.returncode)
+    if result.returncode:
+        print("Edit failed; see", out / "execution.log", "exit", result.returncode)
+    else:
+        print("New edit completed:", out / "report.json")
     return result.returncode

@@ -11,6 +11,8 @@
 
 Addition · Removal · Replacement · Volume adjustment
 
+[![Source and table checks](https://github.com/ChrisTong9/harmony/actions/workflows/checks.yml/badge.svg)](https://github.com/ChrisTong9/harmony/actions/workflows/checks.yml)
+
 </div>
 
 Harmony connects an editing request to particular sounds, time regions, and waveform operations. An LLM planner collaborates with an audio-language model and targeted tools to interpret the request, then uses observations of separated or generated audio to decide whether a bounded correction is needed before mixing.
@@ -19,16 +21,7 @@ The [interactive demo](https://christong9.github.io/harmony/) contains the origi
 
 ## How it works
 
-```mermaid
-flowchart LR
-    I[Input audio + editing request] --> A[Collaborative planning]
-    Q[Audio-language model] <--> A
-    T[Targeted analysis tools] <--> A
-    A --> E[Separate / generate / adjust]
-    E --> B[Inspect execution evidence]
-    B -->|Bounded correction when needed| E
-    B --> M[Mix and export]
-```
+![Harmony method overview: collaborative planning with an audio-language model and targeted tools, followed by evidence-guided execution and bounded correction.](.github/assets/method.svg)
 
 - **Edit-driven collaborative planning (A):** targeted listening questions and tool measurements inform the source, timing, and operation parameters. Tools are available on demand.
 - **Evidence-guided execution (B):** observations of the first separated or generated audio can trigger bounded corrections before the final mix. The bounds depend on the execution stage.
@@ -109,6 +102,10 @@ These checks verify source hashes, Python syntax, table values, cohort identity,
 **arXiv link forthcoming.** This section is reserved for the preprint URL and citation once an identifier is available.
 
 <!-- ARXIV_URL: add the actual https://arxiv.org/abs/... URL after the preprint is public. -->
+
+## Questions and contributions
+
+Please use [GitHub Issues](https://github.com/ChrisTong9/harmony/issues) for reproducible bugs and usage questions. The [contribution guide](CONTRIBUTING.md) describes the CPU checks and how to preserve the frozen experimental records.
 
 ## Dependencies and licensing
 

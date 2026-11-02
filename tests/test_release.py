@@ -6,6 +6,8 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import io
+from contextlib import redirect_stdout
 from types import SimpleNamespace
 from pathlib import Path
 from unittest.mock import patch
@@ -29,12 +31,12 @@ class ReleaseTests(unittest.TestCase):
             cache.mkdir()
             input_audio = base / "input.wav"
             input_audio.touch()
-            for task in ["add", "remove", "replace", "volume"]:
+            for cell, task in ((c, t) for c in reporting.CELLS for t in reporting.TASKS):
                 args = SimpleNamespace(
-                    cell="A1B1",
+                    cell=cell,
                     task=task,
                     resource_root=resources,
-                    output_dir=base / task,
+                    output_dir=base / f"{cell}-{task}",
                     input=input_audio,
                     instruction="Inspect relocation",
                     checkpoint_cache=cache,
@@ -45,6 +47,7 @@ class ReleaseTests(unittest.TestCase):
                     patch.dict("os.environ", {"OPENAI_API_KEY": "test-only-placeholder"}),
                     patch("harmony.runtime.driver.require_gpu"),
                     patch("harmony.runtime.driver.subprocess.run") as process,
+                    redirect_stdout(io.StringIO()),
                 ):
                     process.return_value.returncode = 0
                     self.assertEqual(run(args, ROOT), 0)
@@ -61,6 +64,34 @@ class ReleaseTests(unittest.TestCase):
                     self.assertIn(str(ROOT / "harmony/runtime/service"), copied_bridge)
                     self.assertNotIn("/home/ztong/agent", copied_bridge)
                     self.assertEqual((args.output_dir / "working/.checkpoints").resolve(), cache)
+
+    def test_missing_cache_does_not_leave_a_partial_run(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            interpreter = base / ".venvs/mixer/bin/python"
+            interpreter.parent.mkdir(parents=True)
+            interpreter.touch()
+            audio = base / "input.wav"
+            audio.touch()
+            output = base / "run"
+            args = SimpleNamespace(
+                cell="A1B1",
+                task="replace",
+                resource_root=base,
+                output_dir=output,
+                input=audio,
+                instruction="Inspect configuration",
+                checkpoint_cache=base / "missing",
+                qwen_url="http://127.0.0.1:9999/v1",
+                dry_run=False,
+            )
+            with (
+                patch.dict("os.environ", {"OPENAI_API_KEY": "test-only-placeholder"}),
+                patch("harmony.runtime.driver.require_gpu"),
+            ):
+                with self.assertRaisesRegex(FileNotFoundError, "checkpoint cache"):
+                    run(args, ROOT)
+            self.assertFalse(output.exists())
 
     def test_table_values_and_cohorts(self):
         task_rows, aggregate_rows, checks = reporting.compute()

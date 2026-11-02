@@ -1,0 +1,36 @@
+name: Bug report
+description: Report a configuration, inference, or reproduction problem.
+title: "[Bug] "
+body:
+  - type: dropdown
+    id: task
+    attributes:
+      label: Area
+      options:
+        - Installation or configuration
+        - Addition
+        - Removal
+        - Replacement
+        - Volume adjustment
+        - Table reproduction
+        - Demo website
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps and command
+      description: Include a minimal command and relevant configuration. Omit credentials and private data.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and error
+      description: Python version, operating system, relevant model versions, and a short error excerpt.
