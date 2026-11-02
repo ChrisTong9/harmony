@@ -1,4 +1,4 @@
-"""Relocation adapter for pinned primary code; never reads benchmark IDs or scores."""
+"""Launch the shared editing pipeline in an isolated run directory."""
 
 from pathlib import Path
 import json
@@ -17,7 +17,7 @@ def require_gpu():
 
 def run(args, root):
     config = json.loads((root / "configs/profiles.json").read_text())[args.cell][args.task]
-    source = root / config["source_directory"]
+    source = root / "audio_edit"
     resource = args.resource_root.resolve()
     out = args.output_dir.resolve()
     inp = args.input.resolve()
@@ -48,8 +48,6 @@ def run(args, root):
                         (args.checkpoint_cache or resource / ".checkpoints").resolve()
                     ),
                     requires="Slurm GPU allocation and existing Qwen audio endpoint",
-                    primary_profile_only=True,
-                    historical_repair_episodes="See reproducibility/SOURCES.json; not automatically selected for new inputs.",
                     no_model_calls=True,
                 ),
                 indent=2,
@@ -70,12 +68,6 @@ def run(args, root):
         raise RuntimeError("Use a fresh output directory to preserve first outputs.")
     if not Path(command[0]).is_file():
         raise FileNotFoundError(command[0])
-    manifest = json.loads((source / "SOURCE.json").read_text())
-    import hashlib
-
-    for rel, expected in manifest["files"].items():
-        if hashlib.sha256((source / rel).read_bytes()).hexdigest() != expected:
-            raise RuntimeError("Pinned source changed: " + rel)
     cache = (args.checkpoint_cache or resource / config["checkpoint_cache"]).resolve()
     if not cache.is_dir():
         raise FileNotFoundError("Model checkpoint cache: " + str(cache))
@@ -83,7 +75,12 @@ def run(args, root):
     work = out / "working"
     work.mkdir()
     local = out / "source"
-    shutil.copytree(source, local)
+    shutil.copytree(
+        source, local / "audio_edit", ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
+    )
+    shutil.copytree(
+        root / "harmony", local / "harmony", ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
+    )
     env = os.environ.copy()
     env.update(config["preedit_environment"])
     env.update(
@@ -145,31 +142,17 @@ def run(args, root):
         env.update(
             REPLACEMENT_AUDIO_SEED=str(seed),
             HARMONY_STABLE_TARGET=str(local / "audio_edit/tools/run_stable_audio.py"),
-            STABLE_AUDIO_SCRIPT=str(root / "harmony/runtime/stable_entry.py"),
+            STABLE_AUDIO_SCRIPT=str(local / "harmony/runtime/stable_entry.py"),
         )
     else:
         env.pop("REPLACEMENT_AUDIO_SEED", None)
-    common = json.loads((root / "configs/runtime.json").read_text())["common_source"]
-    env["HARMONY_COMMON_SOURCE"] = str(root / common)
-    bridge = local / "audio_edit/tools/basic_bridge.py"
-    value = bridge.read_text()
-    before = value
-    value = value.replace(
-        "Path('/home/ztong/agent/evaluation/mmae/harmony_basic_execution_v372_20261023')",
-        "Path(" + repr(str(root / "harmony/runtime/service")) + ")",
-    )
-    value = value.replace("'/home/ztong/agent/.venvs/mixer/bin/python'", repr(command[0]))
-    bridge.write_text(value)
-    if value == before:
-        raise RuntimeError("Common service relocation did not match pinned bridge")
+    env["HARMONY_COMMON_SOURCE"] = str(local)
     (out / "run_config.json").write_text(
         json.dumps(
             dict(
                 profile=config,
-                source_manifest=str(source / "SOURCE.json"),
+                source=str(source),
                 resource_root=str(resource),
-                adapter_changes=["basic_bridge service path and interpreter only"],
-                snapshot_result_claim=False,
             ),
             indent=2,
         )

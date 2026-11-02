@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a configuration, inference, or reproduction problem.
+description: Report a configuration, inference, or website problem.
 title: "[Bug] "
 body:
   - type: dropdown
@@ -12,7 +12,6 @@ body:
         - Removal
         - Replacement
         - Volume adjustment
-        - Table reproduction
         - Demo website
     validations:
       required: true

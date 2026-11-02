@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://christong9.github.io/harmony/sitemap.xml

@@ -1,4 +1,4 @@
-"""Same declared SAM seed as the v372 common executor, with relocatable resources."""
+"""Seeded source separation for the bounded delivery route."""
 
 from pathlib import Path
 import os
@@ -9,6 +9,8 @@ import sys
 
 if not os.environ.get("SLURM_JOB_ID"):
     raise RuntimeError("Slurm allocation required")
+if not (os.environ.get("SLURM_JOB_GPUS") or os.environ.get("SLURM_STEP_GPUS")):
+    raise RuntimeError("No GPU granted by Slurm to this job/step")
 print(subprocess.check_output(["nvidia-smi"], text=True), flush=True)
 source = Path(os.environ["HARMONY_COMMON_SOURCE"])
 sys.path.insert(0, str(source))

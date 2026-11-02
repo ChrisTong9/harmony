@@ -1,4 +1,4 @@
-"""Command-line interface for inference and offline paper-result checks."""
+"""Command-line interface for natural-language audio editing."""
 
 import argparse
 import json
@@ -6,7 +6,10 @@ import os
 from pathlib import Path
 
 from . import __version__
-from .reporting import CELLS, ROOT, TASKS, tables, verify
+
+ROOT = Path(__file__).resolve().parents[1]
+CELLS = ("A0B0", "A1B0", "A0B1", "A1B1")
+TASKS = ("add", "remove", "replace", "volume")
 
 
 def parser():
@@ -16,10 +19,7 @@ def parser():
     command.add_argument("--version", action="version", version=__version__)
     actions = command.add_subparsers(dest="action", required=True)
     actions.add_parser("profiles", help="List the four tasks and A/B configurations")
-    report = actions.add_parser("tables", help="Recompute paper tables offline, without models")
-    report.add_argument("--out", type=Path, default=ROOT / "outputs/tables")
-    actions.add_parser("verify", help="Check release hashes, cohorts, and paper table values")
-    edit = actions.add_parser("run", help="Run a new edit using a frozen task backend")
+    edit = actions.add_parser("run", help="Run a new audio edit")
     edit.add_argument("--task", choices=TASKS, required=True)
     edit.add_argument("--cell", choices=CELLS, default="A1B1")
     edit.add_argument("--input", type=Path, required=True)
@@ -53,14 +53,12 @@ def main(argv=None):
         for cell in CELLS:
             for task in TASKS:
                 profile = profiles[cell][task]
-                print(f"{cell}  {task:7}  {profile['source_directory']}")
+                mode = profile["perception_mode"]
+                corrections = profile["preedit_environment"]["HARMONY_EXECUTION_CORRECTIONS"]
+                print(f"{cell}  {task:7}  {mode:15}  corrections={corrections}")
         return 0
     try:
-        if args.action == "tables":
-            tables(args.out)
-        elif args.action == "verify":
-            return int(verify())
-        elif args.action == "run":
+        if args.action == "run":
             from .runtime.driver import run
 
             return run(args, ROOT)

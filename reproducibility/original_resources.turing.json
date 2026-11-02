@@ -1,7 +1,0 @@
-{
-  "resource_root": "/home/ztong/agent",
-  "python": "/home/ztong/agent/.venvs/mixer/bin/python",
-  "common_source": "code/snapshots/harmony_basic_execution_v372_20261023",
-  "qwen_base_url_env": "AUDIO_ANALYSIS_BASE_URL",
-  "credentials": "Environment variables only; credentials excluded from this bundle."
-}

@@ -1,0 +1,421 @@
+sample_id,task,instruction
+69e897fbf1844435bec75ef0,add,Add the music from the last 6 seconds to the background of the speech in the first 3 seconds
+69e897fbf1844435bec75f0f,add,Add soothing background music to all moments where bird chirping occurs
+69e897fff1844435bec79565,add,Append a coughing sound at the very beginning of the original audio.
+69e897fff1844435bec7956a,add,Add a sheep bleating sound at the third second of the audio.
+69e897fff1844435bec79574,add,Append a segment of applause at the end of the original audio.
+69e897fff1844435bec79577,add,Add background guitar accompaniment to the singing voice in the audio.
+69e897fff1844435bec7957b,add,Insert a short explosion sound after the fourth gunshot in the original audio.
+69e897fff1844435bec795ad,add,Add a humorous background music to this stand-up comedy audio.
+69e897fff1844435bec795af,add,Insert a dog bark between the car horn and the door opening sound in this audio.
+69e897fff1844435bec795d4,add,Add the sound of a gun being loaded at the end of this audio.
+69e897fff1844435bec795d8,add,"According to the rhythm of the slapping sound in the audio, add a rhythmic guitar sound from the 5th second of the original audio until the end of the audio. Output the edited audio."
+69e897fff1844435bec795df,add,Append a sound effect indicating a sudden realization at the end of the audio.
+69e898013a050f39ac55bf0b,add,Add harmonious vocals to this instrumental music
+69e898013a050f39ac55bf11,add,Add continuous splashing sounds to the background
+69e898013a050f39ac55bf46,add,Add applause at the beginning
+69e898013a050f39ac55bf60,add,Please add appropriate background music
+69e898013a050f39ac55bf65,add,Add more cheers
+69e898013a050f39ac55bf7e,add,Add cheerful laughter in the appropriate places
+69e89804cb139bd822d10697,add,Add drum beats that match the rhythm.
+69e89804cb139bd822d106a1,add,Make the cat meowing occur more frequently.
+69e89804cb139bd822d106ad,add,Add background chorus humming of the melody.
+69e89804cb139bd822d106b0,add,add wind sound
+69e89804cb139bd822d106b5,add,Add applause in the background.
+69e89804cb139bd822d106b7,add,add some wind sound.
+69e89804cb139bd822d106b9,add,add water sound
+69e89804cb139bd822d106be,add,Add some applause.
+69e89804cb139bd822d106bf,add,add some laughter
+69e89804cb139bd822d106da,add,Add a slight cheering sound in the background.
+69e89805bd490e32ff0d3c7d,add,Add a thunder sound randomly during the rain.
+69e89805bd490e32ff0d3c9d,add,"Add four beats of drum kits before the drum start, the speed in line with the drum sound."
+69e89805bd490e32ff0d3ca7,add,Add applause after the final sentence.
+69e89805bd490e32ff0d3cb1,add,Add a cheering crowd sound after the sound of the football entering the net.
+69e89805bd490e32ff0d3cb8,add,Add a emotional piano music as the background music to this speech as accompany.
+69e89805bd490e32ff0d3cc8,add,Add the sound of splashing water.
+69e898073a050f39ac560801,add,Add ocean waves as background sound to the audio.
+69e898073a050f39ac560812,add,Add a loud ship horn sound at the end of the clip.
+69e898073a050f39ac560816,add,"Insert a crisp ""plop"" sound of a pebble dropping into the water at the very end of the clip."
+69e898073a050f39ac560820,add,Add a single frog croak after the ocean wave sound ends.
+69e898073a050f39ac560821,add,Add a single thunder clap at the beginning of the rain sound.
+69e898073a050f39ac560825,add,Add the sound of an umbrella snapping open right at the beginning of the rain audio.
+69e898073a050f39ac56083b,add,"Add a quirky, comedic pizzicato string music track to the background to perfectly match the man's secretive and funny phone call about ""tank training""."
+69e898073a050f39ac56084b,add,Add soft white noise as the background for this clip.
+69e898073a050f39ac56084f,add,"Add an epic, building orchestral music track to the background that reaches its climax right when he says ""I am Iron Man."""
+69e898073a050f39ac560850,add,"Add a loud water splash sound in the middle of the audio, like someone jumping into the pool below the waterfall."
+69e898073a050f39ac56085c,add,Add the sound of heavy pouring rain starting immediately after the thunder cracks.
+69e898093a050f39ac564723,add,Add an explosion sound at 6-7 seconds.
+69e898093a050f39ac564727,add,Add the audience and applause to the background
+69e898093a050f39ac56472c,add,Add a cat's meow from 13th to 15th seconds.
+69e898093a050f39ac564755,add,Add relaxing background music to this audio
+69e8980a6508941e55c144ac,add,Add a rainy setting to the background of the audio.
+69e8980a6508941e55c144d4,add,Add gun shot at the beginning of the audio.
+69e8980a6508941e55c144d5,add,Add wind sound to the background of the audio.
+69e8980c910050e59545dcf0,add,Add the sound of water to the audio.
+69e8980c910050e59545dcf1,add,Add a man's scream after the loud noise.
+69e8980c910050e59545dcfe,add,Insert a gunshot before the man's scream.
+69e8980c910050e59545dd00,add,Add crowd cheering to the audio.
+69e8980c910050e59545dd03,add,Insert rhythmic drum beats into the audio.
+69e8980c910050e59545dd0b,add,Add a dog barking in the audio.
+69e8980c910050e59545dd0f,add,Add the sound of a sword dropping at the end.
+69e8980c910050e59545dd2b,add,Add bird chirping to the audio.
+69e8980c910050e59545dd2f,add,Add tense background music to the audio.
+69e8980c910050e59545dd31,add,Add a guitar track that fits the intense emotion of this music.
+69e8980c910050e59545dd45,add,Add a piano to the music.
+69e8980ebd490e32ff0d6821,add,Add a piece of instrumental music at the end.
+69e8980ebd490e32ff0d682b,add,Add a piece of instrumental music at the beginning.
+69e8980ebd490e32ff0d6831,add,Add a piece of instrumental music at the end.
+69e8980ebd490e32ff0d683b,add,Add a piece of instrumental music at the beginning.
+69e8980ebd490e32ff0d6844,add,Insert a cat's meow at the end.
+69e8980ebd490e32ff0d6847,add,Add a pure drum beat accompaniment before the rap.
+69e8980ebd490e32ff0d6868,add,Add one continuous door-knocking sound.
+69e898101e675a73b8e1dbf3,add,Add a dog bark between the two speakers.
+69e898101e675a73b8e1dc1f,add,Add a soft piano accompaniment to this vocal track.
+69e89812f1844435bec7d4ea,add,Add a soothing background music track to this introduction.
+69e89812f1844435bec7d4eb,add,Add thunder sound effects to the audio.
+69e89812f1844435bec7d534,add,Add a 0.5-second bleep sound effect after each instance of laughter.
+69e89814cb139bd822d1409a,add,"Append five clock-tick sounds at the end, following the current time interval."
+69e89814cb139bd822d1409b,add,"Add five clock-tick sounds at the beginning, based on the current time interval"
+69e89817910050e595461402,add,Add the gradually approaching footsteps to the background sound in the first two seconds.
+69e89817910050e595461437,add,"Add a snare drum track, playing 8 beats per measure with accents on beats 1, 4, and 7."
+69e89817910050e59546143d,add,Add a sustained note one octave higher for the main melody using the violin.
+69e89817910050e59546144c,add,"Add a bass track to this fingerstyle guitar section, playing the root note an octave lower."
+69e898191e675a73b8e21670,add,Add a seagull's cry at the very end of the audio.
+69e898191e675a73b8e21676,add,Add a scratching sound of writing at the five-second mark of the audio.
+69e898191e675a73b8e21691,add,Add the sound of a crow flapping its wings at the 20-second mark.
+69e898191e675a73b8e2169b,add,Add a countdown timer sound at the beginning to create a sense of urgency.
+69e898191e675a73b8e216bf,add,Add the sound of chirping cicadas to the background.
+69e898191e675a73b8e216cc,add,Add the rustling sound of leaves to the background.
+69e898191e675a73b8e216d0,add,Add the sound of rain to the background.
+69e8981b3a050f39ac5693f4,add,"Generate a continuous, heavy rain and occasional muffled thunder soundscape in the background, making it sound as if the two speakers are having this interview right next to a closed glass window during a thunderstorm."
+69e8981b3a050f39ac5693f9,add,"Insert a loud 'wrong answer buzzer' sound effect immediately after the interviewer says 'Nope, that's a continent'"
+69e8981b3a050f39ac5693fe,add,Identify the section from 0:05 to 0:12 and add a synchronized cello accompaniment that follows the root notes of the piano chords
+69e8981b3a050f39ac56940b,add,"Add the sounds of audience of the interview, nature and suitable"
+69e8981b3a050f39ac56941e,add,"Generate a continuous, epic Hans Zimmer-style orchestral track that spans the clip that is corresponding to the sounds and speeches."
+69e8981b3a050f39ac569434,add,"Immediately after the singer shouts 'Let's go!', inject a heavy, cinematic sub-bass drop and a crash cymbal, ensuring the hit is perfectly quantized to the downbeat of the live band's rhythm."
+69e8981d1b20a5f95709b3a7,add,Add the sound of a lighter being ignited before the fire burning sound at the beginning.
+69e8981d1b20a5f95709b3a8,add,Add the sound of a sheep bleating.
+69e8981d1b20a5f95709b3b7,add,Add a bell “ding” sound at the end to indicate success.
+69e8981d1b20a5f95709b3b9,add,Add the sound of a rope snapping at the end.
+69e8981d1b20a5f95709b3c5,add,"Add a busy traffic background ambience, including distant car sounds and roadway noise."
+69e8981d1b20a5f95709b3c6,add,"Add clear, crisp bird chirping sounds to the background."
+69e8981d1b20a5f95709b3c7,add,"Add café background ambience, including muffled conversational chatter and the sound of a coffee machine operating."
+69e8981d1b20a5f95709b3d6,add,Add a background sound of a gentle breeze rustling through the leaves.
+69e8981d1b20a5f95709b3f7,add,Add a noisy crowd chatter background to the audio.
+69e8981f6508941e55c185cc,add,Add a woman's scream after the explosion sound.
+69e8981f6508941e55c185d2,add,Add bird sounds in the first five seconds of the audio.
+69e8981f6508941e55c185da,add,Add a piece of soft music as background music.
+69e8981f6508941e55c185df,add,Add crowd cheers and applause during the quiet breaks in the music.
+69e8981f6508941e55c185e2,add,Add eerie and creepy background music.
+69e8981f6508941e55c185ef,add,Add a piece of light and soft music as background music.
+69e8981f6508941e55c185f7,add,Add background music that fits the style of a busy city.
+69e8981f6508941e55c1860c,add,Add thunder sound between the 5th and 6th seconds of the audio.
+69e89820f1844435bec80828,add,Insert a thunderclap sound between the 2s and 3s marks.
+69e89820f1844435bec8083b,add,Add a shaker percussion track to the accompaniment.
+69e89820f1844435bec80843,add,Add a 3/4 time signature drum loop consisting of a kick drum and hi-hat.
+69e89820f1844435bec8084c,add,Layer a harmony a third above this vocal.
+69e897fbf1844435bec75ee4,remove,Remove the background music from the audio
+69e897fbf1844435bec75eee,remove,Remove the vocals from this audio
+69e897fbf1844435bec75efb,remove,Remove the cheering sound from the background audio.
+69e897fc1e675a73b8e1a406,remove,"Remove the background noise, keeping the speech natural and unchanged."
+69e897fc1e675a73b8e1a432,remove,"Remove all music from the audio, keeping any non-music sounds unchanged."
+69e897fc1e675a73b8e1a43c,remove,Remove the background noise from the first five seconds of the audio while keeping the rest of the audio unchanged.
+69e897fecb139bd822d0f090,remove,Remove the background noise from this audio and keep only the human voice.
+69e897fecb139bd822d0f096,remove,Remove the background sound in the last few seconds of this audio.
+69e897fecb139bd822d0f0a5,remove,Remove the background music from this audio.
+69e897fff1844435bec79570,remove,"Remove the background music from the audio, leaving only the interview speech."
+69e897fff1844435bec79571,remove,Remove the laughter from the audio.
+69e897fff1844435bec79572,remove,Remove all singing voices from the audio.
+69e897fff1844435bec7957a,remove,Remove the knocking sounds from the audio.
+69e897fff1844435bec795e1,remove,Remove the applause and cheering sounds from the audio.
+69e898013a050f39ac55bf0f,remove,Remove the sound of rain
+69e898013a050f39ac55bf16,remove,Remove the electronic music part from the music
+69e898013a050f39ac55bf18,remove,Remove the vocal from this music track
+69e898013a050f39ac55bf1b,remove,Please eliminate environmental noise.
+69e898013a050f39ac55bf24,remove,Remove the background music
+69e898013a050f39ac55bf30,remove,remove the wind sound
+69e898013a050f39ac55bf34,remove,Remove the thunder sound
+69e898013a050f39ac55bf5e,remove,Remove the noise except for the human voice
+69e898013a050f39ac55bf5f,remove,remove the sound of laugher
+69e89804cb139bd822d10674,remove,Remove the discordant beeping sound from the audio.
+69e89804cb139bd822d10677,remove,remove the man's laughter
+69e89804cb139bd822d10687,remove,"Extract the speech and humming sounds, without the background music."
+69e89804cb139bd822d1068a,remove,Remove the background noise.
+69e89804cb139bd822d1068e,remove,remove the voice and keep the music
+69e89804cb139bd822d1069c,remove,Remove the heartbeat sound from the background.
+69e89804cb139bd822d106a0,remove,"remove the strings, keep other instruments and voice"
+69e89804cb139bd822d106a9,remove,remove the laughter
+69e89805bd490e32ff0d3c8e,remove,Remove the drum track but keep bass and chords.
+69e89805bd490e32ff0d3cab,remove,"The moment a person starts talking, stop any background noise immediately."
+69e89805bd490e32ff0d3cac,remove,Remove the ping pong sound from the music and leave the rest of the sound unchanged.
+69e89805bd490e32ff0d3caf,remove,Reduce the traffic noise while keeping the speaker’s voice clear.
+69e89805bd490e32ff0d3cbd,remove,Remove background music when speech starts.
+69e89805bd490e32ff0d3cd1,remove,Remove the vocals from this Japanese song and leave the accompaniment.
+69e89805bd490e32ff0d3cd6,remove,Remove the mouth smacking sound after people finish talking.
+69e898073a050f39ac5607f9,remove,Remove the piano accompaniment from this audio clip.
+69e898073a050f39ac5607fb,remove,Remove the applause from the audio
+69e898073a050f39ac5607fd,remove,Remove the car engine sound from the audio.
+69e898073a050f39ac560802,remove,Mute all the low double bass sounds.
+69e898073a050f39ac560804,remove,Remove the timpani sound from this clip.
+69e898073a050f39ac560808,remove,Remove the background chatter and clinking glasses from this clip.
+69e898093a050f39ac564718,remove,Remove background noise
+69e898093a050f39ac56471c,remove,Remove all car sounds
+69e898093a050f39ac564722,remove,Remove the camera shutter sound
+69e898093a050f39ac56472d,remove,Remove all gong sounds
+69e898093a050f39ac56473a,remove,Remove the drum from the background music.
+69e8980a6508941e55c144a3,remove,Remove the background music of the speech.
+69e8980a6508941e55c144b7,remove,Remove the background music of the audio and keep the game sound and human speech unchanged.
+69e8980a6508941e55c144c7,remove,Extract the speech from the audio and remove the background laughter.
+69e8980a6508941e55c144f8,remove,Remove the game sound in the audio.
+69e8980c910050e59545dcf3,remove,Remove the sound of the chicken.
+69e8980c910050e59545dcf8,remove,Remove the sudden music.
+69e8980c910050e59545dcff,remove,Remove the background music.
+69e8980c910050e59545dd06,remove,Remove the background music.
+69e8980c910050e59545dd0e,remove,Remove the beeping sound in the audio
+69e8980c910050e59545dd32,remove,Remove the background music
+69e8980ebd490e32ff0d681d,remove,Remove the sound of the car being hit.
+69e8980ebd490e32ff0d682c,remove,Remove background music.
+69e8980ebd490e32ff0d682d,remove,Remove the strange non-singing sounds at the beginning.
+69e8980ebd490e32ff0d684a,remove,Remove the water sound at the end.
+69e8980ebd490e32ff0d6855,remove,Remove all high-frequency synth sweeps from this audio.
+69e8980ebd490e32ff0d6860,remove,Remove the brief switch sound at the end.
+69e898101e675a73b8e1dbec,remove,There is a noise at the very beginning of this video. Please remove only that specific noise while keeping the subsequent speech and background music completely intact.
+69e898101e675a73b8e1dc01,remove,"Remove all background music, keep the vocals unchanged."
+69e898101e675a73b8e1dc05,remove,Remove the drum sound between 2s-4s
+69e898101e675a73b8e1dc09,remove,"In this father-son conversation, there is a sudden physical impact sound (a slap) accompanied by the son making a 'muffled groan' (Wu). Please remove only the impact sound of the slap, while keeping the conversation and the son's voice as natural as possible"
+69e898101e675a73b8e1dc0b,remove,Remove the laughter.
+69e898101e675a73b8e1dc16,remove,"Extract the pipa music from this clip while removing the person's counting voice('one, two, three...').."
+69e898101e675a73b8e1dc1d,remove,Remove the background music
+69e898101e675a73b8e1dc22,remove,Remove singing of woman from background music
+69e898101e675a73b8e1dc30,remove,Remove vocals from the background music
+69e898101e675a73b8e1dc43,remove,Remove Cantonese vocals from the music
+69e898101e675a73b8e1dc4c,remove,"Remove the sound effect that accompanies the beginning Chinese “zhe"""
+69e898101e675a73b8e1dc50,remove,"Remove the background music accompaniment, leaving only the vocal performance"
+69e89812f1844435bec7d4e9,remove,Remove the gunshot sound from the audio.
+69e89812f1844435bec7d4f3,remove,Remove the lip smacking sounds from this dialogue.
+69e89812f1844435bec7d4f8,remove,Remove the siren sound from this dialogue.
+69e89812f1844435bec7d4fa,remove,Remove the loud drum-like booming sounds that appear in this violin ensemble recording.
+69e89812f1844435bec7d4fc,remove,Remove the laughter that appears in the audio.
+69e89812f1844435bec7d502,remove,Remove the vocal track from this music.
+69e89812f1844435bec7d503,remove,Remove the background music from the dialogue.
+69e89812f1844435bec7d509,remove,Remove the background music from the dialogue.
+69e89812f1844435bec7d50a,remove,Remove the background traffic noise from the audio.
+69e89812f1844435bec7d50c,remove,Remove the boom sound effect from the audio.
+69e89812f1844435bec7d510,remove,Remove the screaming sound from the audio.
+69e89812f1844435bec7d515,remove,Remove the sound of a vase breaking from the audio.
+69e89812f1844435bec7d517,remove,Remove the laughter that appears in the dialogue.
+69e89814cb139bd822d14073,remove,Remove the laughter at the end of the audio.
+69e89814cb139bd822d14074,remove,Only remove the laughter in this audio segment.
+69e89814cb139bd822d14075,remove,Remove the background music.
+69e89814cb139bd822d14076,remove,Remove the rhythmic drum beats from this audio segment.
+69e89814cb139bd822d1407b,remove,Remove all siren sounds.
+69e89814cb139bd822d14081,remove,Remove all gunshot sounds.
+69e89814cb139bd822d1408c,remove,Remove all background laughter.
+69e89814cb139bd822d1408d,remove,Remove all background music.
+69e89814cb139bd822d1408f,remove,Remove all laughter from this audio.
+69e89814cb139bd822d14090,remove,Remove all coughs from this audio
+69e89814cb139bd822d140a1,remove,Remove all background music
+69e89814cb139bd822d140be,remove,Remove all background music and retain only the dry vocals.
+69e89814cb139bd822d140bf,remove,Remove all vocals and retain only the background music.
+69e89814cb139bd822d140e8,remove,Remove all punching sounds.
+69e898163a050f39ac5674fd,remove,"Perform speech enhancement on the audio by removing background noise, such as static, wind, or ambient hum, to improve the clarity and quality of the primary speech signal."
+69e898163a050f39ac567511,remove,Extract the human vocals from the audio by removing all instrumental music and background tracks.
+69e898163a050f39ac567521,remove,Detect and remove all instances of laughter from the audio.
+69e898163a050f39ac567524,remove,"Completely suppress all background noise generated by the audience, including applause and cheering, to isolate the primary audio source."
+69e898163a050f39ac56752b,remove,Identify and remove all instances of handclapping from the audio while preserving the underlying speech and background ambience.
+69e898163a050f39ac567536,remove,Mute the sighs or replace them with room tone to maintain the exact audio duration.
+69e898163a050f39ac56754d,remove,Remove all human voices from the audio. Preserve the ambient background sounds.
+69e89817910050e59546140e,remove,Remove the siren sound from the 3rd to 4th seconds.
+69e89817910050e595461410,remove,Remove the laughter of the second speaker
+69e89817910050e595461428,remove,Eliminate the laughter of the audience throughout the entire voice.
+69e89817910050e595461429,remove,Remove the shutter sounds and engine noises from the audio while preserving the drum beats.
+69e89817910050e595461431,remove,Remove the timpani at the beginning.
+69e89817910050e59546143c,remove,Remove this instrumental track and keep only the vocals.
+69e89817910050e59546144f,remove,Remove the sound of glass shattering from the audio.
+69e898191e675a73b8e2167f,remove,Remove the male voice sample at [10.4s:14.9s] of the audio.
+69e898191e675a73b8e21686,remove,Remove the bird chirps from the audio.
+69e898191e675a73b8e216ce,remove,Remove the vocal track from the audio.
+69e8981b3a050f39ac5693f7,remove,"Extract only the woman's voice from the entire clip. You must completely silence the opening alarm clock and the subsequent acoustic guitar background music, leaving perfectly clean speech with no phase cancellation artifacts."
+69e8981b3a050f39ac569437,remove,"Isolate and output only the classical string music. Completely remove the sounds of liquid pouring and the spoon stirring the cup, smoothly inpainting the musical notes hidden behind those transient sounds."
+69e8981d1b20a5f95709b3a3,remove,Remove the human laughter from the audio.
+69e8981d1b20a5f95709b3a4,remove,"Remove the sudden piano sound and the man’s scream in the latter part, keeping only the beautiful piano performance at the beginning."
+69e8981d1b20a5f95709b3ba,remove,Remove the background singing and extract only the sound of scraping small wooden sticks.
+69e8981d1b20a5f95709b3c0,remove,Extract the percussion sounds from the audio and remove the background rain noise.
+69e8981d1b20a5f95709b3d7,remove,Remove the crowd cheering in the background.
+69e8981d1b20a5f95709b3e0,remove,"Remove the background instrumental sounds, keeping only the vocal singing."
+69e8981d1b20a5f95709b3ee,remove,Remove the last two metallic impact sounds.
+69e8981d1b20a5f95709b415,remove,"Remove the vocals and the girl's speech from the audio, keeping only the instrumental sounds."
+69e8981d1b20a5f95709b419,remove,Remove the laughter from the audio.
+69e8981f6508941e55c185a6,remove,"Remove the sound similar to ""ewww"" at the end of the audio."
+69e8981f6508941e55c185a7,remove,"Remove slapping, hitting, and similar impact sounds from the audio."
+69e8981f6508941e55c185ab,remove,Remove the sound of violin
+69e8981f6508941e55c185ac,remove,Remove the background music.
+69e8981f6508941e55c185cf,remove,Remove the sound of vehicle horns.
+69e8981f6508941e55c185f3,remove,Remove all environment sounds
+69e8981f6508941e55c185f9,remove,Remove the man's screaming while keeping the rest unchanged.
+69e8981f6508941e55c18601,remove,Remove the bird sounds from the audio.
+69e8981f6508941e55c18604,remove,Mute the piano
+69e8981f6508941e55c18611,remove,Mute the violin.
+69e8981f6508941e55c18617,remove,Remove the background music.
+69e89820f1844435bec8080f,remove,Remove the BGM.
+69e89820f1844435bec80835,remove,Remove the gunshot sound effect.
+69e89820f1844435bec80836,remove,Remove the sound of the car passing by.
+69e89820f1844435bec80852,remove,Remove the background music track.
+69e89820f1844435bec8085c,remove,Remove the arpeggiated pluck synth track from the music.
+69e89820f1844435bec80860,remove,Remove the BGM.
+69e897fbf1844435bec75ede,replace,Convert the timbre of this music to piano
+69e897fbf1844435bec75ee9,replace,Transform a vocal humming melody into a piano rendition while preserving the melodic content.
+69e897fbf1844435bec75ef8,replace,Replace the knocking sound with a wooden material sound
+69e897fbf1844435bec75f27,replace,Replace the current knocking sound with a metallic knocking sound
+69e897fc1e675a73b8e1a43d,replace,"Make the single bird call sound like a small flock of birds, without changing the surrounding ambience."
+69e898013a050f39ac55bf83,replace,replace the current accompaniment with a cheerful accompaniment
+69e89804cb139bd822d10683,replace,Change the female humming to male humming.
+69e89804cb139bd822d106bb,replace,Change the trumpet tone to an oboe tone.
+69e89805bd490e32ff0d3c7c,replace,Replace the last sound of glass breaking with the sound of a bomb exploding.
+69e89805bd490e32ff0d3c9c,replace,Replace the piano with a marimba sound.
+69e89805bd490e32ff0d3ca1,replace,Turn the noise in the background into a rhythmic drum beat and keep the speech the same.
+69e89805bd490e32ff0d3cd0,replace,Swap the sound of an acoustic guitar with the sound of an electric guitar with low distortion.
+69e898073a050f39ac560854,replace,Change the surface material of the footsteps so it sounds like someone is walking on crunchy dry leaves.
+69e898093a050f39ac564767,replace,Replace the single ring with three consecutive rings.
+69e898093a050f39ac564782,replace,Change the instrument of this music to the tone of a frog's croak
+69e8980a6508941e55c144b6,replace,Change the environment to a busy coffee shop setting.
+69e8980a6508941e55c144da,replace,Replace the applause at the end of the audio with laughter.
+69e8980a6508941e55c144f4,replace,Transfer the instrumentation to piano while preserving the original melody.
+69e8980a6508941e55c144fc,replace,Change the instrumentation to synth percussive clicks while preserving the original melody.
+69e8980c910050e59545dcfb,replace,Replace the glass-shattering sound with a door slamming sound
+69e8980c910050e59545dd0c,replace,Replace the dropping sound with the glass-shattering sound
+69e8980c910050e59545dd10,replace,Change the coughing sound into a dog barking
+69e8980c910050e59545dd4f,replace,Change the sneeze sound to a cat meowing.
+69e8980ebd490e32ff0d6822,replace,Transform the piano piece into a human humming voice.
+69e8980ebd490e32ff0d6824,replace,Turn this piece of music into a piano piece.
+69e8980ebd490e32ff0d6828,replace,Turn this piano piece into an electric piano version.
+69e8980ebd490e32ff0d6835,replace,Turn this piano piece into a violin piece.
+69e8980ebd490e32ff0d6843,replace,Change this dog barking to cat meowing with the same rhythm.
+69e8980ebd490e32ff0d6850,replace,Change this dog barking to cat meowing with the same rhythm.
+69e8980ebd490e32ff0d685b,replace,Replace the non-scissors sound in the middle with the scissors sound
+69e898101e675a73b8e1dbeb,replace,Replace the piano accompaniment with a cello while maintaining the exact timing of the poem's recitation.
+69e898101e675a73b8e1dbed,replace,Change the explosion sound effect to laughter.
+69e898101e675a73b8e1dbf1,replace,Change the background music to soothing music.
+69e898101e675a73b8e1dbfb,replace,Replace the cat meows with dog barks
+69e898101e675a73b8e1dc15,replace,Replace cheers with applause
+69e898101e675a73b8e1dc1b,replace,"Change the timbre of the Erhu to a violin, while strictly preserving all the original slides and vibrato techniques."
+69e898101e675a73b8e1dc4b,replace,Change the cat's meow into a dog's bark
+69e89812f1844435bec7d4f1,replace,"Replace each dog bark with a cat meow, ensuring the number of meows matches the original number of barks."
+69e89812f1844435bec7d501,replace,Rearrange this piece to be performed using a piano.
+69e89812f1844435bec7d506,replace,Replace the dog barking sound with a cat meow.
+69e89814cb139bd822d14086,replace,Change all the cat mews to the dog bark.
+69e89814cb139bd822d14092,replace,Convert the acoustic guitar to a distorted electric guitar.
+69e89814cb139bd822d140ba,replace,"Convert this cello performance into a plucked harp, maintaining the original melody."
+69e89814cb139bd822d140bc,replace,Transfer this Western classical cello into a traditional Chinese Erhu.
+69e89814cb139bd822d140bd,replace,"Convert the cello sound into a deep, rich male bass choir humming (A Cappella style)"
+69e89817910050e595461416,replace,Replace the ending laughter with applause.
+69e89817910050e59546142b,replace,"Replace the kick drum sound with handclaps, but keep the duration and placement unchanged."
+69e89817910050e595461468,replace,"Rearrange the composition to a folk style, using only an acoustic guitar and no synthesizer sounds."
+69e898191e675a73b8e21665,replace,Replace the bird chirps in the audio with dog barking.
+69e898191e675a73b8e21669,replace,Replace all instruments in this music with a solo piano.
+69e898191e675a73b8e2167a,replace,Replace the jazz segment at the 13-second mark with a violin performance.
+69e898191e675a73b8e216b1,replace,Turn this song into a version with only guitar and vocals.
+69e898191e675a73b8e216cd,replace,Replace the band instruments with an orchestral arrangement.
+69e898191e675a73b8e216d4,replace,Convert the entire song into a solo piano version.
+69e8981b3a050f39ac5693f5,replace,"Keep the woman's voice perfectly timed, but replace the light, cheerful acoustic guitar background music with a dark, melancholic cello drone"
+69e8981b3a050f39ac569410,replace,"Keep all the dialogue intact with perfect timing, but replace the existing lighthearted background music with an intense, cinematic thriller drone"
+69e8981b3a050f39ac56941c,replace,"Retain the lead singer's voice, the crowd noise, and the exact tempo and melody of the song. However, universally replace all the classical string instruments in the backing track with heavily distorted electric guitars, maintaining the exact same chord progression and rhythmic feel"
+69e8981b3a050f39ac56942d,replace,"Take the chaotic action sequence audio and completely replace its metallic, sci-fi battleground background ambiance with the sound of a dense, rainy jungle environment, while keeping the primary foreground impact and explosion sounds intact."
+69e8981b3a050f39ac569430,replace,Transform the instrument background music into piano
+69e8981b3a050f39ac569436,replace,Change the continuous sizzling sound of the frying pan into the sound of a large pot of violently boiling water.
+69e8981b3a050f39ac569443,replace,"Transform the entire audio from a solo acoustic piano to a clean electric guitar, maintaining all melodic and harmonic structures."
+69e8981b3a050f39ac56944b,replace,"Keep the Korean dialogue perfectly intact and timed, but replace the heavy, dramatic orchestral music with a calm, peaceful acoustic guitar background track."
+69e8981d1b20a5f95709b3aa,replace,Replace the cat’s meowing with a duck’s quacking.
+69e8981d1b20a5f95709b3bc,replace,Replace the sharp bell ringing sound in the audio with a loud bomb explosion “boom” sound
+69e8981d1b20a5f95709b3bd,replace,Replace the sound of the small ball coming to a stop at the end with the sound of it dropping onto the ground repeatedly in succession.
+69e8981d1b20a5f95709b3c3,replace,Replace the crisp sound of a small ball hitting with the heavy thud of a large ball dropping onto the floor.
+69e8981f6508941e55c185b3,replace,Change the piano timbre in the background to violin timbre.
+69e8981f6508941e55c185be,replace,Change the performing instrument from piano to cello while keeping the melody unchanged.
+69e8981f6508941e55c185cd,replace,Change one knock in the audio to three rapid consecutive knocks.
+69e8981f6508941e55c185d0,replace,"Keep the melody unchanged, and change the piano timbre to violin timbre."
+69e8981f6508941e55c185d1,replace,Change the piano timbre in the background to guitar timbre.
+69e8981f6508941e55c185d3,replace,Change the tiger's roar into a wolf's howl.
+69e8981f6508941e55c185d7,replace,Change the performing instrument from cello to piano while keeping the melody unchanged.
+69e8981f6508941e55c185dd,replace,Change the timbre of the background instruments to guitar.
+69e8981f6508941e55c185e1,replace,Change the background sound from white noise to soft and soothing piano music.
+69e89820f1844435bec80810,replace,Remove the drum kit and add ambient crowd noise.
+69e89820f1844435bec80822,replace,Replace the background engine noise with helicopter rotor sounds.
+69e89820f1844435bec80831,replace,Replace the wood-sawing sound with the sound of fingernails scratching a chalkboard.
+69e89820f1844435bec8085a,replace,Transform the beatbox performance into a realistic drum kit sound while maintaining the rhythm.
+69e897fbf1844435bec75ed5,volume,Reduce the volume.
+69e897fbf1844435bec75ed7,volume,Enhance the vocal track from the background music.
+69e897fbf1844435bec75eef,volume,Increase the volume of the entire audio
+69e897fbf1844435bec75f2f,volume,Reduce the overall volume of the entire audio
+69e897fc1e675a73b8e1a431,volume,Increase the volume of the frying sound while keeping all other sounds unchanged.
+69e897fc1e675a73b8e1a434,volume,"Identify the person who is counting numbers from far away, then increase only that person’s volume while keeping all other voices and background sounds unchanged."
+69e897fff1844435bec79579,volume,Edit the audio so that the volume of the rain and water sounds gradually increases over time.
+69e897fff1844435bec79590,volume,Increase the singing volume of the lyric “Give me your hand before I'm old”.
+69e898013a050f39ac55bf3f,volume,Increase the volume of the laughter
+69e898013a050f39ac55bf42,volume,Reduce the volume of the person's voice
+69e898013a050f39ac55bf4f,volume,Amplify the volume of the cheering sounds
+69e898013a050f39ac55bf68,volume,Increase the volume of the music
+69e89804cb139bd822d10671,volume,lower the sound of background music
+69e89804cb139bd822d1069a,volume,Lower the volume of the drums.
+69e89804cb139bd822d106ab,volume,Reduce the music volume.
+69e89804cb139bd822d106b2,volume,Lower the drum sound.
+69e89804cb139bd822d106b3,volume,Lower the volume of the oboe tone.
+69e89804cb139bd822d106dd,volume,Reduce the accompaniment volume while keeping the vocal volume unchanged.
+69e89805bd490e32ff0d3c75,volume,Enhance the woman's voice and weaken the man's voice in this overlapping speech.
+69e89805bd490e32ff0d3ca5,volume,Changing the strength of the piano makes the music more emotional.
+69e89805bd490e32ff0d3cd5,volume,Change the fading sound of train horns to a constant volume.
+69e89805bd490e32ff0d3cdd,volume,Gradually weaken the piano before the voiceover starts and maintain a soft background level after that.
+69e89805bd490e32ff0d3ce9,volume,Make the wind sound stronger and more intense.
+69e898073a050f39ac5607f2,volume,Decrease the volume of the music
+69e898073a050f39ac5607f8,volume,"Lower the volume of the man answering ""Yes""."
+69e898073a050f39ac5607fa,volume,Enhance the horn sound in the audio.
+69e898073a050f39ac56081c,volume,Increase the volume of the female humming in this clip.
+69e898073a050f39ac56081f,volume,Enhance the speech over the background music.
+69e898073a050f39ac560858,volume,Decrease the volume of the applause at the beginning so the speaker's first words are clearer.
+69e898073a050f39ac560859,volume,Increase the overall volume of the background music.
+69e898073a050f39ac56085b,volume,"Lower the volume of both the background music and the disturbing noise right when the speaker says ""I'm trying to relax."""
+69e898093a050f39ac564717,volume,Change the volume of the sound to start low and then get louder over time.
+69e898093a050f39ac56471e,volume,Lower the volume from the 4th second to the 8th second
+69e8980a6508941e55c144aa,volume,Lower the volume of the background sound to make the speech more clear.
+69e8980a6508941e55c144b3,volume,Reduce the volume of the sound effect of game to make the speech more clear.
+69e8980a6508941e55c144b4,volume,"Raise the volume of ""hollow""."
+69e8980a6508941e55c144cb,volume,"Decrease the volume of ""AAAHHHHH"" in the speech."
+69e8980a6508941e55c144ec,volume,"Adjust the volume of sound, speech and music to make human speech sounds more clear."
+69e8980a6508941e55c144f2,volume,Increase the intensity of the rain sound in the background.
+69e8980a6508941e55c144fd,volume,Lower the volume of cheering from the audience to make the song more clear.
+69e8980c910050e59545dd12,volume,Make the door slamming sound louder.
+69e8980c910050e59545dd1a,volume,Increase the volume of the male voice.
+69e8980ebd490e32ff0d6840,volume,Lower the water sound at the end of the sentence
+69e8980ebd490e32ff0d6867,volume,Boost the vocal volume.
+69e898101e675a73b8e1dc0e,volume,Turn the background music volume down while keeping the speech the same.
+69e89812f1844435bec7d4f5,volume,Lower the background music volume during the speaker’s speech segments.
+69e89812f1844435bec7d521,volume,Gradually decrease the volume of this music to create a fade-out effect.
+69e89812f1844435bec7d52a,volume,Lower the background music volume whenever someone is speaking.
+69e89812f1844435bec7d559,volume,Increase the volume of the female voice in this dialogue.
+69e89812f1844435bec7d55b,volume,Adjust the speaker’s volume from a whistle-level intensity back to a normal speaking level.
+69e89817910050e595461432,volume,Add a fade-in and fade-out effect to the beginning and end.
+69e89817910050e595461434,volume,"Reduce the vocal gain to prevent clipping and distortion, and balance it with the accompaniment."
+69e89817910050e595461456,volume,Increase the volume of the sound of scissors cutting hair.
+69e8981b3a050f39ac56940a,volume,Turn off a bit the background music
+69e8981b3a050f39ac56940f,volume,Turn up the volume of all the speech from the sounds
+69e8981b3a050f39ac569411,volume,"Apply a gradual decrescendo to the segment between 0:08 and 0:14 until it reaches near-silence, without changing the pitch."
+69e8981b3a050f39ac569418,volume,Turn off a bit  the volume of background music
+69e8981b3a050f39ac56942b,volume,"Add a fade-in effect to the beginning of the background music, the first 1.5 seconds"
+69e8981b3a050f39ac569440,volume,Turn up the volume of the background music
+69e8981b3a050f39ac569442,volume,Turn up the volume of the sounds of cooking
+69e8981d1b20a5f95709b3ab,volume,Lower the volume of the background music and make the original bird sounds more prominent.
+69e8981d1b20a5f95709b3bb,volume,Lower the volume of the first crisp impact sound.
+69e8981d1b20a5f95709b3c8,volume,Lower the overall volume of the audio.
+69e8981d1b20a5f95709b3ea,volume,Lower the overall volume of the music.
+69e8981d1b20a5f95709b40a,volume,Increase the volume of the guitar in the music.
+69e8981d1b20a5f95709b40c,volume,Increase the volume of the saxophone in the music.
+69e8981d1b20a5f95709b412,volume,Lower the volume of the accompaniment in the music.
+69e8981d1b20a5f95709b417,volume,Increase the volume of the first knocking sound in the audio.
+69e8981f6508941e55c185eb,volume,Lower the volume of the audio.
+69e8981f6508941e55c185ee,volume,Turn down the volume of the audio.
+69e8981f6508941e55c185f1,volume,Raise the volume of the audio
+69e8981f6508941e55c185fa,volume,Add a fade-out effect in the last second of the audio.
+69e8981f6508941e55c185fb,volume,Enhance the vocal in the audio.
+69e8981f6508941e55c18606,volume,Enhance the vocal in the audio.
+69e8981f6508941e55c18607,volume,Add a fade-in effect at the first second of the audio.
+69e8981f6508941e55c18615,volume,Turn down the background music volume.
+69e89820f1844435bec80855,volume,"Invert the mix hierarchy, making the background music the dominant foreground while pushing all speech and sound effects into the background."

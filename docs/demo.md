@@ -1,21 +1,15 @@
-# Harmony project website
+# Audio demo
 
-Harmony: Bridging Audio Understanding and Editing through Agentic Collaboration.
+The [Harmony project website](https://christong9.github.io/harmony/) presents the abstract and audio comparisons for addition, removal, replacement, and volume adjustment.
 
-This standalone static website contains the paper abstract and 12 audio comparisons, including Original, Harmony, AEC Agent, WavCraft original, WavCraft matched backbone, SmartDJ and MMEDIT. There is no dependency on the previous hosting service. All 84 WAV files preserve their original bytes.
+The website source and audio assets are maintained on the [`gh-pages` branch](https://github.com/ChrisTong9/harmony/tree/gh-pages). GitHub Pages publishes that branch from its root. The `main` branch contains the editing implementation and the 420-example CSV list.
 
-## Publish with GitHub Pages
-
-Push this directory as the root of a GitHub repository. In **Settings > Pages**, choose **Deploy from a branch**, then **main** and **/(root)**. The `.nojekyll` file keeps the existing HTML, JavaScript, CSS and audio files unchanged.
-
-Use the URL shown by GitHub Pages after deployment. All asset links are relative, so project subpaths work without rewriting them.
-
-Official instructions: https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site
-
-## Preview locally
+To preview the website in a separate checkout:
 
 ```bash
+git clone --branch gh-pages --single-branch https://github.com/ChrisTong9/harmony.git harmony-demo
+cd harmony-demo
 python -m http.server 8766 --bind 127.0.0.1
 ```
 
-Open http://localhost:8766/ or forward port 8766 when using SSH.
+Open `http://localhost:8766/`, or forward port 8766 when using SSH.

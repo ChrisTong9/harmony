@@ -1,5 +1,5 @@
-# Dependency records
+# Dependencies
 
-The CLI, table reconstruction, and tests use only Python's standard library. `planner.txt` lists direct planner dependencies with versions observed in the archived mixer environment. It is a starting point for that environment, not a complete installation for SAM Audio, Stable Audio, Qwen serving, or music rendering.
+The public CLI and dry runs use Python's standard library. `planner.txt` lists direct dependencies used by the planner environment; it does not install the separate SAM Audio, Stable Audio, Qwen, or music-rendering environments.
 
-See `docs/setup.md` for the separate environment layout. Full observed package inventories and Python versions are retained under `reproducibility/environments/`. Model weights, third-party source code, and credentials are not installed by the requirements file.
+See the [setup guide](../docs/setup.md) for the resource layout. Install matching PyTorch and Torchaudio builds for your CUDA environment, and follow each model project's installation instructions. Model weights, external source repositories, and credentials are supplied separately.

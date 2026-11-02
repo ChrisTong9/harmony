@@ -28,3 +28,16 @@ __pycache__/
 .ruff_cache/
 .DS_Store
 .vscode/
+
+# Keep recordings, generated audio, and benchmark artifacts out of the code branch
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.m4a
+*.aac
+*.mp4
+*.webm
+results/
+tables/
+reproducibility/

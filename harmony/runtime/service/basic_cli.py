@@ -1,4 +1,4 @@
-"""Portable resource adapter around the unchanged v372 common executor."""
+"""Run the bounded delivery route using the shared editing implementation."""
 
 from pathlib import Path
 import argparse
@@ -15,17 +15,13 @@ def main():
     a = p.parse_args()
     if not os.environ.get("SLURM_JOB_ID"):
         raise RuntimeError("Slurm allocation required")
+    if not (os.environ.get("SLURM_JOB_GPUS") or os.environ.get("SLURM_STEP_GPUS")):
+        raise RuntimeError("No GPU granted by Slurm to this job/step")
     print(subprocess.check_output(["nvidia-smi"], text=True), flush=True)
     request = json.loads(Path(a.request).read_text())
     assert set(request) == {"original_instruction", "input_audio", "output_dir"}
     source = Path(os.environ["HARMONY_COMMON_SOURCE"])
     sys.path.insert(0, str(source))
-    manifest = json.loads((source / "SOURCE.json").read_text())
-    import hashlib
-
-    for rel, expected in manifest["files"].items():
-        if hashlib.sha256((source / rel).read_bytes()).hexdigest() != expected:
-            raise RuntimeError("Common source changed " + rel)
     folder = Path(request["output_dir"])
     folder.mkdir(parents=True, exist_ok=True)
     os.chdir(folder)
@@ -61,7 +57,6 @@ def main():
                 warnings=ctx.warnings,
                 execution_status=ctx.execution_status,
                 execution_error=ctx.execution_error,
-                common_source_digest=manifest.get("digest", manifest.get("source_digest")),
             ),
             ensure_ascii=False,
             indent=2,

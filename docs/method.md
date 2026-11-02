@@ -1,41 +1,43 @@
 # Method and code map
 
-Harmony supports addition, removal, replacement, and volume adjustment through a shared planning-and-execution interface. The public wrapper selects a task/configuration profile; the underlying task implementation interprets the natural-language request.
+Harmony supports addition, removal, replacement, and volume adjustment through one shared implementation. A user provides an audio file and a natural-language instruction. The system resolves the target and scope, executes the requested operation, and mixes the result while retaining surrounding content.
 
-## Collaborative planning
+## Edit-driven collaborative planning
 
-The planner and audio-language model exchange targeted observations. With A enabled, the agent may request additional evidence such as speech timing, event grouping, source separation evidence, rhythm measurements, or source/activity measurements. Availability does not imply that every tool is called on every input.
+The LLM planner asks the audio-language model targeted questions about the edit. With mechanism A enabled, the agent can request additional evidence from tools, including speech alignment, source separation, activity measurements, and rhythm analysis. Tool use is selected for the current request; enabling A does not require every tool to run on every input.
 
-Relevant modules under a selected backend's `audio_edit/` tree:
-
-- `analyzers/`: listening and measurement evidence.
-- `plans/`: source, temporal, and operation constraints.
-- `agents/music_edit_agent.py`: agent coordination.
-- `run_edit.py`: editing entry point.
+Evidence is represented as source descriptions, temporal references, and operation constraints. Explicit file times, selected events, and particular participants have different requirements and are resolved by the corresponding planning modules.
 
 ## Evidence-guided execution
 
-With B enabled, source-specific execution branches can inspect initial separated/generated material and make bounded changes. These checks can revise extraction, generation, or the execution plan before mixing. Bounds are stage-dependent; they should not be described as a single universal correction call.
+With mechanism B enabled, applicable editing branches inspect the first separated or generated material and may make bounded corrections before mixing. These can revise a source query, material generation, or execution parameters. Correction limits are specific to the branch; there is no single universal correction count.
 
-- `runners/`: editing and mixing execution.
-- `tools/`: model subprocess interfaces and measurement tools.
-- `harmony/runtime/service/`: adapter to the common execution service.
-- `reproducibility/correction_budgets.json`: observed/configured correction limits.
+A common basic execution route is available across all four A/B configurations when the primary route cannot finish. It compiles the original instruction into a bounded edit plan without reusing the failed route's listening evidence. The runtime retains the execution status and any delivery error in the local report.
 
-The common basic execution service is enabled in all four configuration profiles. It is separate from the A/B mechanism switches.
+## Configuration
 
-## Runtime code layout
+| Configuration | Collaborative tool evidence (A) | Execution correction (B) |
+|---|---|---|
+| `A0B0` | Off | Off |
+| `A1B0` | On | Off |
+| `A0B1` | Off | On |
+| `A1B1` | On | On |
 
-| Backend | Role |
+Select a configuration with `--cell`; `A1B1` is the default. `configs/profiles.json` supplies the task settings. All configurations execute the same `audio_edit/` package.
+
+## Code map
+
+| Entry point | Responsibility |
 |---|---|
-| `harmony/backends/addition` | Addition profiles |
-| `harmony/backends/removal` | A1B1 removal primary profile |
-| `harmony/backends/removal_control` | Other removal profiles |
-| `harmony/backends/replacement` | A1B1 replacement primary profile |
-| `harmony/backends/replacement_control` | Other replacement profiles |
-| `harmony/backends/volume` | Volume profiles |
-| `harmony/backends/execution` | Common basic execution service |
+| `harmony/cli.py` | Public `profiles` and `run` commands |
+| `harmony/runtime/driver.py` | Configuration, resource paths, and GPU allocation checks |
+| `audio_edit/run_edit.py` | Editing entry point |
+| `audio_edit/agents/` | Coordination and operation dispatch |
+| `audio_edit/analyzers/` | Listening, tool evidence, and evidence binding |
+| `audio_edit/plans/` | Source, temporal, and operation constraints |
+| `audio_edit/specialists/` | Operation-specific planning |
+| `audio_edit/runners/` | Execution and composition |
+| `audio_edit/tools/` | Audio tools, subprocess interfaces, and basic execution |
+| `harmony/runtime/service/` | Isolated basic execution adapter |
 
-These are frozen source trees, not independent published methods. Their duplication preserves task-specific source identity. The 20 additional historical snapshots in `reproducibility/history/` document earlier result-producing revisions and are not selected by benchmark ID during new-input inference.
-
-`configs/profiles.json` is the executable mapping. `reproducibility/SOURCES.json` records the source identities and old-to-new directory mapping. Do not treat all four configuration results as a new, controlled measurement of this reorganized checkout.
+The unified code is intended for new inputs. CPU checks of configuration and command construction do not establish fresh GPU editing results or guarantee identical outputs from stochastic model calls.

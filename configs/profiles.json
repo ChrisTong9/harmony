@@ -41,7 +41,6 @@
       "new_generation_seed": null,
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
-      "source_directory": "harmony/backends/addition",
       "cell": "A0B0",
       "task": "add"
     },
@@ -86,7 +85,6 @@
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
       "new_generation_seed": 20261018,
-      "source_directory": "harmony/backends/removal_control",
       "cell": "A0B0",
       "task": "remove"
     },
@@ -131,7 +129,6 @@
       "new_generation_seed": 20261018,
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
-      "source_directory": "harmony/backends/replacement_control",
       "cell": "A0B0",
       "task": "replace"
     },
@@ -176,7 +173,6 @@
       "new_generation_seed": null,
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
-      "source_directory": "harmony/backends/volume",
       "cell": "A0B0",
       "task": "volume"
     }
@@ -223,7 +219,6 @@
       "new_generation_seed": null,
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
-      "source_directory": "harmony/backends/addition",
       "cell": "A1B0",
       "task": "add"
     },
@@ -268,7 +263,6 @@
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
       "new_generation_seed": 20261018,
-      "source_directory": "harmony/backends/removal_control",
       "cell": "A1B0",
       "task": "remove"
     },
@@ -313,7 +307,6 @@
       "new_generation_seed": 20261018,
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
-      "source_directory": "harmony/backends/replacement_control",
       "cell": "A1B0",
       "task": "replace"
     },
@@ -358,7 +351,6 @@
       "new_generation_seed": null,
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
-      "source_directory": "harmony/backends/volume",
       "cell": "A1B0",
       "task": "volume"
     }
@@ -405,7 +397,6 @@
       "new_generation_seed": null,
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
-      "source_directory": "harmony/backends/addition",
       "cell": "A0B1",
       "task": "add"
     },
@@ -450,7 +441,6 @@
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
       "new_generation_seed": 20261018,
-      "source_directory": "harmony/backends/removal_control",
       "cell": "A0B1",
       "task": "remove"
     },
@@ -495,7 +485,6 @@
       "new_generation_seed": 20261018,
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
-      "source_directory": "harmony/backends/replacement_control",
       "cell": "A0B1",
       "task": "replace"
     },
@@ -540,7 +529,6 @@
       "new_generation_seed": null,
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
-      "source_directory": "harmony/backends/volume",
       "cell": "A0B1",
       "task": "volume"
     }
@@ -587,7 +575,6 @@
       "new_generation_seed": null,
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
-      "source_directory": "harmony/backends/addition",
       "cell": "A1B1",
       "task": "add"
     },
@@ -632,7 +619,6 @@
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
       "new_generation_seed": 20261018,
-      "source_directory": "harmony/backends/removal",
       "cell": "A1B1",
       "task": "remove"
     },
@@ -677,7 +663,6 @@
       "new_generation_seed": 20261018,
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
-      "source_directory": "harmony/backends/replacement",
       "cell": "A1B1",
       "task": "replace"
     },
@@ -722,7 +707,6 @@
       "new_generation_seed": null,
       "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
       "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
-      "source_directory": "harmony/backends/volume",
       "cell": "A1B1",
       "task": "volume"
     }

@@ -1,3 +1,2 @@
-# No third-party dependencies are required for the public CLI, dry runs,
-# offline tables, or release tests. Use Python >= 3.10 from the source checkout.
-# Inference environments are separate; see docs/setup.md and requirements/.
+# The CLI and dry runs use Python >= 3.10 and the standard library.
+# For inference environments, see docs/setup.md and requirements/planner.txt.
