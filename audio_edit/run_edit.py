@@ -25,24 +25,15 @@ def main():
         action="store_true",
         help="Save questions, answers and review without editing audio",
     )
-    parser.add_argument(
-        "--perception-mode",
-        choices=["tool_augmented", "dialogue_only"],
-        help="Choose tool-assisted evidence or the LLM/Qwen dialogue-only ablation",
-    )
     args = parser.parse_args()
     ctx = AudioEditContext(args.instruction, input_audio=str(args.input.resolve()))
-    if args.perception_mode:
-        ctx.params["perception_mode"] = args.perception_mode
     registry, llm = ScriptRegistry(), LLMClient()
     agent = MusicEditAgent(ScriptRunner(registry), registry, llm)
     try:
         if args.listen_only:
             invocation = agent.choose_script(ctx.user_prompt)
             ctx.selected_script = invocation.script_name
-            ctx.params.update(
-                {key: value for key, value in invocation.params.items() if key != "perception_mode"}
-            )
+            ctx.params.update(invocation.params)
             if args.input.suffix.lower() in {".mp4", ".mov", ".mkv", ".webm"}:
                 ctx.input_video = ctx.input_audio
                 ctx.input_audio = extract_audio_for_analysis(ctx.input_video)
@@ -59,7 +50,10 @@ def main():
         args.report.write_text(json.dumps(asdict(ctx), ensure_ascii=False, indent=2) + "\n")
     print(f"{ctx.execution_status}: report={args.report.resolve()} output={ctx.output_audio}")
     return (
-        1 if ctx.fallback_used or ctx.execution_status in ("fallback", "unresolved", "error") else 0
+        1
+        if ctx.fallback_used
+        or ctx.execution_status in ("fallback", "unresolved", "error", "partial", "failed")
+        else 0
     )
 
 

@@ -7,7 +7,10 @@ changes the separator nor retries the same query with another random sample.
 
 from copy import deepcopy
 from dataclasses import asdict
-import hashlib, json, os, re
+import hashlib
+import json
+import os
+import re
 from pathlib import Path
 
 PROMPT = """Bind an existing source-removal query to a concrete acoustic description using ONLY the supplied first original-recording and first residual-recording observations.

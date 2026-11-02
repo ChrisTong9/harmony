@@ -3,7 +3,6 @@
 from copy import deepcopy
 import json
 import math
-import os
 from pathlib import Path
 
 from audio_edit.analyzers.qwen_audio_analyzer import extract_json_object
@@ -348,7 +347,7 @@ audio interpretation selects supported word/gap references, not when a new
 timestamp merely makes the window positive. If a tool is unavailable or fails,
 acknowledge the remaining limitation. A quiet subinterval inside a larger proposed
 window does not certify that the entire window is between complete utterances.
-In tool_augmented mode an insertion bounded by one spoken turn's end and the
+An insertion bounded by one spoken turn's end and the
 next spoken turn's onset also needs lexical and acoustic evidence from the start,
 even when the initial approximate times look positive. This is a requirement of
 the requested bounded gap, not a reason to analyze whole-file BGM or literal times.
@@ -371,8 +370,6 @@ their pauses. This task does not require completed turns or acoustic silence in
 the mixed recording: continuous BGM masks quiet speech gaps. Do not demand a
 turn-ending tool or reject supported lexical regions merely because their timing
 is approximate. Qwen must still confirm the spoken content from the original.
-In dialogue_only mode external perception tools are unavailable; the same dialogue
-budget and evidence requirements apply. This does not disable editing executors.
 
 Measurements return candidates, not semantic identities. measurement_bindings may
 contain only supported {question_id,event_id,region_id} entries from the offered
@@ -1022,11 +1019,6 @@ def listen_for_edit(ctx, llm, analyzer, *, operation, input_audio=None):
     from audio_edit.analyzers.source_inventory import source_inventory_gaps
 
     path = input_audio or ctx.input_audio
-    mode = ctx.params.get(
-        "perception_mode", os.environ.get("AUDIO_EDIT_PERCEPTION_MODE", "tool_augmented")
-    )
-    if mode not in ("tool_augmented", "dialogue_only"):
-        raise ValueError("perception_mode must be tool_augmented or dialogue_only")
     payload = dict(
         original_instruction=ctx.user_prompt,
         operation=operation,
@@ -1039,7 +1031,7 @@ def listen_for_edit(ctx, llm, analyzer, *, operation, input_audio=None):
     audit = dict(
         version=25,
         status="pending",
-        perception_mode=mode,
+        perception_mode="tool_augmented",
         **payload,
         planner_calls=[],
         turns=[],
@@ -1086,7 +1078,7 @@ def listen_for_edit(ctx, llm, analyzer, *, operation, input_audio=None):
                 instruction_authority=False,
                 edit_listening=dict(
                     status="not_required",
-                    perception_mode=mode,
+                    perception_mode="tool_augmented",
                     reason=brief["reason"],
                     requirements=[],
                     timeline_policy=deepcopy(timeline_policy),
@@ -1241,15 +1233,14 @@ def listen_for_edit(ctx, llm, analyzer, *, operation, input_audio=None):
                 original_hash=original_hash,
             )
             audit["requirements"] = deepcopy(required)
-            if mode == "tool_augmented":
-                speech_dependencies = update_speech_dependencies(
-                    speech_dependencies,
-                    required,
-                    analysis,
-                    windows=windows,
-                    turns=audit["turns"],
-                    duration=payload["media_duration"],
-                )
+            speech_dependencies = update_speech_dependencies(
+                speech_dependencies,
+                required,
+                analysis,
+                windows=windows,
+                turns=audit["turns"],
+                duration=payload["media_duration"],
+            )
             audit["speech_dependencies"] = deepcopy(speech_dependencies)
 
             def gaps():
@@ -1287,14 +1278,14 @@ def listen_for_edit(ctx, llm, analyzer, *, operation, input_audio=None):
             observations_available = qwen_calls < 2 and not prerequisites
             record["observation_prerequisites"] = deepcopy(prerequisites)
             audio_sources = ["original"]
-            if mode == "tool_augmented" and _source_audio_available(
+            if _source_audio_available(
                 source_measurement, original_hash, payload["media_duration"]
             ):
                 audio_sources.append("original_and_source")
             tools_available = available_tools(
                 required,
                 analysis,
-                enabled=mode == "tool_augmented" and tool_calls < 2,
+                enabled=tool_calls < 2,
                 duration=payload["media_duration"],
             )
 
@@ -1316,7 +1307,7 @@ def listen_for_edit(ctx, llm, analyzer, *, operation, input_audio=None):
                 dict(
                     **payload,
                     **catalog_context,
-                    perception_mode=mode,
+                    perception_mode="tool_augmented",
                     requirements=required,
                     placement_windows=windows,
                     timeline_policy=timeline_policy,
@@ -1411,7 +1402,7 @@ def listen_for_edit(ctx, llm, analyzer, *, operation, input_audio=None):
             record["effective_status"] = "ready"
             analysis["edit_listening"] = dict(
                 status="ready",
-                perception_mode=mode,
+                perception_mode="tool_augmented",
                 requirements=deepcopy(required),
                 participant_selection=deepcopy(participant),
                 selection=deepcopy(brief.get("selection")),

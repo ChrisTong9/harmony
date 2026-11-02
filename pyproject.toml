@@ -1,3 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "harmony-audio-editing"
+version = "0.1.0.dev0"
+description = "Natural-language audio editing through agentic collaboration"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+harmony = "harmony.cli:main"
+
+[project.urls]
+Repository = "https://github.com/ChrisTong9/harmony"
+Demo = "https://christong9.github.io/harmony/"
+
+[tool.setuptools.packages.find]
+include = ["harmony*", "audio_edit*"]
+
+[tool.setuptools.package-data]
+harmony = ["configs/*.json"]
+
 [tool.ruff]
 target-version = "py310"
 line-length = 100

@@ -2,7 +2,10 @@
 
 from copy import deepcopy
 from pathlib import Path
-import hashlib, json, re, subprocess
+import hashlib
+import json
+import re
+import subprocess
 from tempfile import mkdtemp
 
 PROMPT = """Determine whether the FIRST generated replacement material contains an unrequested singing voice. Use only the original instruction, requested replacement source, and first neutral material facts. The material is a NEW isolated asset; original speech is in a separate, fixed residual and must remain unchanged. Select cleanup ONLY when the requested new source is instrumental music, no new singing/humming/choir/vocals are requested, the facts positively identify a singing voice in the generated asset, and a requested instrumental source is also heard. A soft male vocalist accompanying guitar is still singing. Do not infer singing from a synthesizer, sustained chord, string texture, breath, or uncertainty. If no singing is positively heard or the new target includes voices, return false. Cleanup removes only singing voice from this generated asset with the existing separator; it never alters the original or retained residual. Return JSON: eligible(boolean), fact_quote(exact continuous substring of the first material facts supporting singing, or null), reason. No timing, level, generator, instrument, or target changes."""

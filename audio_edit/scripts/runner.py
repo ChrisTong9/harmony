@@ -20,9 +20,7 @@ class ScriptRunner:
 
         previous = ctx.params
 
-        routed_params = {
-            key: value for key, value in invocation.params.items() if key != "perception_mode"
-        }
+        routed_params = dict(invocation.params)
         params = {**previous, **routed_params}
         if "best_effort" in previous:
             params["best_effort"] = previous["best_effort"]

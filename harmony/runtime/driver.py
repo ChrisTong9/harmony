@@ -6,6 +6,8 @@ import os
 import shutil
 import subprocess
 
+from harmony.config import load_profile
+
 
 def require_gpu():
     if not os.environ.get("SLURM_JOB_ID"):
@@ -16,11 +18,13 @@ def require_gpu():
 
 
 def run(args, root):
-    config = json.loads((root / "configs/profiles.json").read_text())[args.cell][args.task]
+    config = load_profile(args.task)
     source = root / "audio_edit"
     resource = args.resource_root.resolve()
     out = args.output_dir.resolve()
     inp = args.input.resolve()
+    if any(out == package or package in out.parents for package in (source, root / "harmony")):
+        raise ValueError("Place --output-dir outside the audio_edit/ and harmony/ source packages")
     command = [
         str(resource / ".venvs/mixer/bin/python"),
         "-m",
@@ -31,8 +35,6 @@ def run(args, root):
         args.instruction,
         "--report",
         str(out / "report.json"),
-        "--perception-mode",
-        config["perception_mode"],
     ]
     if args.dry_run:
         print(
@@ -40,12 +42,11 @@ def run(args, root):
                 dict(
                     action="new_input_inference",
                     source=str(source),
-                    cell=args.cell,
                     task=args.task,
                     command=command,
                     resource_root=str(resource),
                     checkpoint_cache=str(
-                        (args.checkpoint_cache or resource / ".checkpoints").resolve()
+                        (args.checkpoint_cache or out / "working/.checkpoints").resolve()
                     ),
                     requires="Slurm GPU allocation and existing Qwen audio endpoint",
                     no_model_calls=True,
@@ -68,25 +69,29 @@ def run(args, root):
         raise RuntimeError("Use a fresh output directory to preserve first outputs.")
     if not Path(command[0]).is_file():
         raise FileNotFoundError(command[0])
-    cache = (args.checkpoint_cache or resource / config["checkpoint_cache"]).resolve()
-    if not cache.is_dir():
-        raise FileNotFoundError("Model checkpoint cache: " + str(cache))
+    cache = (args.checkpoint_cache or out / "working/.checkpoints").resolve()
+    if args.checkpoint_cache and not cache.is_dir():
+        raise FileNotFoundError("Legacy tool cache: " + str(cache))
+    from harmony.diagnostics import inspect, print_report
+
+    diagnostics = inspect(args, root, config=config, check_service=True)
+    if not diagnostics["ready"]:
+        print_report(diagnostics)
+        return 1
     out.mkdir(parents=True, exist_ok=True)
     work = out / "working"
     work.mkdir()
     local = out / "source"
-    shutil.copytree(
-        source, local / "audio_edit", ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
+    ignore = shutil.ignore_patterns(
+        "__pycache__", "*.pyc", ".env", ".env.*", "outputs", "generated", "evidence"
     )
-    shutil.copytree(
-        root / "harmony", local / "harmony", ignore=shutil.ignore_patterns("__pycache__", "*.pyc")
-    )
+    shutil.copytree(source, local / "audio_edit", ignore=ignore)
+    shutil.copytree(root / "harmony", local / "harmony", ignore=ignore)
     env = os.environ.copy()
     env.update(config["preedit_environment"])
     env.update(
         LLM_BACKEND="openai",
         OPENAI_MODEL=config["openai_model"],
-        AUDIO_EDIT_PERCEPTION_MODE=config["perception_mode"],
         QWEN_AUDIO_BACKEND="openai_compatible",
         QWEN_AUDIO_MODEL=config["perception"]["model"],
         AUDIO_ANALYSIS_BASE_URL=qwen,
@@ -96,6 +101,7 @@ def run(args, root):
         AUDIO_EDIT_EVIDENCE_DIR=str(out / "evidence"),
         AUDIO_ANALYSIS_LOG=str(out / "analysis_calls.jsonl"),
         SAMAUDIO_MODEL_ID=config["samaudio"]["model_id"],
+        HARMONY_BASIC_MODEL=config["basic_execution_model"],
         PYTHONDONTWRITEBYTECODE="1",
     )
 
@@ -129,7 +135,10 @@ def run(args, root):
             str(resource / "externals/sam-audio"),
         ]
     )
-    (work / ".checkpoints").symlink_to(cache, target_is_directory=True)
+    if args.checkpoint_cache:
+        (work / ".checkpoints").symlink_to(cache, target_is_directory=True)
+    else:
+        cache.mkdir()
     env["HARMONY_CHECKPOINT_CACHE"] = str(cache)
     from urllib.parse import urlparse
 
@@ -147,19 +156,33 @@ def run(args, root):
     else:
         env.pop("REPLACEMENT_AUDIO_SEED", None)
     env["HARMONY_COMMON_SOURCE"] = str(local)
-    (out / "run_config.json").write_text(
-        json.dumps(
-            dict(
-                profile=config,
-                source=str(source),
-                resource_root=str(resource),
-            ),
-            indent=2,
-        )
-        + "\n"
+    from datetime import datetime, timezone
+    import hashlib
+    from .provenance import capture
+
+    digest = hashlib.sha256()
+    with inp.open("rb") as stream:
+        for block in iter(lambda: stream.read(1048576), b""):
+            digest.update(block)
+    record = dict(
+        profile=config,
+        source=str(source),
+        resource_root=str(resource),
+        input_sha256=digest.hexdigest(),
+        started_at=datetime.now(timezone.utc).isoformat(),
+        diagnostics=diagnostics,
+        provenance=capture(root, resource, source=local),
     )
+    config_path = out / "run_config.json"
+    config_path.write_text(json.dumps(record, indent=2) + "\n")
     with (out / "execution.log").open("w") as log:
         result = subprocess.run(command, cwd=work, env=env, stdout=log, stderr=subprocess.STDOUT)
+    record.update(
+        finished_at=datetime.now(timezone.utc).isoformat(),
+        exit_code=result.returncode,
+        provenance=capture(root, resource, source=local),
+    )
+    config_path.write_text(json.dumps(record, indent=2) + "\n")
     if result.returncode:
         print("Edit failed; see", out / "execution.log", "exit", result.returncode)
     else:

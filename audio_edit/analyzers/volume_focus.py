@@ -1,6 +1,5 @@
 """Ask about the requested volume targets without changing the owned edit plan."""
 
-from copy import deepcopy
 from dataclasses import asdict
 import math
 from audio_edit.analyzers.removal_focus import attach_evidence, sole_source_decision

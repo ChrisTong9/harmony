@@ -1,5 +1,11 @@
 # Dependencies
 
-The public CLI and dry runs use Python's standard library. `planner.txt` lists direct dependencies used by the planner environment; it does not install the separate SAM Audio, Stable Audio, Qwen, or music-rendering environments.
+The CLI and `--dry-run` use the standard library. Install the checkout with `python -m pip install -e .`, or run `python -m harmony` from its root.
 
-See the [setup guide](../docs/setup.md) for the resource layout. Install matching PyTorch and Torchaudio builds for your CUDA environment, and follow each model project's installation instructions. Model weights, external source repositories, and credentials are supplied separately.
+- `planner.txt` records the planner's direct dependencies for Python 3.11. Install PyTorch and Torchaudio separately for the selected CUDA runtime.
+- `music-render.txt` records direct dependencies for optional Basic Pitch and SoundFont rendering in a separate Python 3.11 environment. The renderer explicitly selects the ONNX model and CPU provider. A normal installation also installs package-declared dependencies; PyAudio may require PortAudio development headers.
+- SAM Audio, Stable Audio 3, and the Qwen service use separate environments. Their installation commands and observed source revisions are in the [setup guide](../docs/setup.md).
+
+These files are not complete dependency lockfiles. The direct versions were checked against the development environments; a fresh installation of every model environment has not yet been validated. Model weights, external repositories, SoundFont resources, and credentials must be supplied separately.
+
+Use `python -m harmony doctor --task replace --resource-root /path/to/resources` to check the installation before starting a model run.

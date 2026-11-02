@@ -3,28 +3,24 @@
     "task": "add",
     "instruction": "Add a short bell sound at 2 seconds.",
     "input": "/path/to/input.wav",
-    "cell": "A1B1",
     "output_dir": "outputs/example-add"
   },
   {
     "task": "remove",
     "instruction": "Remove the background noise while keeping the speech.",
     "input": "/path/to/input.wav",
-    "cell": "A1B1",
     "output_dir": "outputs/example-remove"
   },
   {
     "task": "replace",
     "instruction": "Replace the ending laughter with applause.",
     "input": "/path/to/input.wav",
-    "cell": "A1B1",
     "output_dir": "outputs/example-replace"
   },
   {
     "task": "volume",
     "instruction": "Make the door slamming sound louder.",
     "input": "/path/to/input.wav",
-    "cell": "A1B1",
     "output_dir": "outputs/example-volume"
   }
 ]

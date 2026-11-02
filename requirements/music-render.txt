@@ -1,0 +1,10 @@
+# Direct dependencies for optional instrument rendering, Python 3.11.
+# Install normally so package-declared dependencies are also resolved.
+basic-pitch==0.4.0
+tinysoundfont==0.3.7
+onnxruntime==1.31.0
+numpy==1.26.4
+soundfile==0.14.0
+librosa==0.11.0
+scipy==1.17.1
+pretty-midi==0.2.11.post0

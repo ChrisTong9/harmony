@@ -2,7 +2,7 @@
 
 The [Harmony project website](https://christong9.github.io/harmony/) presents the abstract and audio comparisons for addition, removal, replacement, and volume adjustment.
 
-The website source and audio assets are maintained on the [`gh-pages` branch](https://github.com/ChrisTong9/harmony/tree/gh-pages). GitHub Pages publishes that branch from its root. The `main` branch contains the editing implementation and the 420-example CSV list.
+The website source and audio assets are maintained on the [`gh-pages` branch](https://github.com/ChrisTong9/harmony/tree/gh-pages). GitHub Pages publishes that branch from its root. The `main` branch contains the application code and usage documentation.
 
 To preview the website in a separate checkout:
 

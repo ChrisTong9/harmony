@@ -354,9 +354,12 @@ def _compile(raw, catalog):
     if not 0 <= start < end <= catalog["duration"]:
         raise ValueError("Compiled speech extent is outside the original time axis")
     evidence = raw["association_evidence"]
-    phase = lambda time: dict(
-        time=time, evidence=evidence, approximate=True, timing_source="speech_reference"
-    )
+
+    def phase(time):
+        return dict(
+            time=time, evidence=evidence, approximate=True, timing_source="speech_reference"
+        )
+
     boundaries = dict(onset=phase(start))
     if end_gap:
         boundaries["sound_end"] = phase(end)

@@ -61,11 +61,6 @@ def get_video_duration(path: str | Path) -> float:
     return get_media_duration(path)
 
 
-def get_audio_duration(path: str) -> float:
-    info = torchaudio.info(path)
-    return float(info.num_frames) / float(info.sample_rate)
-
-
 def get_video_duration_ffprobe(path: str) -> float:
     cmd = [
         "ffprobe",

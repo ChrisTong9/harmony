@@ -2,8 +2,11 @@
 
 from pathlib import Path
 from copy import deepcopy
-from dataclasses import asdict
-import base64, hashlib, json, os, tempfile
+import base64
+import hashlib
+import json
+import os
+import tempfile
 
 SYSTEM = "Describe only audible facts. Do not infer an editing intention or grade a task."
 QUESTION = "Describe the audible sound sources and their relative prominence across this recording. Identify speech, singing, sustained tonal sounds, impulsive or rhythmic sounds, and other sources only if heard. State when a source is faint or uncertain. Do not infer missing sources from an unavailable original recording."
@@ -307,10 +310,6 @@ def first_binding(ctx, plan, original, instruction, facts):
 
 
 def apply(ctx, plan, original, instruction):
-    from audio_edit.utils.ablation_policy import execution_corrections_enabled
-
-    if not execution_corrections_enabled("replace_music_residual_revision"):
-        return ctx
     if not candidate(ctx, plan, original, instruction):
         return ctx
     before = ctx.output_audio

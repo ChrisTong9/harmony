@@ -29,9 +29,6 @@ AUDIO_SUFFIXES = {".wav", ".mp3", ".flac", ".ogg", ".m4a", ".aac"}
 
 
 def run(ctx: AudioEditContext, params: dict) -> AudioEditContext:
-    source_sound = params.get("source_sound")
-    target_sound = params.get("target_sound")
-
     full_user_prompt = ctx.user_prompt or params.get("user_prompt") or params.get("prompt")
 
     if not isinstance(full_user_prompt, str) or not full_user_prompt.strip():
@@ -43,7 +40,6 @@ def run(ctx: AudioEditContext, params: dict) -> AudioEditContext:
 
     full_user_prompt = full_user_prompt.strip()
 
-    audio_user_prompt = full_user_prompt
     ctx.user_prompt = full_user_prompt
 
     if not ctx.input_audio:

@@ -4,26 +4,19 @@ Harmony supports addition, removal, replacement, and volume adjustment through o
 
 ## Edit-driven collaborative planning
 
-The LLM planner asks the audio-language model targeted questions about the edit. With mechanism A enabled, the agent can request additional evidence from tools, including speech alignment, source separation, activity measurements, and rhythm analysis. Tool use is selected for the current request; enabling A does not require every tool to run on every input.
+The LLM planner asks the audio-language model targeted questions about the edit. The agent can request additional evidence from tools, including speech alignment, source separation, activity measurements, and rhythm analysis. Tool use is selected for the current request; a tool is called only when its evidence is needed.
 
 Evidence is represented as source descriptions, temporal references, and operation constraints. Explicit file times, selected events, and particular participants have different requirements and are resolved by the corresponding planning modules.
 
 ## Evidence-guided execution
 
-With mechanism B enabled, applicable editing branches inspect the first separated or generated material and may make bounded corrections before mixing. These can revise a source query, material generation, or execution parameters. Correction limits are specific to the branch; there is no single universal correction count.
+Applicable editing branches inspect the first separated or generated material and may make bounded corrections before mixing. These can revise a source query, material generation, or execution parameters. Correction limits are specific to the branch; there is no single universal correction count.
 
-A common basic execution route is available across all four A/B configurations when the primary route cannot finish. It compiles the original instruction into a bounded edit plan without reusing the failed route's listening evidence. The runtime retains the execution status and any delivery error in the local report.
+A common basic execution route is available when the primary route cannot finish. It compiles the original instruction into a bounded edit plan without reusing the failed route's listening evidence. The runtime retains the execution status and any delivery error in the local report.
 
-## Configuration
+## Task settings
 
-| Configuration | Collaborative tool evidence (A) | Execution correction (B) |
-|---|---|---|
-| `A0B0` | Off | Off |
-| `A1B0` | On | Off |
-| `A0B1` | Off | On |
-| `A1B1` | On | On |
-
-Select a configuration with `--cell`; `A1B1` is the default. `configs/profiles.json` supplies the task settings. All configurations execute the same `audio_edit/` package.
+The public interface runs the complete Harmony pipeline. `harmony/configs/profiles.json` contains shared model settings and task defaults. All four tasks execute the same `audio_edit/` package, and the agent selects relevant tools and corrections from the current instruction and evidence.
 
 ## Code map
 
@@ -40,4 +33,10 @@ Select a configuration with `--cell`; `A1B1` is the default. `configs/profiles.j
 | `audio_edit/tools/` | Audio tools, subprocess interfaces, and basic execution |
 | `harmony/runtime/service/` | Isolated basic execution adapter |
 
-The unified code is intended for new inputs. CPU checks of configuration and command construction do not establish fresh GPU editing results or guarantee identical outputs from stochastic model calls.
+Provide an input recording and instruction to run a new edit. Tool availability and resource requirements are described in the setup guide.
+
+## Reading the implementation
+
+Start with `harmony/cli.py` and `harmony/runtime/driver.py` for configuration and resource setup. Follow `audio_edit/run_edit.py` into `agents/music_edit_agent.py` for dispatch, then the selected `user_scripts/` module for task orchestration. Specialists create plans; runners execute them; tools perform audio operations.
+
+`analyzers/edit_listening.py` coordinates evidence requests. Its schemas and synthetic demonstrations are separated into the adjacent listening modules. `plans/temporal.py` and `plans/add_intent.py` define the timeline contracts shared by planning and mixing. The detailed evidence and correction branches are intentionally explicit; they should be read with their corresponding plan types.

@@ -1,69 +1,162 @@
 # Setup
 
-## Command-line interface
+## Install the interface
 
-Use Python 3.10 or later and run commands from the repository root. The public CLI and `--dry-run` use the standard library:
+The CLI uses Python 3.10+ and the standard library. The planner and separation environments below use Python 3.11; generation uses Python 3.10. Run from the checkout or install the interface:
 
 ```bash
+python -m pip install -e .
 python -m harmony --help
 python -m harmony profiles
 ```
 
-Inference uses separately installed models and environments. The launcher requires Linux with an active Slurm GPU allocation and checks `nvidia-smi` before starting model execution.
+Model inference requires Linux and an active Slurm GPU allocation. The launcher checks the allocation and runs `nvidia-smi` before inference. Install FFmpeg with both `ffmpeg` and `ffprobe` on `PATH` for media decoding. SAM Audio also needs compatible TorchCodec, FFmpeg shared libraries, and CUDA runtime libraries. Having the Python packages installed alone does not establish that their native libraries can load.
 
-## Model resources
-
-Provide a resource directory with this layout:
+## Resource layout
 
 ```text
 resources/
 ├── .venvs/
-│   ├── mixer/bin/python           # planner and audio composition
-│   ├── sam-audio/bin/python       # separation and speech tools
-│   ├── stable-audio-3/bin/python   # audio generation
-│   └── music-render311/bin/python # optional instrument rendering
+│   ├── mixer/bin/python
+│   ├── sam-audio/bin/python
+│   ├── stable-audio-3/bin/python
+│   ├── qwen/bin/vllm
+│   └── music-render311/bin/python # optional
 ├── externals/
 │   ├── sam-audio/
 │   ├── stable-audio-3/
-│   └── music-render/GeneralUser-GS.sf2
-├── models/
-│   ├── Qwen3-Omni-30B-A3B-Instruct/
-│   └── whisper-large-v3-turbo/
-└── .checkpoints/
+│   └── music-render/GeneralUser-GS.sf2 # optional
+└── models/
+    ├── Qwen3-Omni-30B-A3B-Instruct/
+    └── whisper-large-v3-turbo/
+        └── speech_model_manifest.json
 ```
 
-Set `HARMONY_RESOURCE_ROOT` or pass `--resource-root`. The checkpoint cache defaults to `RESOURCE_ROOT/.checkpoints`; override it with `HARMONY_CHECKPOINT_CACHE` or `--checkpoint-cache`.
-
-Install the planner dependencies from [`requirements/planner.txt`](../requirements/planner.txt) in the `mixer` environment. Install matching PyTorch and Torchaudio builds for your CUDA environment. The development setup used Python 3.11 for the planner and SAM Audio, and Python 3.10 for Stable Audio. The requirements file covers the planner's direct dependencies, not every model environment.
-
-| Component | Upstream project | Configured model or resource |
-|---|---|---|
-| Audio understanding | [Qwen3-Omni](https://github.com/QwenLM/Qwen3-Omni) | `Qwen3-Omni-30B-A3B-Instruct` |
-| Source separation | [SAM Audio](https://github.com/facebookresearch/sam-audio) | `facebook/sam-audio-large` |
-| Audio generation | [Stable Audio 3](https://github.com/Stability-AI/stable-audio-3) | Separate generation environment |
-| Speech timing | [Whisper large v3 turbo](https://huggingface.co/openai/whisper-large-v3-turbo) | Local weights; revision in `configs/profiles.json` |
-
-Follow the corresponding model project's installation instructions and access requirements. Optional video/MMAudio branches require additional resources and are outside the four audio tasks covered here.
-
-## Services and credentials
-
-Serve Qwen separately through an OpenAI-compatible endpoint. This checkout does not start the service. The profiles use `Qwen3Omni-Perception` and `Qwen3Omni-Instruct`; the endpoint must expose the model alias required by the selected profile.
-
-The main planner is configured with `gpt-5-mini-2025-08-07`; basic execution uses `gpt-5-mini`. Configuration and endpoint access must be supplied before inference. Model/API calls may incur charges.
-
-The `.env.example` file lists environment variable names. Export values in your shell or job environment:
+Set `HARMONY_RESOURCE_ROOT` or pass `--resource-root`. Existing installations can be linked into this layout; the launcher does not download models or start Qwen for you.
 
 ```bash
 export HARMONY_RESOURCE_ROOT=/path/to/resources
-export HARMONY_CHECKPOINT_CACHE=/path/to/checkpoint-cache
-export AUDIO_ANALYSIS_BASE_URL=http://YOUR_QWEN_HOST:PORT/v1
+mkdir -p "$HARMONY_RESOURCE_ROOT/.venvs" "$HARMONY_RESOURCE_ROOT/externals" "$HARMONY_RESOURCE_ROOT/models"
 ```
 
-Supply `OPENAI_API_KEY` through your shell or job's secret environment. Set `AUDIO_ANALYSIS_API_KEY` if the Qwen endpoint requires it. No credentials are included in the repository.
+SAM Audio and Stable Audio use the Hugging Face cache. Use `HF_HOME` or `HF_HUB_CACHE` to select that cache, and provision the required model access before running. `--checkpoint-cache` and `HARMONY_CHECKPOINT_CACHE` refer to the auxiliary `.checkpoints` directory used by optional legacy tools; they do not redirect Hugging Face downloads. Qwen and Whisper use the explicit local model paths above.
+
+## Planner and model environments
+
+The commands below record the component split and versions observed during development. They are installation instructions, not a claim that a fresh installation or GPU run has passed on every machine. Match CUDA builds to your cluster's driver and library environment.
+
+### Planner and audio composition
+
+```bash
+python3.11 -m venv "$HARMONY_RESOURCE_ROOT/.venvs/mixer"
+"$HARMONY_RESOURCE_ROOT/.venvs/mixer/bin/python" -m pip install -r requirements/planner.txt
+"$HARMONY_RESOURCE_ROOT/.venvs/mixer/bin/python" -m pip install \
+  torch==2.7.1 torchaudio==2.7.1 --index-url https://download.pytorch.org/whl/cu126
+```
+
+### Source separation and speech evidence
+
+The observed [SAM Audio](https://github.com/facebookresearch/sam-audio) source commit was `bb4c6999d2677c7402360e426afc01ddfad6dce0`. It was clean when inspected. The configured separator is `facebook/sam-audio-large`.
+
+```bash
+git clone https://github.com/facebookresearch/sam-audio.git "$HARMONY_RESOURCE_ROOT/externals/sam-audio"
+git -C "$HARMONY_RESOURCE_ROOT/externals/sam-audio" checkout bb4c6999d2677c7402360e426afc01ddfad6dce0
+python3.11 -m venv "$HARMONY_RESOURCE_ROOT/.venvs/sam-audio"
+"$HARMONY_RESOURCE_ROOT/.venvs/sam-audio/bin/python" -m pip install \
+  torch==2.7.1 torchaudio==2.7.1 torchvision==0.22.1 torchcodec==0.5 --index-url https://download.pytorch.org/whl/cu126
+"$HARMONY_RESOURCE_ROOT/.venvs/sam-audio/bin/python" -m pip install \
+  -e "$HARMONY_RESOURCE_ROOT/externals/sam-audio" \
+  torch==2.7.1 torchaudio==2.7.1 torchvision==0.22.1 torchcodec==0.5 \
+  transformers==4.57.1 huggingface-hub==0.36.0 numpy==1.26.4 \
+  librosa==0.11.0 soundfile==0.14.0 scipy==1.17.1
+```
+
+The observed TorchCodec build was `0.5+cu126`. Follow the [TorchCodec installation instructions](https://github.com/meta-pytorch/torchcodec#installing-torchcodec) for the selected Torch/CUDA combination and native FFmpeg libraries. Upstream SAM dependencies include additional source repositories; the two commands above are not a full transitive lock.
+
+Speech evidence requires a pinned Whisper model **and its manifest**. Merely downloading the weights is insufficient. This provided command downloads the declared revision and writes the required file checksums; it does not run inference:
+
+```bash
+"$HARMONY_RESOURCE_ROOT/.venvs/sam-audio/bin/python" -m audio_edit.tools.prepare_speech_model \
+  --output "$HARMONY_RESOURCE_ROOT/models/whisper-large-v3-turbo"
+```
+
+The Whisper revision is `41f01f3fe87f28c78e2fbf8b568835947dd65ed9`. Model identities and task settings are declared in [`harmony/configs/profiles.json`](../harmony/configs/profiles.json). Speech evidence is unavailable if the manifest or runtime cannot be validated; check this before running an edit.
+
+### Audio generation
+
+The observed [Stable Audio 3](https://github.com/Stability-AI/stable-audio-3) source commit was `a0b57f5483c4588f827f3552b7d5c6ca2a9687be`, with no local changes. Harmony uses its `medium` model, corresponding to `stabilityai/stable-audio-3-medium`.
+
+```bash
+git clone https://github.com/Stability-AI/stable-audio-3.git "$HARMONY_RESOURCE_ROOT/externals/stable-audio-3"
+git -C "$HARMONY_RESOURCE_ROOT/externals/stable-audio-3" checkout a0b57f5483c4588f827f3552b7d5c6ca2a9687be
+python3.10 -m venv "$HARMONY_RESOURCE_ROOT/.venvs/stable-audio-3"
+"$HARMONY_RESOURCE_ROOT/.venvs/stable-audio-3/bin/python" -m pip install \
+  torch==2.7.1 torchaudio==2.7.1 --index-url https://download.pytorch.org/whl/cu126
+"$HARMONY_RESOURCE_ROOT/.venvs/stable-audio-3/bin/python" -m pip install \
+  -e "$HARMONY_RESOURCE_ROOT/externals/stable-audio-3" \
+  transformers==5.16.1 huggingface-hub==1.28.0 numpy==2.2.6 soundfile==0.14.0
+```
+
+The inspected local Hugging Face cache pointed to SAM revision `5f2cd3a9471a08c7282c06036be6893e18de8b70` and Stable Audio medium revision `d4d3579395a8ac0df4ab13b5b1d7138ce7290f81`. The current loaders resolve upstream defaults rather than enforce those revisions. Keep your model cache fixed and record its revisions when comparing runs; these observations are not a guarantee that future downloads will be identical.
+
+### Optional instrument rendering
+
+Some musical replacements use Basic Pitch or continuous-pitch analysis with a SoundFont. Install this component separately:
+
+```bash
+python3.11 -m venv "$HARMONY_RESOURCE_ROOT/.venvs/music-render311"
+"$HARMONY_RESOURCE_ROOT/.venvs/music-render311/bin/python" -m pip install -r requirements/music-render.txt
+```
+
+Normal package installation may also install TensorFlow and PyAudio. PyAudio may require PortAudio development headers on Linux. Harmony selects the packaged ONNX model explicitly and runs it with the CPU provider, regardless of whether TensorFlow is installed. Obtain [GeneralUser GS](https://www.schristiancollins.com/generaluser) under its own license and place the SoundFont at `externals/music-render/GeneralUser-GS.sf2`. Missing optional rendering resources leave those branches unavailable.
+
+## Qwen service
+
+The audio-language model is [Qwen3-Omni-30B-A3B-Instruct](https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct). Download its weights into the local model directory separately. If you already have a compatible endpoint, skip server installation and set `AUDIO_ANALYSIS_BASE_URL`.
+
+The inspected server environment used vLLM `0.29.0`, Python 3.11, Torch `2.13.0`, and Transformers `5.17.0`. Keep it separate from the editing environments:
+
+```bash
+python3.11 -m venv "$HARMONY_RESOURCE_ROOT/.venvs/qwen"
+"$HARMONY_RESOURCE_ROOT/.venvs/qwen/bin/python" -m pip install vllm==0.29.0
+```
+
+Inside a suitable Slurm GPU allocation, the following uses the observed serving settings. Both aliases refer to the same weights; vLLM accepts multiple served model names. Adjust resource placement for your cluster. This combined-alias launch has not been rerun as part of the repository cleanup.
+
+```bash
+nvidia-smi
+VLLM_WORKER_MULTIPROC_METHOD=spawn "$HARMONY_RESOURCE_ROOT/.venvs/qwen/bin/vllm" serve \
+  "$HARMONY_RESOURCE_ROOT/models/Qwen3-Omni-30B-A3B-Instruct" \
+  --served-model-name Qwen3Omni-Perception Qwen3Omni-Instruct \
+  --host 127.0.0.1 --port 8000 --dtype bfloat16 \
+  --tensor-parallel-size 1 --max-model-len 32768 --max-num-seqs 1 \
+  --enforce-eager --limit-mm-per-prompt '{"audio":3,"image":0,"video":0}' \
+  --gpu-memory-utilization 0.9 \
+  --structured-outputs-config '{"backend":"xgrammar","disable_any_whitespace":true}'
+```
+
+A loopback endpoint is reachable only on its server node. Run the editing process on that node with sufficient allocated resources, or use your cluster's approved service network. Do not reserve 90% of a shared GPU for Qwen and assume the separation/generation models will also fit; device placement and capacity must cover all active processes.
+
+## Credentials and checks
+
+The main planner uses `gpt-5-mini-2025-08-07`; the basic execution route uses `gpt-5-mini`. Speech generation, when requested, uses `gpt-4o-mini-tts` and voice `alloy` by default, configurable through `OPENAI_TTS_MODEL` and `OPENAI_TTS_VOICE`. Hosted model calls require access and may incur charges.
+
+Export credentials through the shell or job environment; `.env.example` contains names only:
+
+```bash
+export AUDIO_ANALYSIS_BASE_URL=http://YOUR_QWEN_HOST:8000/v1
+```
+
+Set `OPENAI_API_KEY` and, if your endpoint requires it, `AUDIO_ANALYSIS_API_KEY`. No credentials are included. Run the CPU installation check before inference:
+
+```bash
+python -m harmony doctor --task replace \
+  --resource-root "$HARMONY_RESOURCE_ROOT"
+```
+
+Add `--check-service` to check the endpoint's model listing. This sends no audio or editing request. A passing installation check does not establish GPU memory capacity or editing quality.
 
 ## Run an edit
-
-First preview the command:
 
 ```bash
 python -m harmony run \
@@ -74,14 +167,8 @@ python -m harmony run \
   --dry-run
 ```
 
-Then run it without `--dry-run` inside your Slurm GPU allocation. Verify the allocation first:
+Then remove `--dry-run` inside your Slurm GPU allocation. Each task uses the complete Harmony pipeline; tool use and bounded corrections are selected from the current request and evidence.
 
-```bash
-nvidia-smi
-```
+Each run saves its configuration, execution log, evidence, and report locally under `--output-dir`. Use a fresh output directory for every run. Use `report.json` to locate the output audio and inspect its execution status.
 
-Use `--cell A1B1` for both mechanisms, or `A0B0`, `A1B0`, and `A0B1` to disable the corresponding mechanisms. All configurations use the same editing implementation.
-
-Each run saves its configuration, execution log, and report locally under `--output-dir`. Use a fresh output directory for every run. Evidence and intermediate audio remain local and are not part of the published data list.
-
-A dry run confirms command construction only. It does not validate model installations, credentials, endpoint compatibility, GPU memory, or editing quality. Fresh GPU inference has not been rerun as part of this code consolidation.
+A dry run confirms command construction only. A fixed seed does not remove all randomness from hosted planners, generation, or GPU kernels. Optional video/MMAudio branches require additional resources and are outside the four documented audio tasks.

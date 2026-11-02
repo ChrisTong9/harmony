@@ -2,7 +2,10 @@
 
 from copy import deepcopy
 from pathlib import Path
-import hashlib, json, re, subprocess
+import hashlib
+import json
+import re
+import subprocess
 from tempfile import mkdtemp
 
 PROMPT = "Review one FIRST generated replacement asset. This is a new isolated asset, not the original or retained residual. Decide whether it positively contains BOTH the requested new instrument and the old instrument which the original instruction explicitly replaces. Only then may one existing separator remove that old instrument from the generated asset. Do not remove preserved original voices or instruments. Do not infer a piano from a generic sustained synthesized chord, uncertainty, or a score. Do not reinterpret a requested ensemble as an isolated instrument. Return eligible:boolean, old_instrument:string or null, new_instrument:string or null, old_quote:exact continuous substring of first material facts or null, new_quote:exact continuous substring or null, reason:string. When false both instruments and quotes must be null. No generation, level, timing, seed, or source-query change. The sole candidate old-instrument query for this review is piano; if the text/facts do not positively establish piano being replaced and a distinct requested new instrument, return false."

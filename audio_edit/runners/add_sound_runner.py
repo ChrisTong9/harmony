@@ -1,7 +1,5 @@
-from audio_edit.utils.ablation_policy import execution_corrections_enabled
 from copy import deepcopy
 import hashlib
-import json
 import os
 from dataclasses import asdict
 from pathlib import Path
@@ -218,11 +216,7 @@ class AddSoundRunner:
                     generate,
                     validate=valid_audio,
                 )
-                if (
-                    ctx.params.get("replacement_plan")
-                    and not use_music_render
-                    and execution_corrections_enabled("replacement_material_revision")
-                ):
+                if ctx.params.get("replacement_plan") and not use_music_render:
                     from audio_edit.tools.generated_old_instrument import (
                         clean as clean_old_instrument,
                     )

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from audio_edit.utils.ablation_policy import execution_corrections_enabled
 
 from pathlib import Path
 from dataclasses import asdict
@@ -77,9 +76,7 @@ def run(ctx: AudioEditContext, params: dict) -> AudioEditContext:
             media_duration=media_duration,
         )
     for index, action in enumerate(actions):
-        if action.temporal_status != "unresolved" or not execution_corrections_enabled(
-            "volume_plan_grounding"
-        ):
+        if action.temporal_status != "unresolved":
             continue
 
         action_prompt = (

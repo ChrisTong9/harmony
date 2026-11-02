@@ -20,6 +20,6 @@ python -m harmony run \
   --dry-run
 ```
 
-Use `--cell A0B0`, `A1B0`, `A0B1`, or `A1B1` to select the mechanism settings. A dry run does not load models, create an edit, or call an API. Actual inference requires the [model setup](../docs/setup.md) and a Slurm GPU allocation.
+A dry run does not load models, create an edit, or call an API. Actual inference requires the [model setup](../docs/setup.md) and a Slurm GPU allocation.
 
-For audio comparisons, visit the [project demo](https://christong9.github.io/harmony/). The benchmark sample list is [`data/mmae_420.csv`](../data/mmae_420.csv).
+For audio comparisons, visit the [project demo](https://christong9.github.io/harmony/).

@@ -125,6 +125,20 @@ def annotate_outcome(ctx, original_path):
                     delta_to_original_db=audit["delta_to_original_db"],
                 )
             )
+    basic = ctx.params.get("basic_execution", {})
+    delivery = ctx.params.get("basic_execution_delivery", {})
+    actions = basic.get("actions", [])
+    failures = [action for action in actions if action.get("completed") is False]
+    delivery_error = basic.get("delivery_note") or delivery.get("note")
+    if failures or delivery_error:
+        audit["completed_actions"] = sum(action.get("completed") is True for action in actions)
+        audit["failed_actions"] = len(failures)
+        ctx.execution_status = "failed" if audit["no_op"] else "partial"
+        ctx.execution_error = delivery_error or (
+            f"{len(failures)} of {len(actions)} basic execution actions failed: "
+            + failures[0].get("reason", "No failure details recorded")
+        )
+        ctx.warnings.append(dict(code=ctx.execution_status, reason=ctx.execution_error))
     return ctx
 
 

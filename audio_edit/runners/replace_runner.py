@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from audio_edit.utils.ablation_policy import execution_corrections_enabled
 
 from copy import deepcopy
 from dataclasses import asdict
@@ -173,25 +172,24 @@ class ReplaceSoundRunner:
             add_ctx.params["replacement_reference_asset"] = audit["path"]
             add_ctx.params["replacement_reference_audit"] = audit
         residual_correction = None
-        if execution_corrections_enabled("replace_residual_revision"):
-            cleaned_audio, residual_correction = correct_residual(
-                ctx.input_audio, cleaned_audio, residual_observation
-            )
-            if residual_correction is None and not backing_decision.get("eligible"):
-                from audio_edit.analyzers.residual_target_subset import inspect_residual_subset
+        cleaned_audio, residual_correction = correct_residual(
+            ctx.input_audio, cleaned_audio, residual_observation
+        )
+        if residual_correction is None and not backing_decision.get("eligible"):
+            from audio_edit.analyzers.residual_target_subset import inspect_residual_subset
 
-                subset = inspect_residual_subset(ctx, plan, cleaned_audio, duration)
-                add_ctx.params["replacement_residual_subset_decision"] = subset
-                if ctx.params.get("replacement_residual_first_facts") is not None:
-                    add_ctx.params["replacement_residual_first_facts"] = deepcopy(
-                        ctx.params["replacement_residual_first_facts"]
-                    )
-                if subset.get("eligible"):
-                    cleaned_audio, residual_correction = correct_residual(
-                        cleaned_audio, cleaned_audio, subset
-                    )
-            if residual_correction is not None:
-                add_ctx.params["replacement_residual_correction"] = residual_correction
+            subset = inspect_residual_subset(ctx, plan, cleaned_audio, duration)
+            add_ctx.params["replacement_residual_subset_decision"] = subset
+            if ctx.params.get("replacement_residual_first_facts") is not None:
+                add_ctx.params["replacement_residual_first_facts"] = deepcopy(
+                    ctx.params["replacement_residual_first_facts"]
+                )
+            if subset.get("eligible"):
+                cleaned_audio, residual_correction = correct_residual(
+                    cleaned_audio, cleaned_audio, subset
+                )
+        if residual_correction is not None:
+            add_ctx.params["replacement_residual_correction"] = residual_correction
         from audio_edit.tools.complementary_source import retain_music_vocals
 
         cleaned_audio, backing_execution = retain_music_vocals(

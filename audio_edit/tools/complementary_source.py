@@ -1,6 +1,5 @@
 """Extract the observed protected class with the existing SAM Audio tool."""
 
-from copy import deepcopy
 from dataclasses import asdict
 from pathlib import Path
 import subprocess
@@ -13,7 +12,6 @@ def retain_music_vocals(input_audio, cleaned_audio, decision):
     from audio_edit.models import AudioEditContext
     from audio_edit.plans.remove_sound_plan import RemoveSoundPlan
     from audio_edit.runners.samaudio_runner import SAMAudioRunner
-    from audio_edit.utils.media_util import get_media_duration
     import numpy as np
     import soundfile as sf
 

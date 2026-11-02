@@ -4,6 +4,8 @@ These teach a question/decision relationship, not task-specific execution rules.
 The toy observations and times below are invented ONLY inside these examples.
 """
 
+from copy import deepcopy
+
 BRIEF_EXAMPLES = [
     {
         "input": dict(
@@ -409,8 +411,6 @@ BRIEF_EXAMPLES.extend(
     ]
 )
 
-from copy import deepcopy
-
 
 def _speech_review_examples(payload):
     """Teach independent lexical/physical cues before their final audio interpretation."""
@@ -545,7 +545,7 @@ def _speech_review_examples(payload):
     if can_listen:
         item = dict(input=deepcopy(base), output=deepcopy(output))
 
-        tools_present = payload.get("perception_mode") != "dialogue_only" and any(
+        tools_present = any(
             t.get("action") in ("speech_transcription", "activity_regions")
             for t in payload.get("turns", [])
         )

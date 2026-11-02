@@ -41,8 +41,6 @@ class MMAudioGenerator:
         if not video_path:
             raise ValueError("MMAudio requires video_path.")
 
-        output_path = self.output_dir
-
         request = {
             "prompt": prompt.strip(),
             "negative_prompt": negative_prompt,

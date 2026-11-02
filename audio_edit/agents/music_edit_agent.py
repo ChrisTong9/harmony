@@ -35,6 +35,11 @@ class MusicEditAgent:
         except Exception as exc:
             if not original_audio or not Path(original_audio).is_file():
                 raise
+            ctx.params["primary_execution_error"] = {
+                "type": type(exc).__name__,
+                "message": str(exc),
+                "selected_script": ctx.selected_script,
+            }
             import os
 
             if os.environ.get("HARMONY_BASIC_EXECUTION", "0") == "1":

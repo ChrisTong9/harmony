@@ -68,10 +68,6 @@ Return JSON only. These are estimated execution choices, not measured timestamps
 
 
 def enabled(ctx):
-    from audio_edit.utils.ablation_policy import execution_corrections_enabled
-
-    if not execution_corrections_enabled("add_plan_or_asset_recovery"):
-        return False
     return (
         os.environ.get(ENVIRONMENT) == POLICY
         and not ctx.params.get("replacement_reference_asset")

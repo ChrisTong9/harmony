@@ -6,7 +6,12 @@ The same route is available independently of both experimental A/B switches.
 
 from pathlib import Path
 from copy import deepcopy
-import hashlib, json, math, os, subprocess, sys, tempfile
+import hashlib
+import json
+import math
+import os
+import subprocess
+import tempfile
 import numpy as np
 import soundfile as sf
 
@@ -422,9 +427,9 @@ def recover(ctx, original, llm=None):
     root = Path("./audio_edit/outputs")
     root.mkdir(parents=True, exist_ok=True)
     folder = Path(tempfile.mkdtemp(prefix="basic-execution-", dir=root)).resolve()
-    info = sf.info(original)
     audit = dict(route="basic_execution", directory=str(folder), original_request_only=True)
     try:
+        info = sf.info(original)
         plan = first_plan(ctx.user_prompt, info.frames / info.samplerate, folder, llm)
         output, events = render(plan, original, folder)
         audit["actions"] = events

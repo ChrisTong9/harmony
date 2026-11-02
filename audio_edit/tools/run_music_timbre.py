@@ -1,7 +1,10 @@
 """CPU Basic Pitch -> unquantized notes -> SoundFont; fixed defaults, one inference."""
 
 from pathlib import Path
-import hashlib, json, os, sys
+import hashlib
+import json
+import os
+import sys
 import numpy as np
 import soundfile as sf
 
@@ -60,16 +63,19 @@ def main():
     if not np.isfinite(source).all():
         raise ValueError("Non-finite source")
     import onnxruntime as ort
-    from basic_pitch import ICASSP_2022_MODEL_PATH
+    from basic_pitch import FilenameSuffix, build_icassp_2022_model_path
     from basic_pitch.inference import Model, predict
 
+    onnx_model_path = build_icassp_2022_model_path(FilenameSuffix.onnx)
     options = ort.SessionOptions()
     options.intra_op_num_threads = max(1, min(4, int(os.environ.get("SLURM_CPUS_PER_TASK", "1"))))
     options.inter_op_num_threads = 1
     model = Model.__new__(Model)
     model.model_type = Model.MODEL_TYPES.ONNX
     model.model = ort.InferenceSession(
-        str(ICASSP_2022_MODEL_PATH), sess_options=options, providers=["CPUExecutionProvider"]
+        str(onnx_model_path),
+        sess_options=options,
+        providers=["CPUExecutionProvider"],
     )
     raw, midi, note_events = predict(request["input_audio"], model)
     notes = [n for instrument in midi.instruments for n in instrument.notes]
@@ -101,8 +107,8 @@ def main():
         program=request["program"],
         soundfont=request["soundfont"],
         soundfont_sha256=sha(request["soundfont"]),
-        model_path=str(ICASSP_2022_MODEL_PATH),
-        model_sha256=sha(ICASSP_2022_MODEL_PATH),
+        model_path=str(onnx_model_path),
+        model_sha256=sha(onnx_model_path),
         runtime="ONNX CPUExecutionProvider",
         transcription_defaults=True,
         inference_calls=1,

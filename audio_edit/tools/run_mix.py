@@ -7,14 +7,11 @@ import torch
 import torchaudio
 import torchaudio.functional as F
 from audio_edit.tools.scene_mix import (
-    active_rms,
-    bounded_delta,
     edge_envelope,
     finite_audio,
     prepare_snippet,
     render_timeline,
     scene_gain,
-    scope_envelope,
 )
 from audio_edit.tools.sample_placement import placement_sample_bounds
 

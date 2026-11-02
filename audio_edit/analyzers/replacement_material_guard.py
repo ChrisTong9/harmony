@@ -2,7 +2,10 @@
 
 from copy import deepcopy
 from pathlib import Path
-import hashlib, json, shutil, tempfile
+import hashlib
+import json
+import shutil
+import tempfile
 
 PROMPT = """Check only whether the first generated material has a source-class
 contradiction with the original requested NEW sound. material_facts are one neutral

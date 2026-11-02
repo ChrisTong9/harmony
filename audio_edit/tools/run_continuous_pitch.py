@@ -1,7 +1,10 @@
 """One fixed pYIN contour and a continuous SoundFont violin performance."""
 
 from pathlib import Path
-import hashlib, json, os, sys
+import hashlib
+import json
+import os
+import sys
 import numpy as np
 import soundfile as sf
 

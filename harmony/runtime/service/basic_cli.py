@@ -30,7 +30,7 @@ def main():
         cache.symlink_to(os.environ["HARMONY_CHECKPOINT_CACHE"], target_is_directory=True)
     os.environ.update(
         LLM_BACKEND="openai",
-        OPENAI_MODEL="gpt-5-mini",
+        OPENAI_MODEL=os.environ.get("HARMONY_BASIC_MODEL", "gpt-5-mini"),
         SAMAUDIO_SCRIPT=str(Path(__file__).parent / "sam_once.py"),
         STABLE_AUDIO_SCRIPT=str(source / "audio_edit/tools/run_stable_audio.py"),
         BASIC_EXECUTION_SEED="20261018",

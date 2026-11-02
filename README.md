@@ -7,7 +7,7 @@
 
 **Natural-language audio editing with collaborative planning and evidence-guided execution.**
 
-[Audio Demo](https://christong9.github.io/harmony/) · [Quick Start](#quick-start) · [Method](docs/method.md) · [420-Example List](data/mmae_420.csv) · [arXiv — forthcoming](#paper)
+[Audio Demo](https://christong9.github.io/harmony/) · [Quick Start](#quick-start) · [Method](docs/method.md) · [arXiv — forthcoming](#paper)
 
 Addition · Removal · Replacement · Volume adjustment
 
@@ -21,20 +21,21 @@ Listen to the original audio and comparison outputs on the [project website](htt
 
 ![Harmony method overview: collaborative planning with an audio-language model and targeted tools, followed by evidence-guided execution and bounded correction.](.github/assets/method.svg)
 
-- **Edit-driven collaborative planning (A):** targeted questions and tool measurements inform the source, timing, and operation parameters. The agent chooses which evidence is needed.
-- **Evidence-guided execution (B):** observations of separated or generated material can trigger bounded corrections before mixing. The limits are specific to each execution stage.
+- **Edit-driven collaborative planning:** targeted questions and tool measurements inform the source, timing, and operation parameters. The agent chooses which evidence is needed.
+- **Evidence-guided execution:** observations of separated or generated material can trigger bounded corrections before mixing. The limits are specific to each execution stage.
 
-All four editing tasks share one implementation in [`audio_edit/`](audio_edit/). The configuration controls the task and A/B switches; it does not select a separate historical code tree. See the [method and code map](docs/method.md).
+All four editing tasks share one implementation in [`audio_edit/`](audio_edit/). Each task uses the complete planning and execution pipeline, with tools selected as needed. See the [method and code map](docs/method.md).
 
 ## Quick start
 
-The CLI and dry runs require **Python 3.10+** and the standard library. Run commands from this source checkout:
+The CLI and diagnostics require **Python 3.10+**. Install the lightweight command-line package; model environments are prepared separately:
 
 ```bash
 git clone https://github.com/ChrisTong9/harmony.git
 cd harmony
-python -m harmony --help
-python -m harmony profiles
+python -m pip install -e .
+harmony --help
+harmony profiles
 ```
 
 Preview an edit without loading models or calling an API:
@@ -48,15 +49,21 @@ python -m harmony run \
   --dry-run
 ```
 
-For inference, follow the [setup guide](docs/setup.md), supply the model resources and Qwen endpoint, and remove `--dry-run` inside a Slurm GPU allocation. The launcher checks the allocation and runs `nvidia-smi` before inference. See [examples for all four tasks](examples/README.md).
+For inference, follow the [setup guide](docs/setup.md), supply the model resources and Qwen endpoint, then check the setup before running an edit:
 
-`--cell A1B1` enables both mechanisms and is the default. `A0B0`, `A1B0`, and `A0B1` use the same code with the corresponding switches disabled.
+```bash
+harmony doctor --task volume --resource-root /path/to/resources --check-service
+```
 
-## Data list
+`doctor` checks Python imports, tools, the speech model manifest, and the configured Qwen alias without loading weights or sending audio. Then remove `--dry-run` from the editing command inside a Slurm GPU allocation. The launcher checks the allocation and runs `nvidia-smi` before inference. See [examples for all four tasks](examples/README.md).
 
-[`data/mmae_420.csv`](data/mmae_420.csv) identifies the 420 MMAE examples: 115 addition, 149 removal, 79 replacement, and 77 volume adjustment requests. Each row contains only `sample_id`, `task`, and `instruction`. Obtain the associated audio separately from [MMAE](https://huggingface.co/datasets/BoJack/MMAE).
+This release provides the complete Harmony inference pipeline for all four editing tasks.
 
-The code branch contains no benchmark audio, generated outputs, or evaluation records. The existing demo is maintained separately on the `gh-pages` branch.
+## Running and inspecting an edit
+
+The resulting `report.json` contains `output_audio`, the execution status, and any error details. `run_config.json` records the effective configuration, code fingerprint, dependency versions, and available external-repository/cache revisions. Each run uses an isolated directory. A partial edit still returns its available audio and exits with a nonzero status. Read `execution_status` and `execution_error` before using an output.
+
+Model provisioning and GPU inference are separate from package installation. See the [execution guide](docs/setup.md).
 
 ## Repository guide
 
@@ -64,8 +71,7 @@ The code branch contains no benchmark audio, generated outputs, or evaluation re
 |---|---|
 | [`audio_edit/`](audio_edit/) | Shared planner, analyzers, specialists, and editing tools |
 | [`harmony/`](harmony/) | CLI and runtime adapters |
-| [`configs/`](configs/) | Task and mechanism configuration |
-| [`data/mmae_420.csv`](data/mmae_420.csv) | Sample IDs, tasks, and editing instructions |
+| [`harmony/configs/`](harmony/configs/) | Shared model settings and task defaults |
 | [`examples/`](examples/) | Example commands for your own audio |
 | [`requirements/`](requirements/) | Planner dependencies and environment notes |
 | [`docs/`](docs/) | Setup and implementation guide |

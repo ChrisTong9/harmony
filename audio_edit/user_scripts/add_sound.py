@@ -129,7 +129,8 @@ def run(ctx: AudioEditContext, params: dict) -> AudioEditContext:
         )
         return AddSoundRunner().run(ctx, plan)
     ctx.params["add_reference_bindings"] = deepcopy(bindings)
-    requests = bound_requests(plan.intent, bindings) if plan.intent["edits"] else []
+    if plan.intent["edits"]:
+        bound_requests(plan.intent, bindings)
 
     activity = [
         result

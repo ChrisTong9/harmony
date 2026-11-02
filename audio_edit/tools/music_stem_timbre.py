@@ -2,7 +2,10 @@
 
 from pathlib import Path
 from tempfile import mkdtemp
-import json, os, re, subprocess
+import json
+import os
+import re
+import subprocess
 import numpy as np
 import soundfile as sf
 

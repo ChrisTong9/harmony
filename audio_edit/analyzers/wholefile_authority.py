@@ -2,7 +2,11 @@
 
 from copy import deepcopy
 from dataclasses import asdict
-import hashlib, json, math, os, re
+import hashlib
+import json
+import math
+import os
+import re
 from pathlib import Path
 from audio_edit.plans.temporal import TemporalConstraint
 

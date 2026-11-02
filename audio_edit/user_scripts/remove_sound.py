@@ -1,4 +1,3 @@
-from audio_edit.utils.ablation_policy import execution_corrections_enabled
 from pathlib import Path
 from copy import deepcopy
 from dataclasses import asdict
@@ -80,7 +79,6 @@ def prepare_plan(
         and not plan.temporal_schema_error
         and plan.mode != "video"
         and plan.result_mode == "result"
-        and execution_corrections_enabled("remove_participant_plan_revision")
     ):
         feedback = dict(
             error="Selected participant removal requires bounded residual source removal",
@@ -152,11 +150,7 @@ def prepare_plan(
     )
     known_interval = plan.temporal is not None and plan.temporal.kind == "interval"
 
-    if (
-        needs_review
-        and not known_interval
-        and execution_corrections_enabled("remove_plan_grounding")
-    ):
+    if needs_review and not known_interval:
         resolution = ground_from_observations(
             llm,
             user_prompt=ctx.user_prompt,
@@ -269,8 +263,6 @@ def run(ctx: AudioEditContext, params: dict) -> AudioEditContext:
         from audio_edit.analyzers.participant_extraction import retain_selected_intervals
 
         return retain_selected_intervals(result)
-    if not execution_corrections_enabled("remove_residual_revision"):
-        return result
     from audio_edit.analyzers.typed_residual_removal import apply as complete_typed_residual
 
     result = complete_typed_residual(result, plan)
