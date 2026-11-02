@@ -1,0 +1,730 @@
+{
+  "A0B0": {
+    "add": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Perception",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "dialogue_only",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "0",
+        "AUDIO_PREEDIT_SEPARATION": "0",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "0",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "new_generation_seed": null,
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "source_directory": "harmony/backends/addition",
+      "cell": "A0B0",
+      "task": "add"
+    },
+    "remove": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Instruct",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "dialogue_only",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "0",
+        "AUDIO_PREEDIT_SEPARATION": "0",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "0",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "new_generation_seed": 20261018,
+      "source_directory": "harmony/backends/removal_control",
+      "cell": "A0B0",
+      "task": "remove"
+    },
+    "replace": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Instruct",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "dialogue_only",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "0",
+        "AUDIO_PREEDIT_SEPARATION": "0",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "0",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "new_generation_seed": 20261018,
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "source_directory": "harmony/backends/replacement_control",
+      "cell": "A0B0",
+      "task": "replace"
+    },
+    "volume": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Perception",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "dialogue_only",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "0",
+        "AUDIO_PREEDIT_SEPARATION": "0",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "0",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "new_generation_seed": null,
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "source_directory": "harmony/backends/volume",
+      "cell": "A0B0",
+      "task": "volume"
+    }
+  },
+  "A1B0": {
+    "add": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Perception",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "tool_augmented",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "1",
+        "AUDIO_PREEDIT_SEPARATION": "1",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "0",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "new_generation_seed": null,
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "source_directory": "harmony/backends/addition",
+      "cell": "A1B0",
+      "task": "add"
+    },
+    "remove": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Instruct",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "tool_augmented",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "1",
+        "AUDIO_PREEDIT_SEPARATION": "1",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "0",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "new_generation_seed": 20261018,
+      "source_directory": "harmony/backends/removal_control",
+      "cell": "A1B0",
+      "task": "remove"
+    },
+    "replace": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Instruct",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "tool_augmented",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "1",
+        "AUDIO_PREEDIT_SEPARATION": "1",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "0",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "new_generation_seed": 20261018,
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "source_directory": "harmony/backends/replacement_control",
+      "cell": "A1B0",
+      "task": "replace"
+    },
+    "volume": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Perception",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "tool_augmented",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "1",
+        "AUDIO_PREEDIT_SEPARATION": "1",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "0",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "new_generation_seed": null,
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "source_directory": "harmony/backends/volume",
+      "cell": "A1B0",
+      "task": "volume"
+    }
+  },
+  "A0B1": {
+    "add": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Perception",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "dialogue_only",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "0",
+        "AUDIO_PREEDIT_SEPARATION": "0",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "1",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "new_generation_seed": null,
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "source_directory": "harmony/backends/addition",
+      "cell": "A0B1",
+      "task": "add"
+    },
+    "remove": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Instruct",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "dialogue_only",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "0",
+        "AUDIO_PREEDIT_SEPARATION": "0",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "1",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "new_generation_seed": 20261018,
+      "source_directory": "harmony/backends/removal_control",
+      "cell": "A0B1",
+      "task": "remove"
+    },
+    "replace": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Instruct",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "dialogue_only",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "0",
+        "AUDIO_PREEDIT_SEPARATION": "0",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "1",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "new_generation_seed": 20261018,
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "source_directory": "harmony/backends/replacement_control",
+      "cell": "A0B1",
+      "task": "replace"
+    },
+    "volume": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Perception",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "dialogue_only",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "0",
+        "AUDIO_PREEDIT_SEPARATION": "0",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "1",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "new_generation_seed": null,
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "source_directory": "harmony/backends/volume",
+      "cell": "A0B1",
+      "task": "volume"
+    }
+  },
+  "A1B1": {
+    "add": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Perception",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "tool_augmented",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "1",
+        "AUDIO_PREEDIT_SEPARATION": "1",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "1",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "new_generation_seed": null,
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "source_directory": "harmony/backends/addition",
+      "cell": "A1B1",
+      "task": "add"
+    },
+    "remove": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Instruct",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "tool_augmented",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "1",
+        "AUDIO_PREEDIT_SEPARATION": "1",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "1",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "new_generation_seed": 20261018,
+      "source_directory": "harmony/backends/removal",
+      "cell": "A1B1",
+      "task": "remove"
+    },
+    "replace": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Instruct",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "tool_augmented",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "1",
+        "AUDIO_PREEDIT_SEPARATION": "1",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "1",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "new_generation_seed": 20261018,
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "source_directory": "harmony/backends/replacement",
+      "cell": "A1B1",
+      "task": "replace"
+    },
+    "volume": {
+      "openai_model": "gpt-5-mini-2025-08-07",
+      "checkpoint_cache": ".checkpoints",
+      "perception": {
+        "backend": "openai_compatible",
+        "model": "Qwen3Omni-Perception",
+        "weights": "${RESOURCE_ROOT}/models/Qwen3-Omni-30B-A3B-Instruct",
+        "collaborator": "",
+        "structured_outputs_config": {
+          "backend": "xgrammar",
+          "disable_any_whitespace": true
+        }
+      },
+      "samaudio": {
+        "model_id": "facebook/sam-audio-large",
+        "reranking_candidates": 8,
+        "predict_spans": "unanchored text only; retain explicit anchors",
+        "text_ranker": "checkpoint CLAP + SAM Audio Judge ensemble"
+      },
+      "perception_mode": "tool_augmented",
+      "preedit_environment": {
+        "AUDIO_PREEDIT_SPEECH": "1",
+        "AUDIO_PREEDIT_SEPARATION": "1",
+        "AUDIO_ADD_TIMING_RECOVERY": "overlap_preserve",
+        "HARMONY_EXECUTION_CORRECTIONS": "1",
+        "HARMONY_BASIC_EXECUTION": "1"
+      },
+      "speech": {
+        "model": "openai/whisper-large-v3-turbo",
+        "revision": "41f01f3fe87f28c78e2fbf8b568835947dd65ed9",
+        "weights": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo",
+        "manifest": "${RESOURCE_ROOT}/models/whisper-large-v3-turbo/speech_model_manifest.json",
+        "python": "${RESOURCE_ROOT}/.venvs/sam-audio/bin/python",
+        "diarization": false,
+        "timing": "Approximate lexical word alignment; not speaker turns or nonverbal endings",
+        "weights_sha256": "542566a422ae4f3fd23f1ba11add198fca01bbf82e66e6a2857b3f608b1eb9d1",
+        "manifest_sha256": "fca3136693acce9456ddd30e0b84890af9cf206e5cc4f4c4d02a3ff1665806be"
+      },
+      "new_generation_seed": null,
+      "music_render_python": "${RESOURCE_ROOT}/.venvs/music-render311/bin/python",
+      "music_soundfont": "${RESOURCE_ROOT}/externals/music-render/GeneralUser-GS.sf2",
+      "source_directory": "harmony/backends/volume",
+      "cell": "A1B1",
+      "task": "volume"
+    }
+  }
+}

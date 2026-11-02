@@ -1,4 +1,30 @@
-.DS_Store
+# Local credentials and resources
 .env
 .env.*
+!.env.example
+*.pem
+*.key
+.venv/
+.venvs/
+resources/
+.checkpoints/
+models/
+
+# Generated runs and private participant data
+outputs/
+exports/
+private/
+*.sqlite3
+*.sqlite3-*
+*.log
+*.safetensors
+*.pt
+*.pth
+
+# Python/editor caches
 __pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+.vscode/

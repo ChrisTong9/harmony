@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "python_files_compiled": 3380,
+  "source_snapshots_verified": 27,
+  "dry_run_profiles": 16,
+  "paper_metric_checks": 72,
+  "credentials_found": 0,
+  "chinese_text_files": 0,
+  "slurm_guard": "passed",
+  "model_calls": 0,
+  "gpu_inference_tested": false,
+  "packaging_parent": "/home/ztong/agent/releases/harmony_final_v377_20261026"
+}

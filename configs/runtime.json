@@ -1,0 +1,5 @@
+{
+  "common_source": "harmony/backends/execution",
+  "resource_root_environment": "HARMONY_RESOURCE_ROOT",
+  "checkpoint_cache_environment": "HARMONY_CHECKPOINT_CACHE"
+}

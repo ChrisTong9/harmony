@@ -1,0 +1,72 @@
+{
+  "at": "2026-10-25T00:51:21.409057+00:00",
+  "global_one_correction_claim_supported": false,
+  "stages": [
+    {
+      "stage": "Pre-edit evidence",
+      "limit": "At most 2 logical Qwen observations and 2 external evidence-tool dispatches per listen_for_edit invocation; no repeated tool type; at most one pre-edit source extraction.",
+      "scope": "Pre-edit only, not all downstream Qwen/API calls.",
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_evidence_sufficiency_v381_20261024/source/audio_edit/analyzers/edit_listening.py",
+      "line": 741,
+      "sha256": "9b7a9028c4e1e0175e8490d060477302afd17db0fc4b03706a9da6f645079f13"
+    },
+    {
+      "stage": "ADD recovery",
+      "limit": "At most one additional recovery planner call per editing context; an existing add_timing_recovery record prevents a second attempt. Asset fitting may reuse existing material without another LLM call.",
+      "scope": "Quality recovery, distinct from infrastructure retries.",
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_factorial_ablation_v325_20261021/sources/add/audio_edit/plans/add_recovery.py",
+      "line": 365,
+      "sha256": "94028a7bb7277d13078ad6df0e27dc416739f50ff6787c282ea5b1d2c6589b5b"
+    },
+    {
+      "stage": "REMOVE plan grounding",
+      "limit": "One optional ground_from_observations call after the initial plan when timing remains unresolved and no literal interval authorizes a different interpretation.",
+      "scope": "Per removal plan; separate from post-separation correction.",
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_evidence_sufficiency_v381_20261024/source/audio_edit/user_scripts/remove_sound.py",
+      "line": 82,
+      "sha256": "574a928e59bc4f180efa688487613a1e9f4b53bc55b2955a9ad535daa435b723"
+    },
+    {
+      "stage": "REMOVE residual correction",
+      "limit": "The native path visits typed-residual, laughter-query and residual-source-query branches once each; an eligible branch performs at most one additional run_remove invocation. Guards can skip branches; first-fact caches prevent answer rerolls.",
+      "scope": "Per branch, not a single global correction call. One run_remove can itself involve multiple source spans/backend work.",
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_evidence_sufficiency_v381_20261024/source/audio_edit/user_scripts/remove_sound.py",
+      "line": 163,
+      "sha256": "574a928e59bc4f180efa688487613a1e9f4b53bc55b2955a9ad535daa435b723"
+    },
+    {
+      "stage": "REPLACE residual and generated-material correction",
+      "limit": "Residual correction follows a bounded conditional sequence; first-generated-material old-instrument cleanup, voice cleanup and instrument projection are each checked at most once per unique generated asset along their eligible paths. Multiple assets and distinct stages can require more than one call per input.",
+      "scope": "No declared universal one-call correction budget for the complete REPLACE request.",
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_replace79_integrated_v363_20261022/source/audio_edit/runners/add_sound_runner.py",
+      "line": 192,
+      "sha256": "7022609e2e2c1832490a2177b256e94a2948c2444c8a67f49b0a08c9ae3778d9"
+    },
+    {
+      "stage": "VOLUME unresolved grounding",
+      "limit": "At most one semantic-grounding call for each unresolved action in the plan. Multiple actions may cause multiple calls per request.",
+      "scope": "Per action, not per whole request.",
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_factorial_ablation_v325_20261021/sources/volume/audio_edit/user_scripts/volume_change.py",
+      "line": 62,
+      "sha256": "a718ad7377dad9c945fdde30d7726ac5d9da3915ac85c722bdc9acc946f03b46"
+    },
+    {
+      "stage": "Common basic execution",
+      "limit": "One original-request-only text planning call per trigger, max_completion_tokens=4000, reasoning_effort=low, SDK max_retries=0, timeout=150 seconds; one plan contains 1 to 4 actions.",
+      "scope": "Shared by all ablation arms; separate from factor B.",
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_basic_execution_v372_20261023/source/audio_edit/tools/basic_execution.py",
+      "line": 115,
+      "sha256": "9e9e7deb3f11dd678b4e735020211e1947650b147db9029fc48be452435da933"
+    },
+    {
+      "stage": "Transient tool failure retries",
+      "limit": "Generic bounded_call defaults to at most 2 attempts (one retry); ADD recovery explicitly sets attempts=1.",
+      "scope": "Infrastructure/format recovery is not a semantic quality-revision count. SDK-internal network retries are not fully metered by the outer wrapper.",
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_replace79_integrated_v363_20261022/source/audio_edit/utils/bounded_tools.py",
+      "line": 17,
+      "sha256": "0b1237ec3a7bf5a4f5ef0488016b323b566734461ee7c7c28da96275984b0779"
+    }
+  ],
+  "method_sentence": "Harmony uses conditionally triggered, stage-bounded corrections rather than a fixed single global correction step. Pre-edit evidence acquisition is separately capped at two audio observations and two external tool dispatches.",
+  "new_inference": 0
+}

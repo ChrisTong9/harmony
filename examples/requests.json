@@ -1,0 +1,30 @@
+[
+  {
+    "task": "add",
+    "input": "audio/69e89805bd490e32ff0d3c9d/input.wav",
+    "instruction": "Add four beats of drum kits before the drum start, the speed in line with the drum sound.",
+    "cell": "A1B1",
+    "output_dir": "outputs/example-add"
+  },
+  {
+    "task": "remove",
+    "input": "audio/69e8981f6508941e55c185a6/input.wav",
+    "instruction": "Remove the sound similar to \"ewww\" at the end of the audio.",
+    "cell": "A1B1",
+    "output_dir": "outputs/example-remove"
+  },
+  {
+    "task": "replace",
+    "input": "audio/69e89817910050e595461416/input.wav",
+    "instruction": "Replace the ending laughter with applause.",
+    "cell": "A1B1",
+    "output_dir": "outputs/example-replace"
+  },
+  {
+    "task": "volume",
+    "input": "audio/69e8980c910050e59545dd12/input.wav",
+    "instruction": "Make the door slamming sound louder.",
+    "cell": "A1B1",
+    "output_dir": "outputs/example-volume"
+  }
+]

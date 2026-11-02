@@ -1,0 +1,39 @@
+{
+  "version": "harmony_final_v377_20261026",
+  "created_at": "2026-10-27T01:50:04.631335+00:00",
+  "paper_view": "/home/ztong/agent/evaluation/mmae/harmony_volume_checkpoint_join_v377_20261024/views",
+  "task_counts": {
+    "add": 115,
+    "remove": 149,
+    "replace": 79,
+    "volume": 77
+  },
+  "configurations": [
+    "A0B0",
+    "A1B0",
+    "A0B1",
+    "A1B1"
+  ],
+  "records": 1680,
+  "source_snapshots": 27,
+  "audio_objects": 1971,
+  "audio_bytes": 7386763772,
+  "first_vote_files": 14030,
+  "execution_logs": 1618,
+  "new_inference": 0,
+  "new_scores": 0,
+  "measurement": "checkpoint_continuation",
+  "single_source_cold_measurement": false,
+  "excluded_results": [
+    "v381"
+  ],
+  "profile_directories": {
+    "add": "code/snapshots/primary_add",
+    "replace": "code/snapshots/primary_replace",
+    "remove": "code/snapshots/harmony_remove_grounding_polarity_v374_20261023",
+    "volume": "code/snapshots/primary_volume",
+    "replace_latest": "code/snapshots/primary_replace_latest",
+    "remove_control": "code/snapshots/primary_remove_control",
+    "common": "code/snapshots/harmony_basic_execution_v372_20261023"
+  }
+}

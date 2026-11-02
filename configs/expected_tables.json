@@ -1,0 +1,290 @@
+{
+  "current_table4": [
+    {
+      "task": "add",
+      "cell": "A0B0",
+      "n": 115,
+      "IFR": 77.08695652173913,
+      "CR": 83.68219461697723,
+      "EMR": 28.695652173913043,
+      "all_pass_count": 33,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_followthrough_v376_20261023/views/A0B0/add/per_sample.json",
+      "sha256": "25f6596cc6b112a955c8ee48b61607c1617f6a7e9b41111fce11443f2d69f13e"
+    },
+    {
+      "task": "add",
+      "cell": "A1B0",
+      "n": 115,
+      "IFR": 79.10144927536231,
+      "CR": 81.52380952380952,
+      "EMR": 27.82608695652174,
+      "all_pass_count": 32,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_followthrough_v376_20261023/views/A1B0/add/per_sample.json",
+      "sha256": "2db9c9cb408621bbd764dc3918f2a336b9714a9012acd99ab493f56d37e013c7"
+    },
+    {
+      "task": "add",
+      "cell": "A0B1",
+      "n": 115,
+      "IFR": 73.27536231884058,
+      "CR": 81.51035196687371,
+      "EMR": 18.26086956521739,
+      "all_pass_count": 21,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_followthrough_v376_20261023/views/A0B1/add/per_sample.json",
+      "sha256": "649aa54c5284bee4c60ec7287b50f5385b795aa7fdc909fd3e246b8437a3109b"
+    },
+    {
+      "task": "add",
+      "cell": "A1B1",
+      "n": 115,
+      "IFR": 79.14492753623188,
+      "CR": 81.99896480331263,
+      "EMR": 31.304347826086957,
+      "all_pass_count": 36,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_followthrough_v376_20261023/views/latest_main/add/per_sample.json",
+      "sha256": "4b3c875f0777c315760bc62c54e51bc55d21e0816b4b80f80e28c8250b163cfb"
+    },
+    {
+      "task": "remove",
+      "cell": "A0B0",
+      "n": 149,
+      "IFR": 55.525727069351234,
+      "CR": 92.53408969851922,
+      "EMR": 21.476510067114095,
+      "all_pass_count": 32,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_followthrough_v376_20261023/views/A0B0/remove/per_sample.json",
+      "sha256": "1e1a397275cd2897340f31804efc032357ddb7ff8f95730e0bb81454dd0f73fc"
+    },
+    {
+      "task": "remove",
+      "cell": "A1B0",
+      "n": 149,
+      "IFR": 60.95078299776286,
+      "CR": 90.86236284222862,
+      "EMR": 22.14765100671141,
+      "all_pass_count": 33,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_followthrough_v376_20261023/views/A1B0/remove/per_sample.json",
+      "sha256": "f846f6e3ecf2fae225cae42714a94131bd58d8495383cde2eee5092854695e1b"
+    },
+    {
+      "task": "remove",
+      "cell": "A0B1",
+      "n": 149,
+      "IFR": 61.7337807606264,
+      "CR": 93.99595184830085,
+      "EMR": 26.174496644295303,
+      "all_pass_count": 39,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_followthrough_v376_20261023/views/A0B1/remove/per_sample.json",
+      "sha256": "e69eafdc9450b692918cc87b35175d1e353a597f6a85ff2c586df98e08f7757c"
+    },
+    {
+      "task": "remove",
+      "cell": "A1B1",
+      "n": 149,
+      "IFR": 57.29306487695749,
+      "CR": 93.11840843720039,
+      "EMR": 22.818791946308725,
+      "all_pass_count": 34,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_followthrough_v376_20261023/views/latest_main/remove/per_sample.json",
+      "sha256": "62c52e0d7a1b8a633ec9bbecdeab539a0c20d822cc44410003719c066ffe43e3"
+    },
+    {
+      "task": "replace",
+      "cell": "A0B0",
+      "n": 79,
+      "IFR": 65.27426160337554,
+      "CR": 80.83986337150894,
+      "EMR": 16.455696202531644,
+      "all_pass_count": 13,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_followthrough_v376_20261023/views/A0B0/replace/per_sample.json",
+      "sha256": "7d1ebb7e24fdb0a7a51420685ce03c23c8ff8dcbd65c7e3165c15dcaec10d4de"
+    },
+    {
+      "task": "replace",
+      "cell": "A1B0",
+      "n": 79,
+      "IFR": 68.79746835443038,
+      "CR": 80.54601165360658,
+      "EMR": 20.253164556962027,
+      "all_pass_count": 16,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_followthrough_v376_20261023/views/A1B0/replace/per_sample.json",
+      "sha256": "c050bb0b163f5cf751a9112c7d25d08ebb0236afbbbb6c43db6230fa3d8ea32a"
+    },
+    {
+      "task": "replace",
+      "cell": "A0B1",
+      "n": 79,
+      "IFR": 69.45147679324894,
+      "CR": 75.20896122161945,
+      "EMR": 12.658227848101266,
+      "all_pass_count": 10,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_followthrough_v376_20261023/views/A0B1/replace/per_sample.json",
+      "sha256": "e8ff8421333d4295885438508fae95068961c5cecd1471f273d0e0745586ac24"
+    },
+    {
+      "task": "replace",
+      "cell": "A1B1",
+      "n": 79,
+      "IFR": 72.23628691983123,
+      "CR": 78.33785412899337,
+      "EMR": 22.78481012658228,
+      "all_pass_count": 18,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_followthrough_v376_20261023/views/latest_main/replace/per_sample.json",
+      "sha256": "8692e5c7c6ce9f530dd25d83045f2a491ca990936f138d51522a0af921c47795"
+    },
+    {
+      "task": "volume",
+      "cell": "A0B0",
+      "n": 77,
+      "IFR": 30.887445887445885,
+      "CR": 95.84724799010513,
+      "EMR": 3.896103896103896,
+      "all_pass_count": 3,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_followthrough_v376_20261023/views/A0B0/volume/per_sample.json",
+      "sha256": "4137a586f8689be95270b13937117558fc356c70dbaad68bba6df3677770c805"
+    },
+    {
+      "task": "volume",
+      "cell": "A1B0",
+      "n": 77,
+      "IFR": 32.316017316017316,
+      "CR": 95.64316635745207,
+      "EMR": 6.4935064935064934,
+      "all_pass_count": 5,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_followthrough_v376_20261023/views/A1B0/volume/per_sample.json",
+      "sha256": "aa8c2b6a608f1e65dbd06bb98b61f111015add68e86d7269d9bc1e06b275b29c"
+    },
+    {
+      "task": "volume",
+      "cell": "A0B1",
+      "n": 77,
+      "IFR": 29.047619047619044,
+      "CR": 95.1082251082251,
+      "EMR": 5.194805194805195,
+      "all_pass_count": 4,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_remove_followthrough_v376_20261023/views/A0B1/volume/per_sample.json",
+      "sha256": "8ff1e8f44ef84c09d0dd994d12f19634dc1833d6e72c5b5a1ef76821a321cef8"
+    },
+    {
+      "task": "volume",
+      "cell": "A1B1",
+      "n": 77,
+      "IFR": 35.97402597402598,
+      "CR": 95.40197897340755,
+      "EMR": 9.090909090909092,
+      "all_pass_count": 7,
+      "source": "/home/ztong/agent/evaluation/mmae/harmony_volume_checkpoint_join_v377_20261024/views/latest_main/volume/per_sample.json",
+      "sha256": "0ed119c90b89d23b4ceca53ce08aaf6f5566d21e918d42119506a90b2e854546"
+    }
+  ],
+  "current_table5": [
+    {
+      "cell": "A0B0",
+      "macro_IFR": 57.19359777047794,
+      "macro_CR": 88.22584891927764,
+      "macro_EMR": 17.63099058491567,
+      "pooled_IFR": 58.746031746031754,
+      "pooled_CR": 88.51814058956916,
+      "pooled_EMR": 19.285714285714285,
+      "all_pass_count": 81
+    },
+    {
+      "cell": "A1B0",
+      "macro_IFR": 60.29142948589322,
+      "macro_CR": 87.1438375942742,
+      "macro_EMR": 19.180102253425417,
+      "pooled_IFR": 62.14682539682539,
+      "pooled_CR": 87.24140211640211,
+      "pooled_EMR": 20.476190476190474,
+      "all_pass_count": 86
+    },
+    {
+      "cell": "A0B1",
+      "macro_IFR": 58.377059730083744,
+      "macro_CR": 86.45587253625477,
+      "macro_EMR": 15.572099813104789,
+      "pooled_IFR": 60.3531746031746,
+      "pooled_CR": 87.24744897959184,
+      "pooled_EMR": 17.61904761904762,
+      "all_pass_count": 74
+    },
+    {
+      "cell": "A1B1",
+      "macro_IFR": 61.16207632676164,
+      "macro_CR": 87.21430158572849,
+      "macro_EMR": 21.499714747471764,
+      "pooled_IFR": 62.17857142857143,
+      "pooled_CR": 87.71230158730158,
+      "pooled_EMR": 22.61904761904762,
+      "all_pass_count": 95
+    }
+  ],
+  "bold_table4": {
+    "add": {
+      "IFR": [
+        "A1B1"
+      ],
+      "CR": [
+        "A0B0"
+      ],
+      "EMR": [
+        "A1B1"
+      ]
+    },
+    "remove": {
+      "IFR": [
+        "A0B1"
+      ],
+      "CR": [
+        "A0B1"
+      ],
+      "EMR": [
+        "A0B1"
+      ]
+    },
+    "replace": {
+      "IFR": [
+        "A1B1"
+      ],
+      "CR": [
+        "A0B0"
+      ],
+      "EMR": [
+        "A1B1"
+      ]
+    },
+    "volume": {
+      "IFR": [
+        "A1B1"
+      ],
+      "CR": [
+        "A0B0"
+      ],
+      "EMR": [
+        "A1B1"
+      ]
+    }
+  },
+  "bold_table5": {
+    "macro_IFR": [
+      "A1B1"
+    ],
+    "macro_CR": [
+      "A0B0"
+    ],
+    "macro_EMR": [
+      "A1B1"
+    ],
+    "pooled_IFR": [
+      "A1B1"
+    ],
+    "pooled_CR": [
+      "A0B0"
+    ],
+    "pooled_EMR": [
+      "A1B1"
+    ]
+  },
+  "version_note": "Submitted A1B1 uses latest_main v377 for all four tasks. Other cells use existing ablation checkpoint views. It is not the original matched A1B1 row, nor the new v381 run.",
+  "ablation_limit": "Later task-specific repairs occur in the full-system row; cannot attribute every difference solely to the two switches without disclosing this revision difference."
+}

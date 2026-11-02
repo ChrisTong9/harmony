@@ -1,0 +1,9 @@
+# Direct planner dependencies observed at packaging; see README.md.
+openai==3.5.0
+numpy==2.4.6
+soundfile==0.14.0
+pydantic==2.13.4
+python-dotenv==1.2.3
+requests==2.34.2
+httpx==0.28.1
+google-genai==2.20.0
