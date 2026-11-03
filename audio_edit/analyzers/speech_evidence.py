@@ -143,8 +143,11 @@ def speech_tool_status(*, check_runtime=False):
     )
     if os.environ.get("AUDIO_PREEDIT_SPEECH") != "1":
         return dict(result, reason="AUDIO_PREEDIT_SPEECH is not enabled")
-    if not os.environ.get("SLURM_JOB_ID"):
-        return dict(result, reason="A dedicated Slurm GPU allocation is required")
+    from harmony.runtime.gpu import gpu_policy_error
+
+    policy_error = gpu_policy_error()
+    if policy_error:
+        return dict(result, reason=policy_error)
     if not Path(python).is_file() or not os.access(python, os.X_OK):
         return dict(result, reason="Speech Python executable is unavailable")
     try:
@@ -165,7 +168,7 @@ def speech_tool_status(*, check_runtime=False):
         result,
         available=True,
         reason=None,
-        availability_check="Provisioned files and allocation; CUDA is checked before inference",
+        availability_check="Provisioned files and GPU policy; CUDA is checked before inference",
     )
 
 

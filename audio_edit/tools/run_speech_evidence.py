@@ -5,7 +5,6 @@ import importlib.metadata
 import json
 import os
 from pathlib import Path
-import subprocess
 import sys
 import time
 
@@ -13,10 +12,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 
 def require_allocated_gpu(torch):
-    """Inspect the allocation before any CUDA availability check or model loading."""
-    if not os.environ.get("SLURM_JOB_ID"):
-        raise RuntimeError("Speech inference requires a Slurm GPU allocation")
-    subprocess.run(["nvidia-smi"], check=True, capture_output=True, timeout=30)
+    """Inspect GPU access before any CUDA availability check or model loading."""
+    from harmony.runtime.gpu import require_gpu
+
+    require_gpu()
     if not torch.cuda.is_available():
         raise RuntimeError("No allocated CUDA device")
 

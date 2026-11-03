@@ -15,7 +15,7 @@ TemporalKind = Literal[
     "relative",
 ]
 TemporalRelation = Literal["before", "at", "after", "during", "between"]
-ReferenceSource = Literal["audio", "visual", "either"]
+ReferenceSource = Literal["audio"]
 ResolutionStatus = Literal["not_requested", "resolved", "approximate", "estimated", "unresolved"]
 
 
@@ -35,7 +35,7 @@ class TemporalConstraint:
     relation: TemporalRelation | None = None
     reference_event: str | list[str] | None = None
     end_reference_event: str | list[str] | None = None
-    reference_source: ReferenceSource = "either"
+    reference_source: ReferenceSource = "audio"
     occurrence: Literal["first", "last", "each"] | int | None = None
     offset_seconds: float = 0.0
     count: int | None = None
@@ -53,7 +53,7 @@ class ResolvedPlacement:
     start_time: float
     end_time: float | None = None
     reference_event: str | None = None
-    reference_source: Literal["audio", "visual"] | None = None
+    reference_source: Literal["audio"] | None = None
     occurrence_index: int | None = None
     approximate: bool = False
     confidence: float | None = None
@@ -92,11 +92,13 @@ def temporal_constraint_from_dict(
     ):
         raise ValueError(f"Unsupported occurrence selector: {occurrence}")
 
-    reference_source = value.get("reference_source") or "either"
-    if reference_source not in {"audio", "visual", "either"}:
+    reference_source = value.get("reference_source") or "audio"
+    if reference_source == "either":
+        reference_source = "audio"
+    if reference_source != "audio":
         if kind in {"event", "relative"}:
             raise ValueError(f"Unsupported reference_source: {reference_source}")
-        reference_source = "either"
+        reference_source = "audio"
     placement_mode = value.get("placement_mode") or "overlay"
     modes = (
         {"overlay", "insert", "prepend", "append"}
@@ -180,7 +182,6 @@ def resolve_temporal_constraint(
     media_duration: float | None = None,
     event_duration: float | None = None,
     audio_analysis: dict[str, Any] | None = None,
-    visual_analysis: dict[str, Any] | None = None,
 ) -> TemporalResolution:
     """Resolve a generic constraint without guessing missing event timestamps."""
 
@@ -301,15 +302,12 @@ def resolve_temporal_constraint(
         return _unresolved("Event-based timing is missing reference_event.")
 
     if constraint.kind == "relative" and constraint.relation == "between":
-        return _resolve_between(
-            constraint, media_duration, event_duration, audio_analysis, visual_analysis
-        )
+        return _resolve_between(constraint, media_duration, event_duration, audio_analysis)
 
     candidates = _matching_events(
         constraint.reference_event,
         constraint.reference_source,
         audio_analysis,
-        visual_analysis,
     )
     if not candidates:
         source = constraint.reference_source
@@ -445,7 +443,7 @@ def resolve_temporal_constraint(
         if any(p.event_id and p.approximate for p in placements)
         and (
             isinstance(constraint.reference_event, list)
-            or str(constraint.reference_event).startswith(("audio_", "visual_"))
+            or str(constraint.reference_event).startswith("audio_")
         )
         else "resolved"
     )
@@ -469,18 +467,14 @@ def _resolve_between(
     media_duration: float | None,
     event_duration: float | None,
     audio_analysis: dict[str, Any] | None,
-    visual_analysis: dict[str, Any] | None,
 ) -> TemporalResolution:
     """Resolve observed gaps without guessing missing or ambiguous anchors."""
-    left = _matching_events(
-        constraint.reference_event, constraint.reference_source, audio_analysis, visual_analysis
-    )
+    left = _matching_events(constraint.reference_event, constraint.reference_source, audio_analysis)
     if constraint.end_reference_event:
         right = _matching_events(
             constraint.end_reference_event,
             constraint.reference_source,
             audio_analysis,
-            visual_analysis,
         )
         pairs = [
             (a, b)
@@ -614,18 +608,12 @@ def _matching_events(
     reference: str,
     source: ReferenceSource,
     audio_analysis: dict[str, Any] | None,
-    visual_analysis: dict[str, Any] | None,
 ) -> list[dict[str, Any]]:
     candidates: list[dict[str, Any]] = []
     if source in {"audio", "either"} and audio_analysis:
         for event in audio_analysis.get("events") or []:
             if isinstance(event, dict):
                 candidates.append({**event, "_source": "audio"})
-    if source in {"visual", "either"} and visual_analysis:
-        for event in visual_analysis.get("visual_events") or []:
-            if isinstance(event, dict):
-                candidates.append({**event, "_source": "visual"})
-
     candidates = [
         e
         for e in candidates
@@ -639,7 +627,7 @@ def _matching_events(
     ids = reference if isinstance(reference, list) else [reference]
     from audio_edit.plans.event_ids import observation_time
 
-    if isinstance(reference, list) or any(str(r).startswith(("audio_", "visual_")) for r in ids):
+    if isinstance(reference, list) or any(str(r).startswith("audio_") for r in ids):
         if any(not any(e.get("event_id") == r for e in candidates) for r in ids):
             return []
         return sorted(

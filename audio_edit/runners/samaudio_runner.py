@@ -187,8 +187,6 @@ class SAMAudioRunner:
             "result_mode": plan.result_mode,
             "text_prompt": plan.text_prompt,
             "time_span": time_span,
-            "use_video_prompt": plan.use_video_prompt,
-            "visual_prompt": plan.visual_prompt,
             "notes": plan.notes,
             "removal_evidence": plan.removal_evidence,
             "temporal": asdict(plan.temporal) if plan.temporal else None,

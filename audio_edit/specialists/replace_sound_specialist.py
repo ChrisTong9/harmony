@@ -33,7 +33,6 @@ class ReplaceSoundSpecialist:
         self,
         ctx: AudioEditContext,
         user_prompt: str,
-        visual_analysis: dict[str, Any] | None = None,
         audio_analysis: dict[str, Any] | None = None,
     ) -> ReplacePromptPlan:
         system_prompt = self._system_prompt() + EDIT_EVIDENCE_RULES
@@ -41,7 +40,6 @@ class ReplaceSoundSpecialist:
         user_payload = {
             "user_prompt": user_prompt,
             "input_media": ctx.input_audio,
-            "visual_analysis": visual_analysis,
             "audio_analysis": audio_analysis,
         }
 
@@ -71,9 +69,6 @@ class ReplaceSoundSpecialist:
             target_sound=data["target_sound"].strip(),
             remove_user_prompt=data["remove_user_prompt"].strip(),
             add_user_prompt=data["add_user_prompt"].strip(),
-            video_replacement=data.get("video_replacement", False),
-            source_object=data.get("source_object"),
-            target_object=data.get("target_object"),
             notes=(
                 data["notes"].strip()
                 if isinstance(data.get("notes"), str) and data["notes"].strip()
@@ -87,12 +82,11 @@ You are a replace-sound decomposition specialist.
 
 Your primary task is SOUND replacement.
 
-Your job is NOT to create low-level audio or video editing parameters.
+Your job is NOT to create low-level audio editing parameters.
 
 Your job is to decompose a replace request into:
 1. a sound removal prompt,
-2. a sound addition prompt,
-3. and, ONLY when the user explicitly requests a visual change, identify the corresponding video object replacement.
+2. a sound addition prompt.
 
 Return ONLY valid JSON.
 Do not include markdown, explanations, or comments.
@@ -104,9 +98,6 @@ Required JSON schema:
   "target_sound": "the new sound to add",
   "remove_user_prompt": "remove the old sound",
   "add_user_prompt": "add the new sound",
-  "video_replacement": false,
-  "source_object": null,
-  "target_object": null,
   "notes": null
 }
 
@@ -135,11 +126,7 @@ add_user_prompt = "add realistic, clean, isolated cat meowing, natural feline me
 
 - Use words such as realistic, clean, isolated, natural, and suitable for mixing when appropriate.
 
-- If the target sound corresponds to an on-screen animal or object and useful visual information is available, visual information may be used to improve the SOUND description, such as size, age, material, or behavior.
-
-- Using visual information to improve sound generation does NOT mean the video should be edited.
-
-- Do not include backend names such as SAMAudio, Stable Audio, or MMAudio.
+- Do not include backend names such as SAMAudio or Stable Audio.
 
 - Do not create low-level remove or add plans.
 
@@ -154,71 +141,9 @@ add_user_prompt = "add realistic, clean, isolated cat meowing, natural feline me
 - Let AddSoundSpecialist decide how to add the new sound.
 
 
-VIDEO REPLACEMENT RULES:
-
-Video replacement is OPTIONAL and secondary to sound replacement.
-
-Set "video_replacement" to true ONLY when the user EXPLICITLY requests that the visual content of the video should also change.
-
-Explicit visual requests include language such as:
-- "replace the cat in the video with a dog"
-- "also change the cat into a dog visually"
-- "replace the person on screen with a robot"
-- "change the object in the video"
-- "replace the cat with a dog in the scene"
-
-Do NOT infer video replacement simply because:
-- the input is a video,
-- the sound source is visible,
-- visual analysis detects the object,
-- changing the video might make the result more consistent,
-- or the sound replacement implies a different object.
-
-If the user only requests a sound change:
-- video_replacement must be false
-- source_object must be null
-- target_object must be null
-
-Example:
-
-User:
-"replace cat meowing with dog barking"
-
-Then:
-video_replacement = false
-source_object = null
-target_object = null
-
-Even if a cat is clearly visible in the video, DO NOT request a video replacement.
-
-If the user explicitly requests both sound and visual replacement:
-
-User:
-"replace the cat meowing with dog barking and replace the cat in the video with a dog"
-
-Then:
-source_sound = "cat meowing"
-target_sound = "dog barking"
-video_replacement = true
-source_object = "cat"
-target_object = "dog"
-
-When video_replacement is true:
-- source_object is the visible object that should be visually replaced.
-- target_object is the visible object that should replace it.
-- Assume explicitly requested visual targets refer to on-screen entities.
-- Do not reason about off-screen visual objects.
-- Do not infer any additional visual edits beyond what the user explicitly requests.
-
-When video_replacement is false:
-- source_object MUST be null.
-- target_object MUST be null.
-
-
 INTERFACE RULES:
 
-Only describe what to remove and what to add, plus explicitly requested visual
-changes. Do not return temporal, placements, event IDs or computed durations.
+Only describe what to remove and what to add. Do not return temporal, placements, event IDs or computed durations.
 Preserve useful occurrence, exclusion and timing language in the subgoal text.
 The full original request is also passed unchanged to both specialists.
 RemoveSoundSpecialist determines removal scopes. AddSoundSpecialist receives
@@ -230,9 +155,6 @@ IMPORTANT:
 
 Sound replacement is always the primary task.
 
-Video replacement is only an optional additional action when explicitly requested by the user.
-
-Never automatically propagate an audio edit into a video edit.
 """
 
     def _parse_json(self, content: str | None) -> dict[str, Any]:
@@ -268,17 +190,3 @@ Never automatically propagate an audio edit into a video edit.
 
             if not isinstance(data[key], str) or not data[key].strip():
                 raise ValueError(f"Replace decomposition key '{key}' must be non-empty: {data}")
-
-        video_replacement = data.get("video_replacement", False)
-        if not isinstance(video_replacement, bool):
-            raise ValueError(
-                f"Replace decomposition key 'video_replacement' must be a bool: {data}"
-            )
-
-        if video_replacement:
-            for key in ("source_object", "target_object"):
-                if not isinstance(data.get(key), str) or not data[key].strip():
-                    raise ValueError(
-                        f"Replace decomposition key '{key}' must be non-empty "
-                        f"when video_replacement is true: {data}"
-                    )

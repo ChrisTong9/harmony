@@ -23,7 +23,6 @@ class RemoveSoundSpecialist:
         self,
         user_prompt: str,
         audio_analysis: dict[str, Any] | None = None,
-        visual_analysis: dict[str, Any] | None = None,
         media_duration: float | None = None,
         temporal_hint: TemporalConstraint | dict[str, Any] | None = None,
         resolved_placements: list[ResolvedPlacement | dict[str, Any]] | None = None,
@@ -32,7 +31,6 @@ class RemoveSoundSpecialist:
         execution_feedback: dict | None = None,
     ) -> RemoveSoundPlan:
         assign_event_ids(audio_analysis, "audio", media_duration)
-        assign_event_ids(visual_analysis, "visual", media_duration)
         system_prompt = self._build_system_prompt() + EVENT_REFERENCE_RULES + EDIT_EVIDENCE_RULES
         if require_placements:
             system_prompt += """
@@ -81,7 +79,6 @@ Return only the corrected JSON plan; result_mode must be residual.
                         "media_duration": media_duration,
                         "audio_events": (audio_analysis or {}).get("events", []),
                         "audio_analysis": audio_analysis,
-                        "visual_events": (visual_analysis or {}).get("visual_events", []),
                         "temporal_hint": (
                             asdict(temporal_hint)
                             if isinstance(temporal_hint, TemporalConstraint)
@@ -114,7 +111,7 @@ Return only the corrected JSON plan; result_mode must be residual.
                         "are requirements for one cleaned output: use result with X, "
                         "not a prompt combining X and Y. Reconsider text_prompt and "
                         "result_mode together; never blindly map both to residual. "
-                        "Preserve the original time and video constraints. If this is "
+                        "Preserve the original time constraints. If this is "
                         "a replacement removal subgoal, return residual of the OLD sound. "
                         "Return only valid JSON, with result_mode=result or residual."
                     ),
@@ -131,7 +128,6 @@ Return only the corrected JSON plan; result_mode must be residual.
         return self._to_plan(
             data,
             audio_analysis=audio_analysis,
-            visual_analysis=visual_analysis,
             media_duration=media_duration,
             temporal_hint=temporal_hint,
             resolved_placements=resolved_placements,
@@ -142,7 +138,6 @@ Return only the corrected JSON plan; result_mode must be residual.
         plan: RemoveSoundPlan,
         *,
         audio_analysis: dict[str, Any] | None = None,
-        visual_analysis: dict[str, Any] | None = None,
         media_duration: float | None = None,
     ) -> RemoveSoundPlan:
         """Resolve an existing plan after perception, without a second LLM call."""
@@ -154,7 +149,6 @@ Return only the corrected JSON plan; result_mode must be residual.
             plan.temporal,
             media_duration=media_duration,
             audio_analysis=audio_analysis,
-            visual_analysis=visual_analysis,
         )
         plan.temporal_status = resolution.status
         plan.temporal_reason = resolution.reason
@@ -172,7 +166,6 @@ Return only the corrected JSON plan; result_mode must be residual.
                 for item in resolution.placements
             ]
             plan.mode = "span"
-            plan.use_video_prompt = False
         return plan
 
     def _build_system_prompt(self) -> str:
@@ -206,17 +199,9 @@ SAMAudio currently has three modes:
    - time_span must be a list of {"start": float, "end": float}.
    - Multiple spans are allowed.
 
-3. video:
-   - Use only when the user explicitly says "use video prompt", "use video", or "video prompt".
-   - Requires visual_prompt.
-   - visual_prompt is sent to SAM3 to generate object masks.
-   - text_prompt is the audio concept for SAMAudio.
-   - visual_prompt should describe the visible object/region, not the sound itself.
-
 Decision rules:
-1. If the user explicitly asks to use video prompt, choose mode "video".
-2. Else if the user gives one or more clear numeric time spans, choose mode "span".
-3. Else choose mode "text". Event-based spans are resolved downstream from the
+1. If the user gives one or more clear numeric time spans, choose mode "span".
+2. Else choose mode "text". Event-based spans are resolved downstream from the
    supplied event analysis and will then be converted to span mode.
 
 Temporal rules:
@@ -247,18 +232,6 @@ result_mode rules:
   and unwanted Y in text_prompt. For removal of Y while keeping the rest of the
   scene, use "residual" with text_prompt describing Y alone.
 
-Video prompt rules:
-- Do NOT use video mode unless explicitly requested.
-- For video mode, produce BOTH:
-  - text_prompt: the audio concept, e.g. "speech", "dog barking", "car engine"
-  - visual_prompt: the visual object/region, e.g. "person on the left", "dog", "red car"
-- If the user says "remove the sound from the person on the left, use video prompt":
-  text_prompt should be "speech" or "sound from person"
-  visual_prompt should be "person on the left"
-- If the user says "remove dog barking, use video prompt":
-  text_prompt should be "dog barking"
-  visual_prompt should be "dog"
-
 Output ONLY valid JSON.
 Do not use markdown.
 Do not explain.
@@ -270,8 +243,6 @@ Required JSON format:
   "result_mode": "residual",
   "text_prompt": "sound description",
   "time_span": null,
-  "use_video_prompt": false,
-  "visual_prompt": null,
   "temporal": {
     "kind": "unspecified",
     "start_time": null,
@@ -292,9 +263,9 @@ Required JSON format:
 
 Important:
 - The JSON above is a valid example. Choose one enum value, never a string listing
-  alternatives. mode is text/span/video, result_mode is result/residual, temporal
+  alternatives. mode is text/span, result_mode is result/residual, temporal
   kind is unspecified/point/interval/boundary/event/relative, reference_source is
-  audio/visual/either. For span mode, time_span is a nonempty list of start/end objects.
+  audio. For span mode, time_span is a nonempty list of start/end objects.
 - relation is null or before/at/after/during/between. Keep occurrence and boundary
   role separate from relation. Source exclusions belong to WHAT is removed, not
   a made-up temporal relation. A literal time interval needs no event relation.
@@ -330,8 +301,7 @@ Important:
                         "result_mode": "residual",
                         "text_prompt": "dog barking",
                         "time_span": None,
-                        "use_video_prompt": False,
-                        "notes": "No explicit time span or video prompt request.",
+                        "notes": "No explicit time span.",
                     }
                 ),
             }
@@ -353,8 +323,7 @@ Important:
                         "result_mode": "result",
                         "text_prompt": "dog barking",
                         "time_span": None,
-                        "use_video_prompt": False,
-                        "notes": "No explicit time span or video prompt request.",
+                        "notes": "No explicit time span.",
                     }
                 ),
             }
@@ -385,7 +354,6 @@ Important:
                                 "end": 2.0,
                             },
                         ],
-                        "use_video_prompt": False,
                         "notes": "User provided an explicit time span.",
                     }
                 ),
@@ -413,78 +381,7 @@ Important:
                                 "end": 15.0,
                             }
                         ],
-                        "use_video_prompt": False,
                         "notes": "User provided a timestamp range.",
-                    }
-                ),
-            }
-        )
-
-        examples.append(
-            {
-                "role": "user",
-                "content": "remove the vocals, use video prompt",
-            }
-        )
-        examples.append(
-            {
-                "role": "assistant",
-                "content": json.dumps(
-                    {
-                        "backend": "samaudio",
-                        "mode": "video",
-                        "result_mode": "residual",
-                        "text_prompt": "vocals",
-                        "time_span": None,
-                        "use_video_prompt": True,
-                        "notes": "User explicitly requested video prompt mode.",
-                    }
-                ),
-            }
-        )
-        examples.append(
-            {
-                "role": "user",
-                "content": "remove the sound from the person on the left, use video prompt",
-            }
-        )
-        examples.append(
-            {
-                "role": "assistant",
-                "content": json.dumps(
-                    {
-                        "backend": "samaudio",
-                        "mode": "video",
-                        "result_mode": "residual",
-                        "text_prompt": "speech",
-                        "time_span": None,
-                        "use_video_prompt": True,
-                        "visual_prompt": "person on the left",
-                        "notes": "User explicitly requested video prompt mode and described a visual object.",
-                    }
-                ),
-            }
-        )
-
-        examples.append(
-            {
-                "role": "user",
-                "content": "remove dog barking, use video prompt",
-            }
-        )
-        examples.append(
-            {
-                "role": "assistant",
-                "content": json.dumps(
-                    {
-                        "backend": "samaudio",
-                        "mode": "video",
-                        "result_mode": "residual",
-                        "text_prompt": "dog barking",
-                        "time_span": None,
-                        "use_video_prompt": True,
-                        "visual_prompt": "dog",
-                        "notes": "User explicitly requested video prompt mode. The visible object is dog.",
                     }
                 ),
             }
@@ -516,7 +413,6 @@ Important:
             "result_mode",
             "text_prompt",
             "time_span",
-            "use_video_prompt",
         ]
 
         for key in required_keys:
@@ -526,34 +422,13 @@ Important:
         if data["backend"] != "samaudio":
             raise ValueError(f"Only backend='samaudio' is supported now: {data}")
 
-        if data["mode"] not in {"text", "span", "video"}:
+        if data["mode"] not in {"text", "span"}:
             raise ValueError(f"Invalid remove mode: {data['mode']}")
 
         validate_result_mode(data["result_mode"])
 
         if not isinstance(data["text_prompt"], str) or not data["text_prompt"].strip():
             raise ValueError(f"text_prompt must be a non-empty string: {data}")
-
-        if not isinstance(data["use_video_prompt"], bool):
-            raise ValueError(f"use_video_prompt must be boolean: {data}")
-
-        visual_prompt = data.get("visual_prompt")
-
-        if data["use_video_prompt"] and data["mode"] != "video":
-            raise ValueError("If use_video_prompt=true, mode must be 'video'.")
-
-        if data["mode"] == "video":
-            if not data["use_video_prompt"]:
-                raise ValueError(f"video mode requires use_video_prompt=true: {data}")
-
-            if not isinstance(visual_prompt, str) or not visual_prompt.strip():
-                raise ValueError(f"video mode requires non-empty visual_prompt: {data}")
-
-            if data["time_span"] not in (None, []):
-                raise ValueError(f"video mode should not use time_span for now: {data}")
-
-        elif data["use_video_prompt"]:
-            raise ValueError(f"use_video_prompt=true requires mode='video': {data}")
 
         if data["mode"] == "span":
             if data["time_span"] is None:
@@ -590,21 +465,17 @@ Important:
         data: dict[str, Any],
         *,
         audio_analysis: dict[str, Any] | None = None,
-        visual_analysis: dict[str, Any] | None = None,
         media_duration: float | None = None,
         temporal_hint: TemporalConstraint | dict[str, Any] | None = None,
         resolved_placements: list[ResolvedPlacement | dict[str, Any]] | None = None,
     ) -> RemoveSoundPlan:
         time_span = None
-        visual_prompt = None
 
         if data["time_span"] is not None:
             time_span = [
                 TimeSpan(start=float(span["start"]), end=float(span["end"]))
                 for span in data["time_span"]
             ]
-        if data.get("visual_prompt") is not None:
-            visual_prompt = data["visual_prompt"].strip()
 
         temporal_error = None
         try:
@@ -634,7 +505,6 @@ Important:
                 temporal,
                 media_duration=media_duration,
                 audio_analysis=audio_analysis,
-                visual_analysis=visual_analysis,
             )
             placements = resolution.placements
             temporal_status = resolution.status
@@ -664,10 +534,8 @@ Important:
                 TimeSpan(start=item.start_time, end=float(item.end_time)) for item in placements
             ]
             mode = "span"
-            use_video_prompt = False
         else:
             mode = data["mode"]
-            use_video_prompt = data["use_video_prompt"]
 
         return RemoveSoundPlan(
             backend=data["backend"],
@@ -675,8 +543,6 @@ Important:
             result_mode=data["result_mode"],
             text_prompt=data["text_prompt"].strip(),
             time_span=time_span,
-            use_video_prompt=use_video_prompt,
-            visual_prompt=visual_prompt,
             notes=data.get("notes", ""),
             temporal=temporal,
             temporal_status=temporal_status,

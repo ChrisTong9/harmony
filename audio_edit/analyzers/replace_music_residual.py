@@ -89,7 +89,7 @@ def first_fact(path, supplied=None):
     claim = saved.with_suffix(".claim.json")
     if claim.exists():
         raise ValueError("A first observation was already attempted")
-    from audio_edit.analyzers.residual_source_query import local_analyzer
+    from audio_edit.policies.removal.residual_query import local_analyzer
 
     analyzer = local_analyzer()
     if analyzer is None:
@@ -157,7 +157,6 @@ def candidate(ctx, plan, original, instruction):
         and d.get("selection")
         == dict(target="named_source", scope="whole_file", occurrence="unselected")
         and not d.get("participant_selection")
-        and not ctx.input_video
         and len(ctx.params.get("separation_calls", [])) == 1
         and not any(
             ctx.params.get(k)

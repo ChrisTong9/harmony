@@ -41,10 +41,6 @@ def apply_fade(audio, sample_rate, fade_in=0.02, fade_out=0.02):
     return audio
 
 
-def apply_offscreen_muffle(audio, sample_rate):
-    return F.lowpass_biquad(audio, sample_rate, cutoff_freq=min(1000.0, sample_rate * 0.4))
-
-
 def normalize_generated_audio(audio, *, target_rms_dbfs, max_gain_db=30.0, peak_ceiling=0.95):
     """Legacy utility; the scene mixer separately applies an active-sound floor."""
     finite_audio(audio)
@@ -220,8 +216,6 @@ def mix_background(
         if per.get("minimum_added_rms_dbfs") is not None:
             p["minimum_added_rms_dbfs"] = per["minimum_added_rms_dbfs"]
         audio = prepare_snippet(audio, sr, end - start, p.get("coverage", "single"), local_audit)
-        if per.get("apply_offscreen_muffle", False):
-            audio = apply_offscreen_muffle(audio, sr)
         if per.get("reverb_type") in ("room", "hall"):
             audio = apply_synthetic_reverb(audio, sr, per["reverb_type"])
             local_audit.append(

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="540" viewBox="0 0 1200 540" role="img" aria-labelledby="title desc">
   <title id="title">Harmony: collaborative planning and evidence-guided execution</title>
-  <desc id="desc">An audio recording and an editing instruction enter collaborative planning. A planner combines audio-language observations with targeted tool evidence. The resulting plan drives editing, followed by inspection and bounded correction when needed, before final mixing.</desc>
+  <desc id="desc">An audio recording and an editing instruction enter collaborative planning. A planner combines audio-language observations with targeted tool evidence. The resulting plan drives editing. Execution policies inspect evidence and apply eligible bounded corrections before final mixing.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#506b75"/></marker>
     <marker id="green-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#23796e"/></marker>
@@ -15,7 +15,7 @@
   </defs>
   <rect width="1200" height="540" rx="22" fill="#f5f8f8"/>
   <text x="36" y="43" font-size="14" font-weight="700" letter-spacing="2" fill="#23796e">HARMONY</text>
-  <text x="36" y="76" font-size="26" font-weight="700">From an editing request to a grounded audio operation</text>
+  <text x="36" y="76" font-size="26" font-weight="700">Audio editing through planning and execution</text>
 
   <rect x="30" y="126" width="190" height="304" rx="15" fill="#fff" stroke="#d5e1e2"/>
   <text x="125" y="161" class="label" text-anchor="middle">Input</text>
@@ -51,7 +51,7 @@
   <text x="789" y="285" class="small" text-anchor="middle">Apply operation</text>
   <path d="M863 268H886" class="line"/>
   <rect x="890" y="229" width="112" height="79" rx="9" fill="#fff" stroke="#c9d5e7"/>
-  <text x="946" y="260" class="label" text-anchor="middle">Inspect</text>
+  <text x="946" y="260" class="label" text-anchor="middle">Policies</text>
   <text x="946" y="286" class="small" text-anchor="middle">Evidence</text>
   <path d="M1003 268H1026" class="line"/>
   <rect x="1030" y="229" width="120" height="79" rx="9" fill="#fff" stroke="#c9d5e7"/>
@@ -61,5 +61,5 @@
   <text x="932" y="387" class="small" text-anchor="middle">Bounded correction when needed</text>
 
   <text x="600" y="483" text-anchor="middle" font-size="18" font-weight="600">Addition     ·     Removal     ·     Replacement     ·     Volume adjustment</text>
-  <text x="600" y="513" text-anchor="middle" class="small">Tool use and correction are selected by the agent for the current request.</text>
+  <text x="600" y="513" text-anchor="middle" class="small">Planner decisions and explicit policy conditions determine the tools and corrections.</text>
 </svg>

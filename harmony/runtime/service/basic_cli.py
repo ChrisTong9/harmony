@@ -5,7 +5,7 @@ import argparse
 import json
 import os
 import sys
-import subprocess
+from harmony.runtime.gpu import require_gpu
 
 
 def main():
@@ -13,11 +13,7 @@ def main():
     p.add_argument("request")
     p.add_argument("response")
     a = p.parse_args()
-    if not os.environ.get("SLURM_JOB_ID"):
-        raise RuntimeError("Slurm allocation required")
-    if not (os.environ.get("SLURM_JOB_GPUS") or os.environ.get("SLURM_STEP_GPUS")):
-        raise RuntimeError("No GPU granted by Slurm to this job/step")
-    print(subprocess.check_output(["nvidia-smi"], text=True), flush=True)
+    require_gpu()
     request = json.loads(Path(a.request).read_text())
     assert set(request) == {"original_instruction", "input_audio", "output_dir"}
     source = Path(os.environ["HARMONY_COMMON_SOURCE"])
@@ -33,7 +29,7 @@ def main():
         OPENAI_MODEL=os.environ.get("HARMONY_BASIC_MODEL", "gpt-5-mini"),
         SAMAUDIO_SCRIPT=str(Path(__file__).parent / "sam_once.py"),
         STABLE_AUDIO_SCRIPT=str(source / "audio_edit/tools/run_stable_audio.py"),
-        BASIC_EXECUTION_SEED="20261018",
+        BASIC_EXECUTION_SEED=os.environ.get("BASIC_EXECUTION_SEED", "20261018"),
         PYTHONPATH=os.pathsep.join(
             [
                 str(source),

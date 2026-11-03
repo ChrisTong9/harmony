@@ -34,11 +34,9 @@ class VolumeChangeSpecialist:
         user_prompt: str,
         *,
         audio_analysis: dict[str, Any] | None = None,
-        visual_analysis: dict[str, Any] | None = None,
         media_duration: float | None = None,
     ) -> VolumeChangePlan:
         assign_event_ids(audio_analysis, "audio", media_duration)
-        assign_event_ids(visual_analysis, "visual", media_duration)
         messages = [
             {
                 "role": "system",
@@ -52,7 +50,6 @@ class VolumeChangeSpecialist:
                         "media_duration": media_duration,
                         "audio_events": (audio_analysis or {}).get("events", []),
                         "audio_analysis": audio_analysis,
-                        "visual_events": (visual_analysis or {}).get("visual_events", []),
                     },
                     ensure_ascii=False,
                 ),
@@ -67,7 +64,6 @@ class VolumeChangeSpecialist:
             user_prompt,
             data,
             audio_analysis=audio_analysis,
-            visual_analysis=visual_analysis,
             media_duration=media_duration,
         )
 
@@ -104,7 +100,7 @@ Rules:
 - The schema above is one valid example, not literal enum alternatives.
   apply_to is whole_mix or target_source; gain_profile is static, fade_in,
   fade_out, level, or mute. Temporal kind is unspecified/point/interval/boundary/
-  event/relative. reference_source is one of audio, visual, either.
+  event/relative. reference_source is audio.
 - Multiple adjustments with DIFFERENT gains, profiles or timing use
   {"changes":[ONE_PLAN, ONE_PLAN, ...], "notes":"..."}. Each ONE_PLAN uses the
   schema above and must include its own targets, gain and timing. No nested
@@ -202,7 +198,6 @@ Example: "Increase the volume of the whole audio" produces target_sounds=[],
         data: dict[str, Any],
         *,
         audio_analysis: dict[str, Any] | None = None,
-        visual_analysis: dict[str, Any] | None = None,
         media_duration: float | None = None,
         _component: bool = False,
     ) -> VolumeChangePlan:
@@ -235,7 +230,6 @@ Example: "Increase the volume of the whole audio" produces target_sounds=[],
                         user_prompt,
                         item,
                         audio_analysis=audio_analysis,
-                        visual_analysis=visual_analysis,
                         media_duration=media_duration,
                         _component=True,
                     )
@@ -323,7 +317,6 @@ Example: "Increase the volume of the whole audio" produces target_sounds=[],
             temporal,
             media_duration=media_duration,
             audio_analysis=audio_analysis,
-            visual_analysis=visual_analysis,
         )
         temporal_status = resolution.status
         temporal_reason = resolution.reason
@@ -357,7 +350,6 @@ Example: "Increase the volume of the whole audio" produces target_sounds=[],
         plan: VolumeChangePlan,
         *,
         audio_analysis: dict[str, Any] | None = None,
-        visual_analysis: dict[str, Any] | None = None,
         media_duration: float | None = None,
     ) -> VolumeChangePlan:
         """Resolve a previously planned event constraint without replanning."""
@@ -367,7 +359,6 @@ Example: "Increase the volume of the whole audio" produces target_sounds=[],
                 self.ground_plan(
                     child,
                     audio_analysis=audio_analysis,
-                    visual_analysis=visual_analysis,
                     media_duration=media_duration,
                 )
             return plan.refresh_timing_status()
@@ -378,7 +369,6 @@ Example: "Increase the volume of the whole audio" produces target_sounds=[],
             plan.temporal,
             media_duration=media_duration,
             audio_analysis=audio_analysis,
-            visual_analysis=visual_analysis,
         )
         plan.temporal_status = resolution.status
         plan.temporal_reason = resolution.reason
