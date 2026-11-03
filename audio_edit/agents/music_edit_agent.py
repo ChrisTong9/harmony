@@ -5,6 +5,7 @@ from pathlib import Path
 import traceback
 from audio_edit.plans.errors import UnresolvedEditError
 from audio_edit.utils.execution_outcome import annotate_outcome
+from audio_edit.utils.audio_input import validate_audio_input
 
 
 class MusicEditAgent:
@@ -23,6 +24,7 @@ class MusicEditAgent:
         )
 
     def execute(self, ctx: AudioEditContext) -> AudioEditContext:
+        validate_audio_input(ctx.input_audio)
         original_audio = ctx.input_audio
         try:
             invocation = self.choose_script(ctx.user_prompt)
@@ -30,8 +32,7 @@ class MusicEditAgent:
             result = self.runner.run(ctx, invocation)
             if not result.output_audio or not Path(result.output_audio).is_file():
                 raise RuntimeError("Editing did not produce an output file")
-            reference = ctx.input_audio if ctx.input_video else original_audio
-            return annotate_outcome(result, reference)
+            return annotate_outcome(result, original_audio)
         except Exception as exc:
             if not original_audio or not Path(original_audio).is_file():
                 raise

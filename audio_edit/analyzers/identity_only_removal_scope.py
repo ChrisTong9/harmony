@@ -16,8 +16,6 @@ def bind(ctx, plan, analysis, media_duration):
         plan.backend != "samaudio"
         or plan.mode != "span"
         or plan.result_mode != "residual"
-        or plan.use_video_prompt
-        or plan.visual_prompt
         or plan.temporal_schema_error
         or plan.temporal_status not in ("resolved", "approximate")
         or temporal is None

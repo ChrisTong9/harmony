@@ -1,16 +1,14 @@
 from __future__ import annotations
 
-from pathlib import Path
 from copy import deepcopy
 from dataclasses import asdict
 
-from audio_edit.analyzers.gemini_visual_analyzer import GeminiVideoAnalyzer
 from audio_edit.analyzers.qwen_audio_analyzer import QwenAudioAnalyzer
 from audio_edit.llm.client import LLMClient
 from audio_edit.models import AudioEditContext
 from audio_edit.runners.add_sound_runner import AddSoundRunner
 from audio_edit.specialists.add_sound_specialist import AddSoundSpecialist
-from audio_edit.utils.extract_audio import extract_audio_for_analysis
+from audio_edit.utils.audio_input import validate_audio_input
 from audio_edit.utils.media_util import get_media_duration
 from audio_edit.plans.temporal_boundaries import uncertain_anchors
 from audio_edit.plans.add_timing import compile_plan
@@ -32,15 +30,8 @@ def has_event_anchor(value):
     return isinstance(value, list) and any(has_event_anchor(v) for v in value)
 
 
-def has_uncertain_event_anchor(value, audio_analysis, visual_analysis=None):
-    events = {
-        e.get("event_id"): e
-        for analysis, key in (
-            (audio_analysis, "events"),
-            (visual_analysis, "visual_events"),
-        )
-        for e in (analysis or {}).get(key, [])
-    }
+def has_uncertain_event_anchor(value, audio_analysis):
+    events = {e.get("event_id"): e for e in (audio_analysis or {}).get("events", [])}
 
     def uncertain(item):
         if isinstance(item, dict):
@@ -55,23 +46,8 @@ def has_uncertain_event_anchor(value, audio_analysis, visual_analysis=None):
     return uncertain(value)
 
 
-VIDEO_SUFFIXES = {".mp4", ".mov", ".mkv", ".webm"}
-AUDIO_SUFFIXES = {".wav", ".mp3", ".flac", ".ogg", ".m4a", ".aac"}
-
-
 def run(ctx: AudioEditContext, params: dict) -> AudioEditContext:
-    if not ctx.input_audio:
-        raise ValueError("ctx.input_audio is required for add_sound")
-    suffix = Path(ctx.input_audio).suffix.lower()
-    visual_analysis = None
-    if suffix in VIDEO_SUFFIXES:
-        ctx.input_video = ctx.input_audio
-        visual_analysis = GeminiVideoAnalyzer().analyze(
-            input_video=ctx.input_video, user_prompt=ctx.user_prompt
-        )
-        ctx.input_audio = extract_audio_for_analysis(ctx.input_video)
-    elif suffix not in AUDIO_SUFFIXES:
-        raise ValueError("Unsupported add input: " + ctx.input_audio)
+    validate_audio_input(ctx.input_audio)
     llm = LLMClient()
     try:
         audio_analysis = listen_for_edit(ctx, llm, QwenAudioAnalyzer(), operation="add_sound")
@@ -84,7 +60,6 @@ def run(ctx: AudioEditContext, params: dict) -> AudioEditContext:
             llm,
             duration=duration,
             analysis=unresolved_analysis(ctx),
-            visual_analysis=visual_analysis,
             reason=str(exc),
         )
         return AddSoundRunner().run(ctx, plan)
@@ -92,9 +67,7 @@ def run(ctx: AudioEditContext, params: dict) -> AudioEditContext:
     plan = bounded_call(
         ctx,
         "initial_add_intent",
-        lambda: specialist.plan(
-            ctx, audio_analysis=audio_analysis, visual_analysis=visual_analysis
-        ),
+        lambda: specialist.plan(ctx, audio_analysis=audio_analysis),
     )
     duration = get_media_duration(ctx.input_audio)
     assign_event_ids(audio_analysis, "audio", duration)
@@ -108,7 +81,6 @@ def run(ctx: AudioEditContext, params: dict) -> AudioEditContext:
                     llm,
                     plan.intent,
                     audio_analysis,
-                    visual_analysis,
                     audit=ctx.params.setdefault("add_binding_calls", []),
                 ),
             )
@@ -123,7 +95,6 @@ def run(ctx: AudioEditContext, params: dict) -> AudioEditContext:
             llm,
             duration=duration,
             analysis=audio_analysis,
-            visual_analysis=visual_analysis,
             reason=str(exc),
             prior_plan=plan,
         )
@@ -143,7 +114,6 @@ def run(ctx: AudioEditContext, params: dict) -> AudioEditContext:
         plan,
         duration=duration,
         audio_analysis=audio_analysis,
-        visual_analysis=visual_analysis,
         bindings=bindings,
         adjust_choices=True,
     )
@@ -161,10 +131,7 @@ def run(ctx: AudioEditContext, params: dict) -> AudioEditContext:
             llm,
             duration=duration,
             analysis=audio_analysis,
-            visual_analysis=visual_analysis,
             reason=plan.temporal_reason,
             prior_plan=plan,
         )
-    if ctx.input_video:
-        plan.source_type = "video"
     return AddSoundRunner().run(ctx, plan)

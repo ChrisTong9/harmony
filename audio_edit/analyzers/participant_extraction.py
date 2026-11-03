@@ -107,8 +107,6 @@ def compile_participant_extraction(ctx, analysis, duration):
         result_mode="result",
         text_prompt=reference,
         time_span=[TimeSpan(p.start_time, p.end_time) for p in placements],
-        use_video_prompt=False,
-        visual_prompt=None,
         notes="Extract the explicitly selected participant within the existing identity-linked speech intervals.",
         temporal=TemporalConstraint(kind="unspecified"),
         temporal_status="approximate",

@@ -9,6 +9,9 @@ import tempfile
 
 
 def recover(ctx, original, llm=None):
+    from audio_edit.utils.execution_outcome import annotate_outcome, mark_basic_execution
+
+    mark_basic_execution(ctx)
     root = Path("audio_edit/outputs")
     root.mkdir(parents=True, exist_ok=True)
     folder = Path(tempfile.mkdtemp(prefix="basic-route-", dir=root)).resolve()
@@ -51,9 +54,5 @@ def recover(ctx, original, llm=None):
             directory=str(folder),
             note=f"{type(exc).__name__}: {exc}",
         )
-        from audio_edit.utils.execution_outcome import annotate_outcome
-
-        ctx.fallback_used = False
         annotate_outcome(ctx, original)
-    ctx.fallback_used = False
     return ctx

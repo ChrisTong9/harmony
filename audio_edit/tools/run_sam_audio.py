@@ -28,7 +28,7 @@ class RealSAMAudioRemoveRunner:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = None
         self.dtype = torch.float32
 
         self.model = None
@@ -40,6 +40,13 @@ class RealSAMAudioRemoveRunner:
         if self.model is not None and self.processor is not None:
             return
 
+        from harmony.runtime.gpu import require_gpu
+
+        require_gpu()
+        if not torch.cuda.is_available():
+            raise RuntimeError("No CUDA device is available for source separation")
+        self.device = torch.device("cuda")
+
         self.model = SAMAudio.from_pretrained(self.model_id).eval()
         self.model = self.model.to(device=self.device, dtype=self.dtype).eval()
 
@@ -47,10 +54,9 @@ class RealSAMAudioRemoveRunner:
 
     def _separate(self, inputs):
         """Use SAM's candidate ranking and predict missing text-prompt anchors."""
-        visual = inputs.masked_video is not None
         provided_anchors = inputs.anchors is not None
-        predict_spans = not visual and not provided_anchors
-        ranker_name = "visual_ranker" if visual else "text_ranker"
+        predict_spans = not provided_anchors
+        ranker_name = "text_ranker"
         ranker = getattr(self.model, ranker_name, None)
         if ranker is None:
             raise RuntimeError(
@@ -82,9 +88,6 @@ class RealSAMAudioRemoveRunner:
 
         if plan.mode == "span":
             return self._run_span_mode(input_audio, plan)
-
-        if plan.mode == "video":
-            return self._run_video_mode(input_audio, plan)
 
         raise ValueError(f"Unsupported mode: {plan.mode}")
 
@@ -148,52 +151,6 @@ class RealSAMAudioRemoveRunner:
             result_mode=plan.result_mode,
             name_suffix=f"{self._safe_name(text_prompt)}_{span_name}",
             spans=plan.time_span,
-        )
-
-    def _run_video_mode(self, input_audio: str, plan: RemoveSoundPlan) -> str:
-        input_media = Path(input_audio)
-
-        if not input_media.exists():
-            raise FileNotFoundError(f"Input media does not exist: {input_media}")
-
-        if input_media.suffix.lower() not in {".mp4", ".mov", ".mkv", ".webm"}:
-            raise ValueError(f"SAMAudio video mode requires video input, got: {input_media}")
-
-        if not plan.visual_prompt:
-            raise ValueError("video mode requires plan.visual_prompt")
-
-        self._lazy_load()
-
-        from audio_edit.vision.sam3_mask_provider import SAM3MaskProvider
-
-        mask_provider = SAM3MaskProvider()
-
-        mask_result = mask_provider.generate_mask(
-            video_path=str(input_media),
-            visual_prompt=plan.visual_prompt,
-        )
-
-        masked_videos = self.processor.mask_videos(
-            [mask_result.frames],
-            [mask_result.mask],
-        )
-
-        inputs = self.processor(
-            audios=[str(input_media)],
-            descriptions=[""],
-            masked_videos=masked_videos,
-        ).to(self.device)
-
-        result = self._separate(inputs)
-
-        safe_audio_prompt = self._safe_name(plan.text_prompt)
-        safe_visual_prompt = self._safe_name(plan.visual_prompt)
-
-        return self._save_result(
-            input_path=input_media,
-            result=result,
-            result_mode=plan.result_mode,
-            name_suffix=f"{safe_audio_prompt}_{safe_visual_prompt}_video",
         )
 
     def run_source_volume(
@@ -534,8 +491,6 @@ def load_plan(path: str) -> tuple[str, str, RemoveSoundPlan]:
         result_mode=plan_data["result_mode"],
         text_prompt=plan_data["text_prompt"],
         time_span=time_span,
-        use_video_prompt=bool(plan_data.get("use_video_prompt", False)),
-        visual_prompt=plan_data.get("visual_prompt"),
         notes=plan_data.get("notes"),
     )
 

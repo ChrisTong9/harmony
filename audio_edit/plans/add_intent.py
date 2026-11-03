@@ -22,7 +22,7 @@ from audio_edit.plans.listening_handoff import (
 SOURCES = ("user_explicit", "system_default", "planner_choice")
 
 ADD_INTENT_PROMPT = """Understand the complete addition instruction ONCE. Return
-JSON with intent_version=2, edits, is_on_screen and optional top-level
+JSON with intent_version=2, edits and optional top-level
 audio_prompt (a default for edits), speech_text, voice_prompt, negative_audio_prompt,
 layer_role, composer, notes. Each edit must have its own non-empty audio_prompt or
 inherit the top-level default. Do not repeat the same description at both levels.
@@ -105,7 +105,7 @@ Choose ONLY the appropriate placement shape:
 
 ANCHOR is exactly one of {"seconds":number}, {"media_fraction":number in [0,1]},
 {"media_edge":"start|end"}, or {"reference_text":"existing event phrase",
-"reference_source":"audio|visual|either", "reference_kind":"action|audible_event|utterance",
+"reference_source":"audio", "reference_kind":"action|audible_event|utterance",
 "occurrence":"first|last|each or positive integer or null",
 "boundary_role":"onset|action_end|sound_end|utterance_end"}.
 Keep repeated-event identity separate from its occurrence selector. For "after
@@ -165,8 +165,8 @@ Generation for a discrete sound is {"target_seconds":number or null,
 length, use user_explicit and adjustable=false. If you choose a natural duration,
 mark planner_choice and adjustable=true ONLY if a shorter complete sound remains
 faithful; specify its minimum. null means the generator determines material length
-(speech); it is NOT a missing temporal reference. For non-speech Stable Audio or
-MMAudio, always choose a numeric generation target: those generators require a
+(speech); it is NOT a missing temporal reference. For non-speech Stable Audio,
+always choose a numeric generation target: the generator requires a
 duration budget even though the actual material length is not yet known. If that
 budget is omitted, the entry adapter supplies a fixed 1-second system default. Code checks space before
 and after generation. Do not compute arithmetic with observed times. Continuous
@@ -435,7 +435,7 @@ def bound_requests(intent, bindings):
     return visit([e["placement"] for e in intent["edits"]])
 
 
-def bind_references(llm, intent, audio_analysis, visual_analysis=None, *, audit=None):
+def bind_references(llm, intent, audio_analysis, *, audit=None):
     refs = references(intent)
     if not refs:
         return {}
@@ -447,7 +447,7 @@ def bind_references(llm, intent, audio_analysis, visual_analysis=None, *, audit=
         return grounded
     events = [
         e
-        for a, k in ((audio_analysis, "events"), (visual_analysis, "visual_events"))
+        for a, k in ((audio_analysis, "events"),)
         for e in (a or {}).get(k, [])
         if has_measured_timing(e) and not e.get("review_context_only")
     ]
@@ -568,7 +568,6 @@ def compile_add_intent(
     *,
     duration,
     audio_analysis=None,
-    visual_analysis=None,
     bindings=None,
     asset_durations=None,
     replacement_extent_limits=None,
@@ -580,14 +579,9 @@ def compile_add_intent(
     """
     validate_intent(intent)
     validate_listening_windows(intent, audio_analysis)
-    analyses = [deepcopy(audio_analysis), deepcopy(visual_analysis)]
-    for a, source in zip(analyses, ("audio", "visual")):
-        assign_event_ids(a, source, duration)
-    events = {
-        e["event_id"]: e
-        for a, k in zip(analyses, ("events", "visual_events"))
-        for e in (a or {}).get(k, [])
-    }
+    analysis = deepcopy(audio_analysis)
+    assign_event_ids(analysis, "audio", duration)
+    events = {e["event_id"]: e for e in (analysis or {}).get("events", [])}
     bound = bound_requests(intent, bindings or {})
     output, windows = [], []
     final = asset_durations is not None

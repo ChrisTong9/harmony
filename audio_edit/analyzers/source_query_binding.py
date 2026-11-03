@@ -20,7 +20,6 @@ def bind(ctx, plan, analysis):
         plan.backend == "samaudio"
         and plan.mode == "text"
         and plan.result_mode == "residual"
-        and not plan.use_video_prompt
         and not plan.placements
         and not plan.time_span
         and not plan.temporal_schema_error

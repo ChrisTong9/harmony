@@ -51,6 +51,10 @@ def main() -> None:
     parser.add_argument("--init-noise-level", type=float)
     args = parser.parse_args()
 
+    from harmony.runtime.gpu import require_gpu
+
+    require_gpu()
+
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 

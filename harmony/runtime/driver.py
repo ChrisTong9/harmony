@@ -6,19 +6,14 @@ import os
 import shutil
 import subprocess
 
-from harmony.config import load_profile
-
-
-def require_gpu():
-    if not os.environ.get("SLURM_JOB_ID"):
-        raise RuntimeError("Run this command inside a Slurm GPU allocation.")
-    if not (os.environ.get("SLURM_JOB_GPUS") or os.environ.get("SLURM_STEP_GPUS")):
-        raise RuntimeError("No GPU granted by Slurm to this job/step.")
-    print(subprocess.check_output(["nvidia-smi"], text=True), flush=True)
+from harmony.config import load_config
+from .gpu import require_gpu
 
 
 def run(args, root):
-    config = load_profile(args.task)
+    config = load_config(qwen_model=args.qwen_model, seed=args.seed)
+    if not args.instruction.strip():
+        raise ValueError("Provide a nonempty editing instruction")
     source = root / "audio_edit"
     resource = args.resource_root.resolve()
     out = args.output_dir.resolve()
@@ -42,22 +37,25 @@ def run(args, root):
                 dict(
                     action="new_input_inference",
                     source=str(source),
-                    task=args.task,
+                    operation_selection="planner",
+                    model=config["perception"]["model"],
+                    generation_seed=config["generation_seed"],
                     command=command,
                     resource_root=str(resource),
                     checkpoint_cache=str(
                         (args.checkpoint_cache or out / "working/.checkpoints").resolve()
                     ),
-                    requires="Slurm GPU allocation and existing Qwen audio endpoint",
+                    requires="Configured model resources and an existing Qwen audio endpoint",
                     no_model_calls=True,
                 ),
                 indent=2,
             )
         )
         return 0
+    from audio_edit.utils.audio_input import validate_audio_input
+
+    validate_audio_input(inp)
     require_gpu()
-    if not inp.is_file():
-        raise FileNotFoundError(inp)
     if not os.environ.get("OPENAI_API_KEY"):
         raise RuntimeError("Set OPENAI_API_KEY in your environment; no credentials are bundled.")
     qwen = args.qwen_url or os.environ.get("AUDIO_ANALYSIS_BASE_URL")
@@ -112,7 +110,6 @@ def run(args, root):
         ("SAMAUDIO_PYTHON", "sam-audio"),
         ("MIXER_PYTHON", "mixer"),
         ("STABLE_AUDIO_PYTHON", "stable-audio-3"),
-        ("MMAUDIO_PYTHON", "MMAudio"),
     ]:
         env[key] = str(resource / ".venvs" / name / "bin/python")
     for key, name in [
@@ -146,15 +143,13 @@ def run(args, root):
         filter(None, [env.get("NO_PROXY"), urlparse(qwen).hostname, "127.0.0.1", "localhost"])
     )
     env["no_proxy"] = env["NO_PROXY"]
-    seed = config.get("new_generation_seed")
-    if seed is not None:
-        env.update(
-            REPLACEMENT_AUDIO_SEED=str(seed),
-            HARMONY_STABLE_TARGET=str(local / "audio_edit/tools/run_stable_audio.py"),
-            STABLE_AUDIO_SCRIPT=str(local / "harmony/runtime/stable_entry.py"),
-        )
-    else:
-        env.pop("REPLACEMENT_AUDIO_SEED", None)
+    seed = config["generation_seed"]
+    env.update(
+        REPLACEMENT_AUDIO_SEED=str(seed),
+        BASIC_EXECUTION_SEED=str(seed),
+        HARMONY_STABLE_TARGET=str(local / "audio_edit/tools/run_stable_audio.py"),
+        STABLE_AUDIO_SCRIPT=str(local / "harmony/runtime/stable_entry.py"),
+    )
     env["HARMONY_COMMON_SOURCE"] = str(local)
     from datetime import datetime, timezone
     import hashlib

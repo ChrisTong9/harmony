@@ -1,1 +1,1 @@
-"""Resource adapters for the frozen task backends."""
+"""Resource adapters for shared audio editing execution."""

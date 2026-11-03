@@ -1,16 +1,16 @@
 # Setup
 
-## Install the interface
+## Prerequisites and interface
 
-The CLI uses Python 3.10+ and the standard library. The planner and separation environments below use Python 3.11; generation uses Python 3.10. Run from the checkout or install the interface:
+Use Linux with a compatible NVIDIA GPU, Python 3.10 and 3.11, Git, and FFmpeg (`ffmpeg` and `ffprobe` on `PATH`). The model components use separate environments to accommodate their dependencies.
+
+Run the following commands from the Harmony checkout. The interface itself requires Python 3.10+:
 
 ```bash
 python -m pip install -e .
 python -m harmony --help
-python -m harmony profiles
+python -m harmony config
 ```
-
-Model inference requires Linux and an active Slurm GPU allocation. The launcher checks the allocation and runs `nvidia-smi` before inference. Install FFmpeg with both `ffmpeg` and `ffprobe` on `PATH` for media decoding. SAM Audio also needs compatible TorchCodec, FFmpeg shared libraries, and CUDA runtime libraries. Having the Python packages installed alone does not establish that their native libraries can load.
 
 ## Resource layout
 
@@ -32,20 +32,16 @@ resources/
         └── speech_model_manifest.json
 ```
 
-Set `HARMONY_RESOURCE_ROOT` or pass `--resource-root`. Existing installations can be linked into this layout; the launcher does not download models or start Qwen for you.
+Set `HARMONY_RESOURCE_ROOT` or pass `--resource-root`. Existing environments and model directories can be linked into this layout. Prepare the resources below before running an edit; Harmony does not install environments or start Qwen automatically.
 
 ```bash
 export HARMONY_RESOURCE_ROOT=/path/to/resources
 mkdir -p "$HARMONY_RESOURCE_ROOT/.venvs" "$HARMONY_RESOURCE_ROOT/externals" "$HARMONY_RESOURCE_ROOT/models"
 ```
 
-SAM Audio and Stable Audio use the Hugging Face cache. Use `HF_HOME` or `HF_HUB_CACHE` to select that cache, and provision the required model access before running. `--checkpoint-cache` and `HARMONY_CHECKPOINT_CACHE` refer to the auxiliary `.checkpoints` directory used by optional legacy tools; they do not redirect Hugging Face downloads. Qwen and Whisper use the explicit local model paths above.
+SAM Audio and Stable Audio use the Hugging Face cache. Set `HF_HOME` or `HF_HUB_CACHE` if you want a custom cache location. Obtain access to [SAM Audio](https://huggingface.co/facebook/sam-audio-large) and [Stable Audio 3 medium](https://huggingface.co/stabilityai/stable-audio-3-medium), accept any required model terms, and set `HF_TOKEN` for downloads that require authentication. Qwen and Whisper use the explicit local model directories above.
 
-## Planner and model environments
-
-The commands below record the component split and versions observed during development. They are installation instructions, not a claim that a fresh installation or GPU run has passed on every machine. Match CUDA builds to your cluster's driver and library environment.
-
-### Planner and audio composition
+## Planner and audio composition
 
 ```bash
 python3.11 -m venv "$HARMONY_RESOURCE_ROOT/.venvs/mixer"
@@ -54,9 +50,9 @@ python3.11 -m venv "$HARMONY_RESOURCE_ROOT/.venvs/mixer"
   torch==2.7.1 torchaudio==2.7.1 --index-url https://download.pytorch.org/whl/cu126
 ```
 
-### Source separation and speech evidence
+## Source separation and speech evidence
 
-The observed [SAM Audio](https://github.com/facebookresearch/sam-audio) source commit was `bb4c6999d2677c7402360e426afc01ddfad6dce0`. It was clean when inspected. The configured separator is `facebook/sam-audio-large`.
+Use [SAM Audio](https://github.com/facebookresearch/sam-audio) commit `bb4c6999d2677c7402360e426afc01ddfad6dce0`. The configured separator is `facebook/sam-audio-large`.
 
 ```bash
 git clone https://github.com/facebookresearch/sam-audio.git "$HARMONY_RESOURCE_ROOT/externals/sam-audio"
@@ -71,20 +67,29 @@ python3.11 -m venv "$HARMONY_RESOURCE_ROOT/.venvs/sam-audio"
   librosa==0.11.0 soundfile==0.14.0 scipy==1.17.1
 ```
 
-The observed TorchCodec build was `0.5+cu126`. Follow the [TorchCodec installation instructions](https://github.com/meta-pytorch/torchcodec#installing-torchcodec) for the selected Torch/CUDA combination and native FFmpeg libraries. Upstream SAM dependencies include additional source repositories; the two commands above are not a full transitive lock.
+These commands use PyTorch 2.7.1 and TorchCodec 0.5 with CUDA 12.6. TorchCodec also needs compatible native FFmpeg libraries; see its [installation instructions](https://github.com/meta-pytorch/torchcodec#installing-torchcodec) if loading the decoder fails.
 
-Speech evidence requires a pinned Whisper model **and its manifest**. Merely downloading the weights is insufficient. This provided command downloads the declared revision and writes the required file checksums; it does not run inference:
+Download the separator weights into the Hugging Face cache:
+
+```bash
+"$HARMONY_RESOURCE_ROOT/.venvs/sam-audio/bin/python" - <<'PY'
+from huggingface_hub import snapshot_download
+snapshot_download("facebook/sam-audio-large")
+PY
+```
+
+Prepare Whisper with the supplied command. It downloads the pinned model and creates the manifest required by the speech tools:
 
 ```bash
 "$HARMONY_RESOURCE_ROOT/.venvs/sam-audio/bin/python" -m audio_edit.tools.prepare_speech_model \
   --output "$HARMONY_RESOURCE_ROOT/models/whisper-large-v3-turbo"
 ```
 
-The Whisper revision is `41f01f3fe87f28c78e2fbf8b568835947dd65ed9`. Model identities and task settings are declared in [`harmony/configs/profiles.json`](../harmony/configs/profiles.json). Speech evidence is unavailable if the manifest or runtime cannot be validated; check this before running an edit.
+Whisper uses revision `41f01f3fe87f28c78e2fbf8b568835947dd65ed9`. Keep `speech_model_manifest.json` with its downloaded files.
 
-### Audio generation
+## Audio generation
 
-The observed [Stable Audio 3](https://github.com/Stability-AI/stable-audio-3) source commit was `a0b57f5483c4588f827f3552b7d5c6ca2a9687be`, with no local changes. Harmony uses its `medium` model, corresponding to `stabilityai/stable-audio-3-medium`.
+Use [Stable Audio 3](https://github.com/Stability-AI/stable-audio-3) commit `a0b57f5483c4588f827f3552b7d5c6ca2a9687be`. Harmony uses its `medium` model, corresponding to `stabilityai/stable-audio-3-medium`.
 
 ```bash
 git clone https://github.com/Stability-AI/stable-audio-3.git "$HARMONY_RESOURCE_ROOT/externals/stable-audio-3"
@@ -97,37 +102,43 @@ python3.10 -m venv "$HARMONY_RESOURCE_ROOT/.venvs/stable-audio-3"
   transformers==5.16.1 huggingface-hub==1.28.0 numpy==2.2.6 soundfile==0.14.0
 ```
 
-The inspected local Hugging Face cache pointed to SAM revision `5f2cd3a9471a08c7282c06036be6893e18de8b70` and Stable Audio medium revision `d4d3579395a8ac0df4ab13b5b1d7138ce7290f81`. The current loaders resolve upstream defaults rather than enforce those revisions. Keep your model cache fixed and record its revisions when comparing runs; these observations are not a guarantee that future downloads will be identical.
-
-### Optional instrument rendering
-
-Some musical replacements use Basic Pitch or continuous-pitch analysis with a SoundFont. Install this component separately:
+Download the generation weights into the Hugging Face cache:
 
 ```bash
-python3.11 -m venv "$HARMONY_RESOURCE_ROOT/.venvs/music-render311"
-"$HARMONY_RESOURCE_ROOT/.venvs/music-render311/bin/python" -m pip install -r requirements/music-render.txt
+"$HARMONY_RESOURCE_ROOT/.venvs/stable-audio-3/bin/python" - <<'PY'
+from huggingface_hub import snapshot_download
+snapshot_download("stabilityai/stable-audio-3-medium")
+PY
 ```
 
-Normal package installation may also install TensorFlow and PyAudio. PyAudio may require PortAudio development headers on Linux. Harmony selects the packaged ONNX model explicitly and runs it with the CPU provider, regardless of whether TensorFlow is installed. Obtain [GeneralUser GS](https://www.schristiancollins.com/generaluser) under its own license and place the SoundFont at `externals/music-render/GeneralUser-GS.sf2`. Missing optional rendering resources leave those branches unavailable.
+The SAM and Stable Audio loaders use their upstream default model revisions. Additional model dependencies may download on first use.
 
 ## Qwen service
 
-The audio-language model is [Qwen3-Omni-30B-A3B-Instruct](https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct). Download its weights into the local model directory separately. If you already have a compatible endpoint, skip server installation and set `AUDIO_ANALYSIS_BASE_URL`.
+The audio-language model is [Qwen3-Omni-30B-A3B-Instruct](https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct). If you already have a compatible endpoint, skip server installation and set `AUDIO_ANALYSIS_BASE_URL` in the configuration section below.
 
-The inspected server environment used vLLM `0.29.0`, Python 3.11, Torch `2.13.0`, and Transformers `5.17.0`. Keep it separate from the editing environments:
+Otherwise, install vLLM in a separate environment and download the model:
 
 ```bash
 python3.11 -m venv "$HARMONY_RESOURCE_ROOT/.venvs/qwen"
 "$HARMONY_RESOURCE_ROOT/.venvs/qwen/bin/python" -m pip install vllm==0.29.0
+"$HARMONY_RESOURCE_ROOT/.venvs/qwen/bin/python" - <<'PY'
+import os
+from pathlib import Path
+from huggingface_hub import snapshot_download
+
+destination = Path(os.environ["HARMONY_RESOURCE_ROOT"]) / "models/Qwen3-Omni-30B-A3B-Instruct"
+snapshot_download("Qwen/Qwen3-Omni-30B-A3B-Instruct", local_dir=destination)
+PY
 ```
 
-Inside a suitable Slurm GPU allocation, the following uses the observed serving settings. Both aliases refer to the same weights; vLLM accepts multiple served model names. Adjust resource placement for your cluster. This combined-alias launch has not been rerun as part of the repository cleanup.
+Start the audio service with the shared model alias in a separate terminal:
 
 ```bash
 nvidia-smi
 VLLM_WORKER_MULTIPROC_METHOD=spawn "$HARMONY_RESOURCE_ROOT/.venvs/qwen/bin/vllm" serve \
   "$HARMONY_RESOURCE_ROOT/models/Qwen3-Omni-30B-A3B-Instruct" \
-  --served-model-name Qwen3Omni-Perception Qwen3Omni-Instruct \
+  --served-model-name Qwen3Omni-Instruct \
   --host 127.0.0.1 --port 8000 --dtype bfloat16 \
   --tensor-parallel-size 1 --max-model-len 32768 --max-num-seqs 1 \
   --enforce-eager --limit-mm-per-prompt '{"audio":3,"image":0,"video":0}' \
@@ -135,40 +146,57 @@ VLLM_WORKER_MULTIPROC_METHOD=spawn "$HARMONY_RESOURCE_ROOT/.venvs/qwen/bin/vllm"
   --structured-outputs-config '{"backend":"xgrammar","disable_any_whitespace":true}'
 ```
 
-A loopback endpoint is reachable only on its server node. Run the editing process on that node with sufficient allocated resources, or use your cluster's approved service network. Do not reserve 90% of a shared GPU for Qwen and assume the separation/generation models will also fit; device placement and capacity must cover all active processes.
+A loopback endpoint is reachable only on its server host. Use a reachable service address if Harmony runs on another host. For an endpoint with a different served alias, pass `--qwen-model` to both `doctor` and `run`.
 
-## Credentials and checks
+## Optional instrument rendering
 
-The main planner uses `gpt-5-mini-2025-08-07`; the basic execution route uses `gpt-5-mini`. Speech generation, when requested, uses `gpt-4o-mini-tts` and voice `alloy` by default, configurable through `OPENAI_TTS_MODEL` and `OPENAI_TTS_VOICE`. Hosted model calls require access and may incur charges.
-
-Export credentials through the shell or job environment; `.env.example` contains names only:
+To enable Basic Pitch and SoundFont rendering for supported musical replacements:
 
 ```bash
+python3.11 -m venv "$HARMONY_RESOURCE_ROOT/.venvs/music-render311"
+"$HARMONY_RESOURCE_ROOT/.venvs/music-render311/bin/python" -m pip install -r requirements/music-render.txt
+mkdir -p "$HARMONY_RESOURCE_ROOT/externals/music-render"
+```
+
+Obtain [GeneralUser GS](https://www.schristiancollins.com/generaluser) and place the SoundFont at `$HARMONY_RESOURCE_ROOT/externals/music-render/GeneralUser-GS.sf2`. PyAudio may require PortAudio development headers on Linux. Harmony uses Basic Pitch's ONNX model with the CPU provider; TensorFlow may also be installed as a package dependency. The instrument-rendering component is optional.
+
+## Configure credentials and endpoints
+
+Set the following values in the shell where you run Harmony:
+
+```bash
+export OPENAI_API_KEY=your_api_key
 export AUDIO_ANALYSIS_BASE_URL=http://YOUR_QWEN_HOST:8000/v1
 ```
 
-Set `OPENAI_API_KEY` and, if your endpoint requires it, `AUDIO_ANALYSIS_API_KEY`. No credentials are included. Run the CPU installation check before inference:
+Set `AUDIO_ANALYSIS_API_KEY` if your Qwen endpoint requires authentication. The planner uses `gpt-5-mini-2025-08-07` and `gpt-5-mini`; your OpenAI account needs access to these models. Requests to generate speech additionally use `gpt-4o-mini-tts`, with voice `alloy` by default. Set `OPENAI_TTS_MODEL` and `OPENAI_TTS_VOICE` to change the speech settings. Hosted API calls may incur charges.
+
+Shared model settings are in [`harmony/configs/defaults.json`](../harmony/configs/defaults.json). Display them and check the configured resources and service:
 
 ```bash
-python -m harmony doctor --task replace \
-  --resource-root "$HARMONY_RESOURCE_ROOT"
+harmony config
+harmony doctor --check-service
 ```
 
-Add `--check-service` to check the endpoint's model listing. This sends no audio or editing request. A passing installation check does not establish GPU memory capacity or editing quality.
+`doctor` checks files, imports, and the endpoint's model listing without sending audio. Resolve any reported missing resources before running an edit.
 
 ## Run an edit
 
 ```bash
 python -m harmony run \
-  --task replace \
   --input /path/to/input.wav \
   --instruction "Replace the background noise with soft piano music." \
-  --output-dir outputs/new-replacement \
-  --dry-run
+  --output-dir outputs/new-replacement
 ```
 
-Then remove `--dry-run` inside your Slurm GPU allocation. Each task uses the complete Harmony pipeline; tool use and bounded corrections are selected from the current request and evidence.
+The command performs an edit using the configured models. The operation is selected from the instruction; no task label is needed. Use one primary operation per request and a fresh output directory for each run.
 
-Each run saves its configuration, execution log, evidence, and report locally under `--output-dir`. Use a fresh output directory for every run. Use `report.json` to locate the output audio and inspect its execution status.
+Useful options:
 
-A dry run confirms command construction only. A fixed seed does not remove all randomness from hosted planners, generation, or GPU kernels. Optional video/MMAudio branches require additional resources and are outside the four documented audio tasks.
+- `--resource-root /path/to/resources`: override `HARMONY_RESOURCE_ROOT`.
+- `--qwen-url http://host:8000/v1`: override `AUDIO_ANALYSIS_BASE_URL`.
+- `--qwen-model model-alias`: match a different model alias served by your endpoint.
+- `--seed 123`: change the Stable Audio generation seed (default: `20261018`). This does not seed hosted planning or speech generation.
+- `--dry-run`: preview the command without model calls.
+
+Open `report.json` in the output directory to find the output audio and execution status. The directory also contains `execution.log` and `run_config.json`. A failed, partial, or unchanged edit returns a nonzero exit status.

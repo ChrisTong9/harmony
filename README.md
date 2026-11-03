@@ -5,87 +5,46 @@
 # Harmony
 ### Bridging Audio Understanding and Editing through Agentic Collaboration
 
-**Natural-language audio editing with collaborative planning and evidence-guided execution.**
-
-[Audio Demo](https://christong9.github.io/harmony/) · [Quick Start](#quick-start) · [Method](docs/method.md) · [arXiv — forthcoming](#paper)
+[Audio Demo](https://christong9.github.io/harmony/) · [Setup](docs/setup.md) · [420-case CSV](data/mmae_420.csv) · arXiv (coming soon)
 
 Addition · Removal · Replacement · Volume adjustment
 
 </div>
 
-Harmony connects an editing request to particular sounds, time regions, and waveform operations. An LLM planner collaborates with an audio-language model and targeted tools to interpret the request. Observations of the first separated or generated audio guide bounded corrections before final mixing.
+Harmony edits an audio file from a natural-language instruction and selects the editing operation automatically.
 
-Listen to the original audio and comparison outputs on the [project website](https://christong9.github.io/harmony/).
+## Install
 
-## How it works
-
-![Harmony method overview: collaborative planning with an audio-language model and targeted tools, followed by evidence-guided execution and bounded correction.](.github/assets/method.svg)
-
-- **Edit-driven collaborative planning:** targeted questions and tool measurements inform the source, timing, and operation parameters. The agent chooses which evidence is needed.
-- **Evidence-guided execution:** observations of separated or generated material can trigger bounded corrections before mixing. The limits are specific to each execution stage.
-
-All four editing tasks share one implementation in [`audio_edit/`](audio_edit/). Each task uses the complete planning and execution pipeline, with tools selected as needed. See the [method and code map](docs/method.md).
-
-## Quick start
-
-The CLI and diagnostics require **Python 3.10+**. Install the lightweight command-line package; model environments are prepared separately:
+Install the command-line interface with **Python 3.10+**:
 
 ```bash
 git clone https://github.com/ChrisTong9/harmony.git
 cd harmony
 python -m pip install -e .
-harmony --help
-harmony profiles
 ```
 
-Preview an edit without loading models or calling an API:
+## Configure
+
+Follow the [setup guide](docs/setup.md) to install the model environments, download weights, and start or connect to a Qwen audio service. Set the resource directory and credentials in your shell:
+
+```bash
+export HARMONY_RESOURCE_ROOT=/path/to/resources
+export OPENAI_API_KEY=your_api_key
+export AUDIO_ANALYSIS_BASE_URL=http://localhost:8000/v1
+harmony doctor --check-service
+```
+
+## Run
+
+Provide your audio and one editing instruction:
 
 ```bash
 python -m harmony run \
-  --task volume \
   --input /path/to/input.wav \
   --instruction "Make the door slamming sound louder." \
-  --output-dir outputs/door-volume \
-  --dry-run
+  --output-dir outputs/door-volume
 ```
 
-For inference, follow the [setup guide](docs/setup.md), supply the model resources and Qwen endpoint, then check the setup before running an edit:
+Use a fresh output directory for each edit. The generated `report.json` identifies the output audio; `execution.log` contains runtime messages. Use one primary operation per request.
 
-```bash
-harmony doctor --task volume --resource-root /path/to/resources --check-service
-```
-
-`doctor` checks Python imports, tools, the speech model manifest, and the configured Qwen alias without loading weights or sending audio. Then remove `--dry-run` from the editing command inside a Slurm GPU allocation. The launcher checks the allocation and runs `nvidia-smi` before inference. See [examples for all four tasks](examples/README.md).
-
-This release provides the complete Harmony inference pipeline for all four editing tasks.
-
-## Running and inspecting an edit
-
-The resulting `report.json` contains `output_audio`, the execution status, and any error details. `run_config.json` records the effective configuration, code fingerprint, dependency versions, and available external-repository/cache revisions. Each run uses an isolated directory. A partial edit still returns its available audio and exits with a nonzero status. Read `execution_status` and `execution_error` before using an output.
-
-Model provisioning and GPU inference are separate from package installation. See the [execution guide](docs/setup.md).
-
-## Repository guide
-
-| Location | Purpose |
-|---|---|
-| [`audio_edit/`](audio_edit/) | Shared planner, analyzers, specialists, and editing tools |
-| [`harmony/`](harmony/) | CLI and runtime adapters |
-| [`harmony/configs/`](harmony/configs/) | Shared model settings and task defaults |
-| [`examples/`](examples/) | Example commands for your own audio |
-| [`requirements/`](requirements/) | Planner dependencies and environment notes |
-| [`docs/`](docs/) | Setup and implementation guide |
-
-## Paper
-
-**arXiv link forthcoming.** The preprint link and citation will be added here when an identifier is available.
-
-<!-- ARXIV_URL: add the actual https://arxiv.org/abs/... URL after the preprint is public. -->
-
-## Questions and contributions
-
-Use [GitHub Issues](https://github.com/ChrisTong9/harmony/issues) for bugs and usage questions. See [CONTRIBUTING.md](CONTRIBUTING.md) for the information to include in a report or pull request.
-
-## Dependencies and licensing
-
-Model weights and third-party repositories must be installed separately. See [setup](docs/setup.md) and the [license notice](LICENSE-NOTICE.md). A license for the Harmony source has not yet been specified.
+Run `harmony config` to view settings, add `--seed 123` to set the Stable Audio generation seed, or add `--dry-run` to preview a command without model calls. See [setup](docs/setup.md) for all configuration steps.

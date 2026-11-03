@@ -1,4 +1,4 @@
-"""Run this development workflow, or inspect its listening dialogue only."""
+"""Run audio editing or inspect the listening dialogue."""
 
 import argparse
 from dataclasses import asdict
@@ -12,7 +12,8 @@ from audio_edit.llm.client import LLMClient
 from audio_edit.models import AudioEditContext
 from audio_edit.scripts.registry import ScriptRegistry
 from audio_edit.scripts.runner import ScriptRunner
-from audio_edit.utils.extract_audio import extract_audio_for_analysis
+from audio_edit.utils.audio_input import validate_audio_input
+from audio_edit.utils.execution_outcome import execution_exit_code
 
 
 def main():
@@ -26,7 +27,7 @@ def main():
         help="Save questions, answers and review without editing audio",
     )
     args = parser.parse_args()
-    ctx = AudioEditContext(args.instruction, input_audio=str(args.input.resolve()))
+    ctx = AudioEditContext(args.instruction, input_audio=str(validate_audio_input(args.input)))
     registry, llm = ScriptRegistry(), LLMClient()
     agent = MusicEditAgent(ScriptRunner(registry), registry, llm)
     try:
@@ -34,9 +35,6 @@ def main():
             invocation = agent.choose_script(ctx.user_prompt)
             ctx.selected_script = invocation.script_name
             ctx.params.update(invocation.params)
-            if args.input.suffix.lower() in {".mp4", ".mov", ".mkv", ".webm"}:
-                ctx.input_video = ctx.input_audio
-                ctx.input_audio = extract_audio_for_analysis(ctx.input_video)
             listen_for_edit(ctx, llm, QwenAudioAnalyzer(), operation=invocation.script_name)
             ctx.execution_status = "listening_ready"
         else:
@@ -49,12 +47,7 @@ def main():
         args.report.parent.mkdir(parents=True, exist_ok=True)
         args.report.write_text(json.dumps(asdict(ctx), ensure_ascii=False, indent=2) + "\n")
     print(f"{ctx.execution_status}: report={args.report.resolve()} output={ctx.output_audio}")
-    return (
-        1
-        if ctx.fallback_used
-        or ctx.execution_status in ("fallback", "unresolved", "error", "partial", "failed")
-        else 0
-    )
+    return execution_exit_code(ctx)
 
 
 if __name__ == "__main__":

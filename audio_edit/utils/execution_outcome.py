@@ -11,7 +11,7 @@ import soundfile as sf
 
 @contextmanager
 def open_decoded_audio(path):
-    """Keep supported compressed/video inputs usable for the new audit too."""
+    """Decode supported compressed audio without normalization or timeline changes."""
     try:
         source = sf.SoundFile(path)
     except RuntimeError:
@@ -76,8 +76,27 @@ def compare_waveforms(original_path, output_path):
         )
 
 
+def mark_basic_execution(ctx):
+    """Record recovery independently of whether the recovered edit succeeds."""
+    ctx.fallback_used = True
+    ctx.execution_path = "basic"
+    if ctx.recovery_trigger is None:
+        ctx.recovery_trigger = dict(
+            ctx.params.get("primary_execution_error")
+            or {"reason": "Primary execution did not complete; no exception details supplied"}
+        )
+    return ctx
+
+
+def execution_exit_code(ctx):
+    """A recovered edit may succeed; unchanged or incomplete edits do not."""
+    return (
+        0 if ctx.execution_status in {"applied", "limited", "estimated", "listening_ready"} else 1
+    )
+
+
 def annotate_outcome(ctx, original_path):
-    if ctx.fallback_used:
+    if ctx.fallback_used and ctx.execution_path != "basic":
         if ctx.execution_status not in ("unresolved", "fallback"):
             ctx.execution_status = "fallback"
         return ctx

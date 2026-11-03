@@ -214,17 +214,13 @@ def compile_edits(
     *,
     duration,
     audio_analysis=None,
-    visual_analysis=None,
     shared_windows=None,
     best_effort=False,
     default_duration=None,
 ):
     assign_event_ids(audio_analysis, "audio", duration)
-    assign_event_ids(visual_analysis, "visual", duration)
     events = {
-        e["event_id"]: e
-        for a, k in ((audio_analysis, "events"), (visual_analysis, "visual_events"))
-        for e in (a or {}).get(k, [])
+        e["event_id"]: e for a, k in ((audio_analysis, "events"),) for e in (a or {}).get(k, [])
     }
     if not isinstance(edits, list) or not edits:
         raise ValueError("Unresolved edit: planner returned no grounded edit needs")
