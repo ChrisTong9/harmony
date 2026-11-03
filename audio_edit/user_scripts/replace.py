@@ -103,6 +103,7 @@ def run(ctx: AudioEditContext, params: dict) -> AudioEditContext:
         temporal_status=remove_plan.temporal_status,
         temporal_reason=remove_plan.temporal_reason,
         placements=shared_placements,
+        semantics=deepcopy(replace_prompt_plan.semantics),
     )
 
     runner = ReplaceSoundRunner()

@@ -10,11 +10,11 @@ from ..core import PolicySpec, record_policy
 
 POLICIES = (
     PolicySpec(
-        "material.replaced_piano",
+        "material.replaced_instrument",
         "material",
-        "A piano is explicitly replaced by one different named instrument; ensembles and voices are excluded.",
-        "Bound first generated-material facts positively identify both the old piano and requested instrument.",
-        "Remove the old piano from the generated asset, preserving the original residual and sample grid.",
+        "Validated request semantics replace one instrument with one instrument from a different family; ensembles, voices, and uncertain identities are excluded.",
+        "Bound first generated-material facts positively identify both planned instruments with exact supporting quotes.",
+        "Remove the planned old instrument from the generated asset, preserving the original residual and sample grid.",
         "Per first-asset pass: one observation if uncached, one binding decision, and at most one SAM cleanup; no generation.",
     ),
     PolicySpec(

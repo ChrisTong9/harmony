@@ -7,6 +7,7 @@ from typing import Any
 from audio_edit.llm.client import LLMClient
 from audio_edit.models import AudioEditContext
 from audio_edit.plans.replace_sound_plan import ReplacePromptPlan
+from audio_edit.plans.replacement_semantics import SEMANTICS_PROMPT, validate_replacement_semantics
 
 
 class ReplaceSoundSpecialist:
@@ -35,7 +36,7 @@ class ReplaceSoundSpecialist:
         user_prompt: str,
         audio_analysis: dict[str, Any] | None = None,
     ) -> ReplacePromptPlan:
-        system_prompt = self._system_prompt() + EDIT_EVIDENCE_RULES
+        system_prompt = self._system_prompt() + SEMANTICS_PROMPT + EDIT_EVIDENCE_RULES
 
         user_payload = {
             "user_prompt": user_prompt,
@@ -63,6 +64,13 @@ class ReplaceSoundSpecialist:
         if data.get("temporal") is not None:
             ctx.params["replace_decomposition_legacy_timing_ignored"] = True
 
+        semantics = None
+        try:
+            semantics = validate_replacement_semantics(data.get("semantics"), user_prompt)
+            ctx.params["replacement_semantics"] = {"status": "available"}
+        except (TypeError, ValueError) as exc:
+            ctx.params["replacement_semantics"] = {"status": "unavailable", "reason": str(exc)}
+
         return ReplacePromptPlan(
             user_prompt=user_prompt,
             source_sound=data["source_sound"].strip(),
@@ -74,6 +82,7 @@ class ReplaceSoundSpecialist:
                 if isinstance(data.get("notes"), str) and data["notes"].strip()
                 else None
             ),
+            semantics=semantics,
         )
 
     def _system_prompt(self) -> str:
@@ -91,7 +100,7 @@ Your job is to decompose a replace request into:
 Return ONLY valid JSON.
 Do not include markdown, explanations, or comments.
 
-Required JSON schema:
+Required JSON fields:
 
 {
   "source_sound": "the old sound to remove",

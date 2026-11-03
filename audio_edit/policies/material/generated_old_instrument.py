@@ -1,4 +1,4 @@
-"""Remove positively observed replaced piano from a generated new-instrument asset."""
+"""Remove a positively observed old instrument from new replacement material."""
 
 from copy import deepcopy
 from pathlib import Path
@@ -8,44 +8,82 @@ import re
 import subprocess
 from tempfile import mkdtemp
 
-PROMPT = "Review one FIRST generated replacement asset. This is a new isolated asset, not the original or retained residual. Decide whether it positively contains BOTH the requested new instrument and the old instrument which the original instruction explicitly replaces. Only then may one existing separator remove that old instrument from the generated asset. Do not remove preserved original voices or instruments. Do not infer a piano from a generic sustained synthesized chord, uncertainty, or a score. Do not reinterpret a requested ensemble as an isolated instrument. Return eligible:boolean, old_instrument:string or null, new_instrument:string or null, old_quote:exact continuous substring of first material facts or null, new_quote:exact continuous substring or null, reason:string. When false both instruments and quotes must be null. No generation, level, timing, seed, or source-query change. The sole candidate old-instrument query for this review is piano; if the text/facts do not positively establish piano being replaced and a distinct requested new instrument, return false."
+PROMPT = """Review one FIRST generated replacement asset. This is a new isolated asset, not the original or retained residual. The validated replacement semantics identify one old instrument explicitly replaced by one new instrument from a different instrument family. Decide whether the first material facts positively identify BOTH of those exact instruments in the generated asset. Only then may one existing separator remove the old instrument from that asset. Use the supplied old_identity.name and new_identity.name verbatim; do not substitute a different instrument or infer one from generic music, a synthesized chord, similarity, absence, negation, or uncertainty. Do not reinterpret an ensemble or voice as an isolated instrument. Do not alter preserved original voices or instruments. Return eligible:boolean, old_instrument:string or null, new_instrument:string or null, old_quote:exact continuous substring of first material facts or null, new_quote:exact continuous substring or null, reason:string. Each quote must include the corresponding instrument name and affirmative evidence that it is present, retaining any surrounding qualifiers. When false both instruments and quotes must be null. No generation, level, timing, seed, or original-source query change. Return false when either identity lacks positive evidence. The sole permitted cleanup query is the supplied old_identity.name."""
 
 
 def sha(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
 
-INSTRUMENTS = (
-    r"\b(piano|guitar|violin|viola|cello|flute|oboe|clarinet|trumpet|saxophone|harp|strings)\b"
+_UNSUPPORTED_EVIDENCE = re.compile(
+    r"\b(?:no|not|without|absent|absence|neither|nor|never|unclear|uncertain|unsure|"
+    r"possibly|possible|perhaps|maybe|might|may|could|cannot|can't|doesn't|isn't|"
+    r"seems?|appears?|suggests?|resembl\w*|similar|imitat\w*)\b|"
+    r"\b(?:sounds?\s+like|hard\s+to\s+(?:hear|tell|identify)|rather\s+than)\b|-like\b",
+    re.I,
 )
 
 
-def applicable(ctx, plan, placement):
-    from audio_edit.policies.material.instrumental_material import applicable as instrumental
+def _instrument_pair(ctx, plan, placement):
+    from audio_edit.plans.replacement_semantics import get_replacement_semantics
 
-    if not instrumental(ctx, plan, placement):
+    if not placement.get("shared_window") or placement.get("generator") != "audio":
+        return None
+    if plan.is_speech:
+        return None
+    if any(
+        ctx.params.get(key, {}).get("status") == "rendered"
+        for key in ["replacement_music_render", "replacement_independent_piano"]
+    ):
+        return None
+    semantics = get_replacement_semantics(ctx.params.get("replacement_plan"))
+    if semantics is None or semantics["source_scope"] != "selected_source":
+        return None
+    source, target = semantics["source"], semantics["target"]
+    if source["kind"] != "instrument" or target["kind"] != "instrument":
+        return None
+    if source["family"].casefold() == target["family"].casefold():
+        return None
+    if source["name"].casefold() == target["name"].casefold():
+        return None
+    if any(
+        _UNSUPPORTED_EVIDENCE.search(identity[field])
+        for identity in (source, target)
+        for field in ("name", "family", "quote")
+    ):
+        return None
+    return source, target
+
+
+def applicable(ctx, plan, placement):
+    return _instrument_pair(ctx, plan, placement) is not None
+
+
+def _positive_quote(quote, facts, identity):
+    """Bind the instrument name to an exact, non-negated first-fact excerpt."""
+    if not isinstance(quote, str) or not quote.strip() or quote not in facts:
         return False
-    replacement = ctx.params["replacement_plan"]
-    source = replacement.get("source_sound", "")
-    if not isinstance(source, str) or set(re.findall(INSTRUMENTS, source.lower())) != {"piano"}:
+    name = re.escape(identity).replace(r"\ ", r"\s+")
+    if not re.search(r"(?<![\w-])" + name + r"(?![\w-])", quote, re.I):
         return False
-    if not re.search(r"\bpiano\b", replacement.get("user_prompt", ""), re.I):
+    if _UNSUPPORTED_EVIDENCE.search(quote):
         return False
-    # A generated ensemble or an uncertain retained source never licenses this cleanup.
-    target = replacement.get("target_sound", "")
-    if re.search(r"\b(ensemble|orchestra|band)\b", target, re.I):
-        return False
-    new_target = re.split(r"\b(?:replacing|instead of|in place of)\b", target.lower(), maxsplit=1)[
-        0
-    ]
-    named = set(re.findall(INSTRUMENTS, new_target))
-    return len(named) == 1 and "piano" not in named
+    # A short substring cannot discard a qualifier in its containing sentence.
+    for match in re.finditer(re.escape(quote), facts):
+        start = max(facts.rfind(mark, 0, match.start()) for mark in ".!?;\n") + 1
+        ends = [facts.find(mark, match.end()) for mark in ".!?;\n"]
+        end = min((index for index in ends if index >= 0), default=len(facts))
+        if not _UNSUPPORTED_EVIDENCE.search(facts[start:end]):
+            return True
+    return False
 
 
 def decide(ctx, plan, placement, generated, *, llm=None):
     audit = dict(eligible=False, status="not_applicable", new_material_observations=0)
-    if not applicable(ctx, plan, placement):
+    instruments = _instrument_pair(ctx, plan, placement)
+    if instruments is None:
         return audit
+    old_identity, new_identity = instruments
     digest = sha(generated)
     facts = ctx.params.get("replacement_material_first_facts", {}).get(digest)
     if facts is None:
@@ -74,6 +112,8 @@ def decide(ctx, plan, placement, generated, *, llm=None):
         original_instruction=replacement["user_prompt"],
         old_source=replacement["source_sound"],
         new_source=replacement["target_sound"],
+        old_identity=deepcopy(old_identity),
+        new_identity=deepcopy(new_identity),
         first_material_facts=facts["text"],
     )
     if llm is None:
@@ -128,16 +168,17 @@ def decide(ctx, plan, placement, generated, *, llm=None):
         first_decision=True,
     )
     if isinstance(answer, dict) and set(answer) == set(props) and answer.get("eligible") is True:
-        quotes = [answer.get(k) for k in ["old_quote", "new_quote"]]
-        requested = set(re.findall(INSTRUMENTS, replacement["target_sound"].lower())) - {"piano"}
-        observed = set(re.findall(INSTRUMENTS, str(answer.get("new_instrument", "")).lower()))
         if (
-            answer.get("old_instrument") == "piano"
-            and observed == requested
-            and all(isinstance(q, str) and q.strip() and q in facts["text"] for q in quotes)
+            isinstance(answer.get("reason"), str)
+            and answer.get("old_instrument") == old_identity["name"]
+            and answer.get("new_instrument") == new_identity["name"]
+            and _positive_quote(answer.get("old_quote"), facts["text"], old_identity["name"])
+            and _positive_quote(answer.get("new_quote"), facts["text"], new_identity["name"])
         ):
             audit.update(
-                eligible=True, status="replaced_piano_in_new_material_confirmed", sam_query="piano"
+                eligible=True,
+                status="replaced_instrument_in_new_material_confirmed",
+                sam_query=old_identity["name"],
             )
     return audit
 
@@ -160,13 +201,14 @@ def clean(ctx, plan, placement, generated):
         backend="samaudio",
         mode="text",
         result_mode="residual",
-        text_prompt="piano",
+        text_prompt=audit["sam_query"],
         temporal_status="resolved",
-        notes="Remove positively heard replaced piano only from the first generated new-instrument material.",
+        notes="Remove the positively heard old instrument only from the first generated replacement material.",
     )
     result = SAMAudioRunner(output_dir=str(folder)).run_remove(
         AudioEditContext(
-            "Remove replaced piano from generated new-instrument material", input_audio=generated
+            f"Remove replaced {audit['sam_query']} from generated replacement material",
+            input_audio=generated,
         ),
         removal,
     )

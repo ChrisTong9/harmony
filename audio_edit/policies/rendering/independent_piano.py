@@ -4,12 +4,12 @@ from pathlib import Path
 from tempfile import mkdtemp
 import json
 import os
-import re
 import subprocess
+from audio_edit.plans.replacement_semantics import get_replacement_semantics
 
 
 def requested_program(ctx, plan):
-    """Only explicit independent acoustic-piano music on an existing replacement."""
+    """Select the existing piano renderer from validated replacement semantics."""
     if ctx.selected_script != "replace":
         return None
     removal = plan.remove_plan
@@ -32,14 +32,14 @@ def requested_program(ctx, plan):
         and (edit.get("replacement_material") or {}).get("mode") == "independent_texture"
     )
 
-    all_instruments = bool(
-        re.match(
-            r"^all (?:the )?(?:musical )?instruments\b",
-            " ".join(str(plan.source_sound).lower().split()),
-        )
-    )
+    semantics = get_replacement_semantics(plan)
+    if semantics is None or semantics["preserve_continuous_pitch"]:
+        return None
+    target = semantics["target"]
+    if target["kind"] != "instrument" or target["name"] != "piano":
+        return None
     structured_all = (
-        all_instruments
+        semantics["source_scope"] == "all_instruments"
         and edit.get("audio_reference") == "structure"
         and (edit.get("replacement_material") or {}).get("mode") == "structured_audio"
     )
@@ -61,12 +61,6 @@ def requested_program(ctx, plan):
     from audio_edit.utils.media_util import get_media_duration
 
     if abs(placement.end_time - get_media_duration(ctx.input_audio)) > 1e-6:
-        return None
-    label = " ".join(str(plan.target_sound).lower().replace(",", " ").split())
-    modifiers = r"(?:(?:soft|soothing|gentle|quiet|calm|peaceful|slow|solo|acoustic|grand|concert|natural) )*"
-    if not re.fullmatch(
-        modifiers + r"piano(?: (?:music|bed|background|track|performance|accompaniment))?", label
-    ):
         return None
     return 0
 

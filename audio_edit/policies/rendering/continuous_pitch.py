@@ -3,9 +3,9 @@
 import json
 import os
 from pathlib import Path
-import re
 import subprocess
 from tempfile import mkdtemp
+from audio_edit.plans.replacement_semantics import get_replacement_semantics
 
 
 def render_request(ctx, plan, reference):
@@ -45,17 +45,12 @@ def render_request(ctx, plan, reference):
         or duration <= 0
     ):
         return None
-    text = ctx.user_prompt.lower()
-
+    semantics = get_replacement_semantics(plan)
     if (
-        not re.search(r"\b(?:preserv\w*|retain\w*|keep\w*)\b", text)
-        or not re.search(r"\b(?:slides?|glissand\w*|portament\w*)\b", text)
-        or not re.search(r"\bvibrato\b", text)
-        or not re.fullmatch(
-            r"(?:a |an |solo |acoustic )*violin(?: (?:tone|timbre|performance|playing))?",
-            str(plan.target_sound).strip().lower(),
-        )
-        or not re.search(r"\b(?:to|with|into) (?:a |an |solo |acoustic )*violin\b", text)
+        semantics is None
+        or not semantics["preserve_continuous_pitch"]
+        or semantics["target"]["kind"] != "instrument"
+        or semantics["target"]["name"] != "violin"
     ):
         return None
     if not reference or not Path(reference).is_file():

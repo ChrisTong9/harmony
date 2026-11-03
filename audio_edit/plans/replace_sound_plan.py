@@ -31,6 +31,7 @@ class ReplacePromptPlan:
     temporal_status: str = "not_requested"
     temporal_reason: str | None = None
     placements: list[ResolvedPlacement] = field(default_factory=list)
+    semantics: dict | None = None
 
 
 @dataclass
@@ -59,3 +60,4 @@ class ReplaceSoundPlan:
     temporal_status: str = "not_requested"
     temporal_reason: str | None = None
     placements: list[ResolvedPlacement] = field(default_factory=list)
+    semantics: dict | None = None

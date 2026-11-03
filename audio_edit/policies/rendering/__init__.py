@@ -16,7 +16,7 @@ POLICIES = (
     PolicySpec(
         "rendering.continuous_violin",
         "rendering",
-        "A whole-file violin substitution explicitly preserves slides and vibrato with a structural audio reference.",
+        "A whole-file violin substitution has validated continuous-pitch preservation intent and a structural audio reference.",
         "The existing first removed component and its matching duration; no additional source separation.",
         "Render one continuous pYIN pitch contour with a violin SoundFont voice.",
         "One pitch analysis/render; a failed or unconfigured renderer does not advance to another renderer.",
@@ -24,7 +24,7 @@ POLICIES = (
     PolicySpec(
         "rendering.isolated_instrument",
         "rendering",
-        "A confirmed sole instrument is replaced structurally with piano, harp, violin, or wordless humming.",
+        "A confirmed sole instrument is replaced structurally with a supported discrete-note target: piano, harp, violin, or wordless humming.",
         "The existing sole-target observation and original audio, with one shared cover window.",
         "Transcribe the source notes and render the requested supported SoundFont program.",
         "One transcription/render; no new source separation or diffusion generation.",
@@ -32,7 +32,7 @@ POLICIES = (
     PolicySpec(
         "rendering.removed_stem_timbre",
         "rendering",
-        "A literal piano/harp/violin/guitar/oboe timbre request has an eligible backing decision and structural reference.",
+        "Validated replacement semantics select piano, harp, violin, guitar, or oboe without continuous-pitch requirements, with an eligible backing decision and structural reference.",
         "The existing first removed component on the original sample grid.",
         "Render its transcribed notes with the requested supported SoundFont program.",
         "One transcription/render on the first stem; missing resources or failed rendering retain generation.",
@@ -40,7 +40,7 @@ POLICIES = (
     PolicySpec(
         "rendering.first_generated_piano",
         "rendering",
-        "One whole-file independent acoustic-piano replacement, or a structured all-instruments-to-piano replacement.",
+        "Validated semantics select piano without continuous-pitch requirements for one whole-file independent replacement or a structured all-instruments replacement.",
         "The primary generator's first music asset, never a replacement sample chosen after listening.",
         "Render the first composition with an acoustic-piano SoundFont voice.",
         "One existing generator call and one transcription/render; second generation is rejected and the generator is restored.",

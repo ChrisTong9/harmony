@@ -1,13 +1,13 @@
-"""Use the first removed musical component for literal instrument timbre changes."""
+"""Render an existing removed component with a supported structured target timbre."""
 
 from pathlib import Path
 from tempfile import mkdtemp
 import json
 import os
-import re
 import subprocess
 import numpy as np
 import soundfile as sf
+from audio_edit.plans.replacement_semantics import get_replacement_semantics
 
 PROGRAMS = {"piano": 0, "harp": 46, "violin": 40, "guitar": 24, "oboe": 68}
 
@@ -43,21 +43,13 @@ def request_program(ctx, plan):
     if p.start_time != 0 or p.end_time != window.get("end_time"):
         return None
 
-    text = ctx.user_prompt.strip().rstrip(".!?").strip().lower()
-    target = (
-        r"(?:an? )?(?:acoustic )?(?P<target>piano|harp|violin|guitar|oboe)(?: (?:timbre|tone))?"
-    )
-    patterns = [
-        r"change (?:the )?[a-z ]+? (?:timbre|tone)(?: in the background)? to " + target,
-        r"change the (?:timbre|tone) of (?:the )?[a-z ]+? to " + target,
-    ]
-    matches = [m for pattern in patterns if (m := re.fullmatch(pattern, text))]
-    if len(matches) != 1:
+    semantics = get_replacement_semantics(plan)
+    if semantics is None or semantics["preserve_continuous_pitch"]:
         return None
-    name = matches[0]["target"]
-    if not re.search(r"\b" + re.escape(name) + r"\b", str(plan.target_sound).lower()):
+    target = semantics["target"]
+    if target["kind"] != "instrument":
         return None
-    return PROGRAMS[name]
+    return PROGRAMS.get(target["name"])
 
 
 def render_stem_replacement(ctx, plan, reference):

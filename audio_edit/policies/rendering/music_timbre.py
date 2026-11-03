@@ -4,8 +4,11 @@ from pathlib import Path
 from tempfile import mkdtemp
 import json
 import os
-import re
 import subprocess
+from audio_edit.plans.replacement_semantics import get_replacement_semantics
+
+
+PROGRAMS = {"piano": 0, "harp": 46, "violin": 40}
 
 
 def target_program(plan, observation):
@@ -27,49 +30,15 @@ def target_program(plan, observation):
     ):
         return None
 
-    if re.fullmatch(
-        r"(?:(?:solo|human|wordless) )*humming(?: voice)?", str(plan.target_sound).lower().strip()
-    ):
+    semantics = get_replacement_semantics(plan)
+    if semantics is None or semantics["preserve_continuous_pitch"]:
+        return None
+    target = semantics["target"]
+    if target["kind"] == "wordless_voice" and target["name"] == "humming":
         return 53
-
-    label = " ".join(str(plan.target_sound).lower().split())
-    request = str(plan.user_prompt).lower()
-    prefix = re.match(
-        r"(?:(?:solo|acoustic|grand|concert|natural) )*piano accompaniment(?: |$)", label
-    )
-    preserves = re.search(
-        r"\b(?:preserv(?:e|ing)|maintain(?:ing)?) (?:the )?original melody\b", request
-    )
-    names_piano = re.search(
-        r"\bto (?:a |an |the )?(?:(?:solo|acoustic|grand|concert) )*piano\b", request
-    )
-    if prefix and preserves and names_piano:
-        tail = label[prefix.end() :].strip()
-        words = set(re.findall(r"[a-z]+", tail))
-        allowed = {
-            "replicating",
-            "preserving",
-            "maintaining",
-            "the",
-            "original",
-            "melody",
-            "and",
-            "harmonic",
-            "rhythmic",
-            "support",
-            "timing",
-            "phrasing",
-            "dynamics",
-        }
-        if not tail or (
-            re.match(r"(?:replicating|preserving|maintaining)\b", tail) and words <= allowed
-        ):
-            return 0
-    match = re.fullmatch(
-        r"(?:(?:solo|acoustic|grand|concert|plucked|classical|clean|natural) )*(piano|harp|violin)(?: (?:performance|rendition|music|piece|sound|playing))?",
-        str(plan.target_sound).lower().strip(),
-    )
-    return {"piano": 0, "harp": 46, "violin": 40}[match[1]] if match else None
+    if target["kind"] != "instrument":
+        return None
+    return PROGRAMS.get(target["name"])
 
 
 def render_replacement(input_audio, plan, observation):
