@@ -7,6 +7,7 @@ import shutil
 import tempfile
 from audio_edit.models import AudioEditContext
 from audio_edit.generators.stable_audio_generator import StableAudioGenerator
+from audio_edit.generators.mmaudio_generator import MMAudioGenerator
 from audio_edit.generators.openai_speech_generator import OpenAISpeechGenerator
 from audio_edit.runners.mixer_runner import MixerRunner
 from audio_edit.plans.add_sound_plan import AddSoundPlan
@@ -19,7 +20,8 @@ from audio_edit.plans.add_timing import compile_plan
 
 class AddSoundRunner:
     def __init__(self):
-        self.generator_audio = StableAudioGenerator()
+        self.generator_offscreen = StableAudioGenerator()
+        self.generator_on_screen = MMAudioGenerator()
         self.generator_speech = OpenAISpeechGenerator()
         self.mixer = MixerRunner()
 
@@ -47,6 +49,13 @@ class AddSoundRunner:
             for field in ("generator", "audio_reference"):
                 if field in declared and p.get(field) != declared[field]:
                     raise ValueError(f"Compiled placement lost its declared {field}")
+            if (ctx.input_video or plan.source_type == "video") and (
+                p["timeline_op"] != "overlay"
+                or (p["end_time"] is not None and p["end_time"] > duration)
+            ):
+                raise ValueError(
+                    "video_timeline_sync_unsupported: insertion/extension requires explicit video synchronization"
+                )
         ctx.params["temporal_resolution_status"] = plan.temporal_status
         if plan.temporal_status in ("approximate", "estimated"):
             ctx.warnings.append(
@@ -72,11 +81,17 @@ class AddSoundRunner:
                 "independent_event",
                 "independent_texture",
             )
-            complete_event = bool(independent and material["mode"] == "independent_event")
+            complete_event = bool(
+                independent and material["mode"] == "independent_event" and not plan.is_on_screen
+            )
             generation_options = {}
             if complete_event:
                 generation_options["complete_event"] = True
-            if independent and os.environ.get("REPLACEMENT_AUDIO_SEED") is not None:
+            if (
+                independent
+                and not plan.is_on_screen
+                and os.environ.get("REPLACEMENT_AUDIO_SEED") is not None
+            ):
                 generation_options["seed"] = int(os.environ["REPLACEMENT_AUDIO_SEED"])
             prompt = p.get("audio_prompt") or plan.audio_prompt
             d = p["generation_target_seconds"]
@@ -88,7 +103,7 @@ class AddSoundRunner:
             if independent and (mode is not None or prompt != material["target"]):
                 raise ValueError("Independent material lost its target-only generation contract")
             if mode:
-                if speech:
+                if speech or plan.is_on_screen:
                     raise ValueError(
                         "Selected generator cannot consume the requested audio reference"
                     )
@@ -148,6 +163,7 @@ class AddSoundRunner:
                 and len(plan.intent["edits"]) == 1
                 and mode == "structure"
                 and not speech
+                and not plan.is_on_screen
             )
             if use_music_render:
                 generation_input.update(
@@ -166,6 +182,7 @@ class AddSoundRunner:
                 speech,
                 speech_text,
                 voice_prompt,
+                plan.is_on_screen,
                 tuple(sorted(reference.items())),
                 tuple(sorted(generation_options.items())),
             )
@@ -178,7 +195,14 @@ class AddSoundRunner:
                         return self.generator_speech.generate(
                             text=speech_text, voice_prompt=voice_prompt
                         )
-                    return self.generator_audio.generate(
+                    if plan.is_on_screen:
+                        return self.generator_on_screen.generate(
+                            video_path=ctx.input_video or ctx.input_audio,
+                            prompt=prompt,
+                            negative_prompt=plan.negative_audio_prompt,
+                            duration=d,
+                        )
+                    return self.generator_offscreen.generate(
                         prompt=prompt,
                         negative_prompt=plan.negative_audio_prompt,
                         duration=d,
@@ -193,9 +217,25 @@ class AddSoundRunner:
                     validate=valid_audio,
                 )
                 if ctx.params.get("replacement_plan") and not use_music_render:
-                    from audio_edit.policies.material import clean_generated_material
+                    from audio_edit.tools.generated_old_instrument import (
+                        clean as clean_old_instrument,
+                    )
 
-                    generated = clean_generated_material(ctx, plan, p, generated)
+                    first_generated = generated
+                    generated = clean_old_instrument(ctx, plan, p, generated)
+                    material_check = ctx.params["replacement_material_old_instrument_cleanup"][-1]
+                    first_facts_failed = material_check["status"] in (
+                        "first_material_facts_unavailable",
+                        "unbound_first_material_facts",
+                    )
+                    if generated == first_generated and not first_facts_failed:
+                        from audio_edit.tools.instrumental_material import clean
+
+                        generated = clean(ctx, plan, p, generated)
+                    if generated == first_generated and not first_facts_failed:
+                        from audio_edit.tools.generated_instrument_projection import project
+
+                        generated = project(ctx, plan, p, generated)
                 asset = assets / (str(index) + ".wav")
                 if complete_event:
                     from audio_edit.tools.event_material import first_event_asset
@@ -217,7 +257,11 @@ class AddSoundRunner:
         ctx.params["actual_asset_lengths"] = actual_lengths
         from audio_edit.plans.replacement_extent import replacement_extent_limits
 
-        extent_limits = replacement_extent_limits(plan, ctx.params.get("remove_plan"), duration)
+        extent_limits = (
+            replacement_extent_limits(plan, ctx.params.get("remove_plan"), duration)
+            if not ctx.input_video
+            else {}
+        )
         if extent_limits:
             ctx.params["replacement_extent_limits"] = deepcopy(extent_limits)
         from audio_edit.tools.event_fit import fit_replacement_assets
@@ -259,6 +303,12 @@ class AddSoundRunner:
         for p in placements:
             if p["compiled_phase"] != "final":
                 raise ValueError("Executor requires final material-derived timing")
+            if (ctx.input_video or plan.source_type == "video") and (
+                p["timeline_op"] != "overlay" or p["end_time"] > duration
+            ):
+                raise ValueError(
+                    "video_timeline_sync_unsupported: actual material requires video synchronization"
+                )
             p["background_path"] = assets_by_key[p["key"]]
         features = dict(plan.composer or {})
         if plan.layer_role:

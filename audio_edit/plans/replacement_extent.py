@@ -12,7 +12,7 @@ POLICY = "complete_event_after_source_onset"
 
 
 def replacement_extent_limits(plan, removal_plan, duration):
-    if not isinstance(removal_plan, dict):
+    if plan.is_on_screen or not isinstance(removal_plan, dict):
         return {}
     temporal = removal_plan.get("temporal") or {}
     retained_selection = False

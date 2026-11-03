@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import subprocess
-from audio_edit.utils.audio_input import validate_audio_input
 from pathlib import Path
 
 
@@ -9,10 +8,10 @@ def extract_audio_for_analysis(
     input_media: str,
     output_dir: str = "./audio_edit/outputs/analysis",
 ) -> str:
-    input_path = validate_audio_input(input_media)
+    input_path = Path(input_media)
 
     if not input_path.exists():
-        raise FileNotFoundError(f"Input audio does not exist: {input_path}")
+        raise FileNotFoundError(f"Input media does not exist: {input_path}")
 
     output_dir_path = Path(output_dir)
     output_dir_path.mkdir(parents=True, exist_ok=True)

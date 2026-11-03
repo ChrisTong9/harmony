@@ -1,12 +1,11 @@
 """Command-line interface for natural-language audio editing."""
 
 import argparse
-import json
 import os
 from pathlib import Path
 
 from . import __version__
-from .config import load_config
+from .config import TASKS, load_profile
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -17,10 +16,11 @@ def parser():
     )
     command.add_argument("--version", action="version", version=__version__)
     actions = command.add_subparsers(dest="action", required=True)
-    settings = actions.add_parser("config", help="Show the shared model and runtime settings")
+    actions.add_parser("profiles", help="List model settings for the four editing tasks")
     doctor = actions.add_parser(
         "doctor", help="Check resources and imports without model inference"
     )
+    doctor.add_argument("--task", choices=TASKS, default="replace")
     doctor.add_argument(
         "--check-service",
         action="store_true",
@@ -28,6 +28,7 @@ def parser():
     )
     doctor.add_argument("--json", action="store_true", help="Print structured diagnostics")
     edit = actions.add_parser("run", help="Run a new audio edit")
+    edit.add_argument("--task", choices=TASKS, required=True)
     edit.add_argument("--input", type=Path, required=True)
     edit.add_argument("--instruction", required=True)
     edit.add_argument("--output-dir", type=Path, required=True)
@@ -39,12 +40,6 @@ def parser():
             help="Model repositories, environments and weights; see docs/setup.md",
         )
         action.add_argument("--qwen-url", help="Existing OpenAI-compatible Qwen audio endpoint")
-    for action in (edit, doctor, settings):
-        action.add_argument("--qwen-model", help="Model name served by your Qwen endpoint")
-    for action in (edit, settings):
-        action.add_argument(
-            "--seed", type=int, help="Stable Audio generation seed; does not seed hosted planning"
-        )
     edit.add_argument(
         "--checkpoint-cache",
         type=Path,
@@ -61,10 +56,12 @@ def parser():
 
 def main(argv=None):
     args = parser().parse_args(argv)
+    if args.action == "profiles":
+        for task in TASKS:
+            profile = load_profile(task)
+            print(f"{task:7}  {profile['openai_model']}  {profile['perception']['model']}")
+        return 0
     try:
-        if args.action == "config":
-            print(json.dumps(load_config(qwen_model=args.qwen_model, seed=args.seed), indent=2))
-            return 0
         if args.action == "doctor":
             from .diagnostics import inspect, print_report
 

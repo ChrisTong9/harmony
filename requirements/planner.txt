@@ -6,3 +6,4 @@ pydantic==2.13.4
 python-dotenv==1.2.3
 requests==2.34.2
 httpx==0.28.1
+google-genai==2.20.0

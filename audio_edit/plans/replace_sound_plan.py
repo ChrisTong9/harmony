@@ -26,6 +26,10 @@ class ReplacePromptPlan:
     remove_user_prompt: str
     add_user_prompt: str
 
+    video_replacement: bool = False
+    source_object: str | None = None
+    target_object: str | None = None
+
     notes: str | None = None
     temporal: TemporalConstraint | None = None
     temporal_status: str = "not_requested"

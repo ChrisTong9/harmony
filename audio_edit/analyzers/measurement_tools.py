@@ -9,7 +9,7 @@ from copy import deepcopy
 import hashlib
 import os
 from pathlib import Path
-from harmony.runtime.gpu import gpu_policy_error, require_gpu
+import subprocess
 
 import numpy as np
 
@@ -122,7 +122,9 @@ def measurement_question_ids(questions):
 
 
 def source_tool_available():
-    return os.environ.get("AUDIO_PREEDIT_SEPARATION") == "1" and gpu_policy_error() is None
+    return os.environ.get("AUDIO_PREEDIT_SEPARATION") == "1" and bool(
+        os.environ.get("SLURM_JOB_ID")
+    )
 
 
 def source_question_eligible(question):
@@ -147,7 +149,7 @@ def run_measurement(name, path, questions, ctx):
             raise ValueError(
                 "Source activity needs an enabled dedicated GPU and one selected source"
             )
-        require_gpu()
+        subprocess.run(["nvidia-smi"], check=True, capture_output=True)
         from audio_edit.models import AudioEditContext
         from audio_edit.plans.remove_sound_plan import RemoveSoundPlan
         from audio_edit.runners.samaudio_runner import SAMAudioRunner

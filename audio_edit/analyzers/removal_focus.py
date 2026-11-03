@@ -128,6 +128,7 @@ def silence_decision(plan, input_audio, duration):
     decision = dict(eligible=False, reason="No confirmed sole-source observation")
     if (
         plan.result_mode != "residual"
+        or plan.use_video_prompt
         or plan.temporal_schema_error
         or plan.temporal_status not in ("not_requested", "resolved")
     ):

@@ -30,7 +30,9 @@ def coverage_candidate(data, payload):
     windows = payload.get("shared_replacement_windows")
     edits = data.get("edits")
     if (
-        not isinstance(windows, list)
+        payload.get("source_type") != "audio"
+        or data.get("is_on_screen") is not False
+        or not isinstance(windows, list)
         or len(windows) != 1
         or not isinstance(edits, list)
         or len(edits) != 1

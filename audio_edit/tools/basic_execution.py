@@ -1,7 +1,7 @@
 """Common bounded execution route from the original request alone.
 
 It does not observe audio, revise a previous plan, inspect errors, or inspect scores.
-Recovery status and instruction-only timing remain explicit in the local report.
+The same route is available independently of both experimental A/B switches.
 """
 
 from pathlib import Path
@@ -107,65 +107,35 @@ def planning_request(instruction, duration, model="gpt-5-mini"):
 
 
 def validate(plan, duration):
-    def require(condition, reason):
-        if not condition:
-            raise ValueError(reason)
-
-    require(
-        type(duration) in (int, float) and math.isfinite(duration) and duration > 0,
-        "Input duration must be finite and positive",
-    )
-    require(type(plan) is dict and set(plan) == {"actions"}, "Plan must contain only actions")
-    require(
-        type(plan["actions"]) is list and 1 <= len(plan["actions"]) <= 4,
-        "Plan must contain 1 to 4 actions",
-    )
+    assert type(plan) is dict and set(plan) == {"actions"}
+    assert type(plan["actions"]) is list and 1 <= len(plan["actions"]) <= 4
     for index, a in enumerate(plan["actions"]):
-        require(
-            type(a) is dict and set(a) == set(ACTION_FIELDS),
-            f"Action {index} has missing or unexpected fields",
-        )
+        assert type(a) is dict and set(a) == set(ACTION_FIELDS)
         for k, s in ACTION_FIELDS.items():
             v = a[k]
             if s["type"] == "string":
-                valid = isinstance(v, str) and ("enum" not in s or v in s["enum"])
+                assert isinstance(v, str) and ("enum" not in s or v in s["enum"])
             elif s["type"] == "number":
-                valid = type(v) in (int, float) and math.isfinite(v)
+                assert type(v) in (int, float) and math.isfinite(v)
             elif s["type"] == "integer":
-                valid = type(v) is int and s["minimum"] <= v <= s["maximum"]
+                assert type(v) is int and s["minimum"] <= v <= s["maximum"]
             elif s["type"] == "boolean":
-                valid = type(v) is bool
-            require(valid, f"Action {index} has invalid {k}")
-        require(
-            0 <= a["start"] < a["end"] and a["start"] <= duration,
-            f"Action {index} has invalid timing",
-        )
-        require(
-            a["timeline"] == "overlay" or a["operation"] == "add",
-            "Only addition can insert or append audio",
-        )
+                assert type(v) is bool
+        assert 0 <= a["start"] < a["end"] and a["start"] <= duration
+        assert a["timeline"] == "overlay" or a["operation"] == "add"
         if a["timeline"] == "overlay":
-            require(a["end"] <= duration + 1e-5, f"Action {index} exceeds the input duration")
+            assert a["end"] <= duration + 1e-5
         else:
-            require(
-                a["end"] - a["start"] <= 30 and index == len(plan["actions"]) - 1,
-                "Insert/append must be the final action and at most 30 seconds",
-            )
+            assert a["end"] - a["start"] <= 30 and index == len(plan["actions"]) - 1
         if a["timeline"] == "append":
-            require(abs(a["start"] - duration) < 1e-5, "Append must start at the input end")
+            assert abs(a["start"] - duration) < 1e-5
         if a["operation"] != "add":
-            require(0 < len(a["target"].split()) <= 35, "Target must contain 1 to 35 words")
+            assert 0 < len(a["target"].split()) <= 35
         if a["operation"] in ("add", "replace"):
-            require(0 < len(a["material"].split()) <= 40, "Material must contain 1 to 40 words")
-        require(
-            -60 <= a["gain_start_db"] <= 24 and -60 <= a["gain_end_db"] <= 24,
-            "Gain must be within [-60, 24] dB",
-        )
+            assert 0 < len(a["material"].split()) <= 40
+        assert -60 <= a["gain_start_db"] <= 24 and -60 <= a["gain_end_db"] <= 24
         if a["operation"] != "volume":
-            require(
-                a["gain_start_db"] == a["gain_end_db"] == 0,
-                "Non-volume actions must have zero gain fields",
-            )
+            assert a["gain_start_db"] == a["gain_end_db"] == 0
     return deepcopy(plan)
 
 
@@ -239,8 +209,7 @@ def first_plan(instruction, duration, folder, llm=None):
     response = client.chat.completions.create(**request)
     save(folder / "plan_first_response.json", response.model_dump(mode="json"))
     choice = response.choices[0]
-    if choice.finish_reason != "stop" or getattr(choice.message, "refusal", None):
-        raise ValueError("Basic planner did not return a complete executable response")
+    assert choice.finish_reason == "stop" and not getattr(choice.message, "refusal", None)
     plan, normalization = canonicalize(json.loads(choice.message.content), duration, instruction)
     save(folder / "normalization.json", normalization)
     save(folder / "plan.json", plan)
@@ -282,9 +251,9 @@ def edges(length, rate):
 
 class NativeBackend:
     def __init__(self, folder):
-        from harmony.runtime.gpu import require_gpu
-
-        require_gpu()
+        if not os.environ.get("SLURM_JOB_ID"):
+            raise RuntimeError("Basic editing requires Slurm GPU allocation")
+        print(subprocess.check_output(["nvidia-smi"], text=True), flush=True)
         self.folder = Path(folder)
         self.calls = []
         self.source = Path(__file__).resolve().parents[2]
@@ -352,13 +321,9 @@ class NativeBackend:
 
 
 def render(plan, original, folder, backend=None):
-    from audio_edit.utils.execution_outcome import open_decoded_audio
-
     folder = Path(folder).resolve()
     folder.mkdir(parents=True, exist_ok=True)
-    with open_decoded_audio(original) as source:
-        x = source.read(dtype="float64", always_2d=True)
-        sr = source.samplerate
+    x, sr = sf.read(original, always_2d=True)
     assert len(x) > 0 and np.isfinite(x).all()
     plan = validate(plan, len(x) / sr)
     backend = backend or NativeBackend(folder)
@@ -459,70 +424,24 @@ def render(plan, original, folder, backend=None):
 
 def recover(ctx, original, llm=None):
     """Always deliver valid audio for a valid local audio input; never fake a pass."""
-    from audio_edit.utils.execution_outcome import (
-        annotate_outcome,
-        mark_basic_execution,
-        open_decoded_audio,
-    )
-
-    mark_basic_execution(ctx)
     root = Path("./audio_edit/outputs")
     root.mkdir(parents=True, exist_ok=True)
     folder = Path(tempfile.mkdtemp(prefix="basic-execution-", dir=root)).resolve()
-    audit = dict(
-        route="basic_execution",
-        directory=str(folder),
-        original_request_only=True,
-        timing_source="instruction_only",
-        audio_observed=False,
-    )
+    audit = dict(route="basic_execution", directory=str(folder), original_request_only=True)
     try:
-        with open_decoded_audio(original) as source:
-            duration = len(source) / source.samplerate
-        plan = first_plan(ctx.user_prompt, duration, folder, llm)
-        timing_actions = []
-        for index, action in enumerate(plan["actions"]):
-            even_spacing = (
-                action["operation"] in {"add", "replace"}
-                and not action["continuous"]
-                and action["count"] > 1
-            )
-            timing_actions.append(
-                dict(
-                    index=index,
-                    kind=action["timing"],
-                    start=action["start"],
-                    end=action["end"],
-                    placement="evenly_spaced" if even_spacing else "declared_interval",
-                    even_spacing=even_spacing,
-                )
-            )
-        audit["timing"] = dict(
-            estimated=any(action["kind"] == "estimated" for action in timing_actions),
-            defaulted=any(action["kind"] == "default" for action in timing_actions),
-            even_spacing=any(action["even_spacing"] for action in timing_actions),
-            uses_assumptions=any(
-                action["kind"] in {"estimated", "default"} or action["even_spacing"]
-                for action in timing_actions
-            ),
-            actions=timing_actions,
-        )
+        info = sf.info(original)
+        plan = first_plan(ctx.user_prompt, info.frames / info.samplerate, folder, llm)
         output, events = render(plan, original, folder)
         audit["actions"] = events
     except Exception as exc:
         output = original
         audit["delivery_note"] = f"{type(exc).__name__}: {exc}"
     ctx.output_audio = output
+    ctx.fallback_used = False
     ctx.execution_error = None
     ctx.params.pop("execution_outcome", None)
     ctx.params["basic_execution"] = audit
-    timing = audit.get("timing")
-    ctx.params["temporal_resolution_status"] = (
-        "unresolved"
-        if timing is None
-        else "estimated"
-        if timing["uses_assumptions"]
-        else "resolved"
-    )
+    ctx.params["temporal_resolution_status"] = "estimated"
+    from audio_edit.utils.execution_outcome import annotate_outcome
 
     return annotate_outcome(ctx, original)

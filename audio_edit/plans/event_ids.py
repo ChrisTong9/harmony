@@ -40,9 +40,7 @@ def observation_time(event):
 def assign_event_ids(analysis, source="audio", media_duration=None):
     if analysis is None:
         return None
-    if source != "audio":
-        raise ValueError("Event observations must come from audio")
-    key = "events"
+    key = "events" if source == "audio" else "visual_events"
     seen = {}
     unique = []
     for event in analysis.get(key, []):

@@ -6,14 +6,20 @@ from typing import Any, Literal
 from audio_edit.plans.temporal import ResolvedPlacement, TemporalConstraint
 
 
+SourceType = Literal["audio", "video"]
+
+
 @dataclass
 class MediaAnalysis:
+    visual_analysis: dict[str, Any] | None = None
     audio_analysis: dict[str, Any] | None = None
 
 
 @dataclass
 class AddSoundPlan:
+    source_type: SourceType
     user_prompt: str
+    is_on_screen: bool
     is_speech: bool
     audio_prompt: str
     duration: float | None
@@ -25,6 +31,8 @@ class AddSoundPlan:
     composer: dict[str, Any] | None = None
     speech_text: str | None = None
     voice_prompt: str | None = None
+    visual_edit_prompt: str | None = None
+    use_gemini_analysis: bool = False
 
     media_analysis: MediaAnalysis | None = None
     notes: str | None = None

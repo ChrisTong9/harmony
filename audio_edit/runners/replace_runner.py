@@ -130,128 +130,114 @@ class ReplaceSoundRunner:
                 residual_observation = sole_first
                 ctx.params["replacement_residual_inspection"] = sole_first
 
-        child_ctx = None
-        child_stage = "replacement_removal"
-        try:
-            remove_ctx = deepcopy(ctx)
-            child_ctx = remove_ctx
-            remove_ctx.user_prompt = plan.remove_user_prompt
+        remove_ctx = deepcopy(ctx)
+        remove_ctx.user_prompt = plan.remove_user_prompt
 
-            remove_ctx = self.remove_runner.run_remove(remove_ctx, plan.remove_plan)
-            child_ctx = remove_ctx
+        remove_ctx = self.remove_runner.run_remove(remove_ctx, plan.remove_plan)
 
-            if not remove_ctx.output_audio:
-                raise RuntimeError("Replace failed: remove step did not produce output_audio.")
+        if not remove_ctx.output_audio:
+            raise RuntimeError("Replace failed: remove step did not produce output_audio.")
 
-            cleaned_audio = remove_ctx.output_audio
+        cleaned_audio = remove_ctx.output_audio
 
-            removal_outcome = compare_waveforms(ctx.input_audio, cleaned_audio)
-            ctx.params["replacement_removal_outcome"] = removal_outcome
-            remove_ctx.params["replacement_removal_outcome"] = removal_outcome
-            if removal_outcome["no_op"]:
-                raise UnresolvedEditError(
-                    "Removal output is unchanged; replacement cannot be claimed before adding"
-                )
-
-            add_ctx = deepcopy(remove_ctx)
-            child_ctx = add_ctx
-            child_stage = "replacement_addition"
-            add_ctx.user_prompt = plan.add_user_prompt
-            add_ctx.params.pop("replacement_init_noise_level", None)
-            removal_execution = remove_ctx.params.get("removal_execution", {})
-            if (
-                removal_execution.get("backend") == "direct_silence"
-                and removal_execution.get("target_is_single_instrument") is True
-            ):
-                add_ctx.params["replacement_init_noise_level"] = 0.4
-
-            if abs(get_media_duration(cleaned_audio) - duration) > 1e-3:
-                raise ValueError(
-                    "Removal changed the timeline; shared add windows cannot be reused"
-                )
-            if any(e.get("audio_reference") for e in plan.add_plan.intent.get("edits", [])):
-                from pathlib import Path
-                from tempfile import mkdtemp
-                from audio_edit.utils.execution_outcome import removed_component_reference
-
-                root = Path("audio_edit/generated")
-                root.mkdir(parents=True, exist_ok=True)
-                path = Path(mkdtemp(prefix="replacement-reference-", dir=root)) / "removed.wav"
-                audit = removed_component_reference(ctx.input_audio, cleaned_audio, path)
-                add_ctx.params["replacement_reference_asset"] = audit["path"]
-                add_ctx.params["replacement_reference_audit"] = audit
-            residual_correction = None
-            cleaned_audio, residual_correction = correct_residual(
-                ctx.input_audio, cleaned_audio, residual_observation
+        removal_outcome = compare_waveforms(ctx.input_audio, cleaned_audio)
+        ctx.params["replacement_removal_outcome"] = removal_outcome
+        remove_ctx.params["replacement_removal_outcome"] = removal_outcome
+        if removal_outcome["no_op"]:
+            raise UnresolvedEditError(
+                "Removal output is unchanged; replacement cannot be claimed before adding"
             )
-            if residual_correction is None and not backing_decision.get("eligible"):
-                from audio_edit.analyzers.residual_target_subset import inspect_residual_subset
 
-                subset = inspect_residual_subset(ctx, plan, cleaned_audio, duration)
-                add_ctx.params["replacement_residual_subset_decision"] = subset
-                if ctx.params.get("replacement_residual_first_facts") is not None:
-                    add_ctx.params["replacement_residual_first_facts"] = deepcopy(
-                        ctx.params["replacement_residual_first_facts"]
-                    )
-                if subset.get("eligible"):
-                    cleaned_audio, residual_correction = correct_residual(
-                        cleaned_audio, cleaned_audio, subset
-                    )
-            if residual_correction is not None:
-                add_ctx.params["replacement_residual_correction"] = residual_correction
-            from audio_edit.tools.complementary_source import retain_music_vocals
+        add_ctx = deepcopy(remove_ctx)
+        add_ctx.user_prompt = plan.add_user_prompt
+        add_ctx.params.pop("replacement_init_noise_level", None)
+        removal_execution = remove_ctx.params.get("removal_execution", {})
+        if (
+            removal_execution.get("backend") == "direct_silence"
+            and removal_execution.get("target_is_single_instrument") is True
+        ):
+            add_ctx.params["replacement_init_noise_level"] = 0.4
 
-            cleaned_audio, backing_execution = retain_music_vocals(
-                ctx.input_audio, cleaned_audio, backing_decision
+        if abs(get_media_duration(cleaned_audio) - duration) > 1e-3:
+            raise ValueError("Removal changed the timeline; shared add windows cannot be reused")
+        if any(e.get("audio_reference") for e in plan.add_plan.intent.get("edits", [])):
+            from pathlib import Path
+            from tempfile import mkdtemp
+            from audio_edit.utils.execution_outcome import removed_component_reference
+
+            root = Path("audio_edit/generated")
+            root.mkdir(parents=True, exist_ok=True)
+            path = Path(mkdtemp(prefix="replacement-reference-", dir=root)) / "removed.wav"
+            audit = removed_component_reference(ctx.input_audio, cleaned_audio, path)
+            add_ctx.params["replacement_reference_asset"] = audit["path"]
+            add_ctx.params["replacement_reference_audit"] = audit
+        residual_correction = None
+        cleaned_audio, residual_correction = correct_residual(
+            ctx.input_audio, cleaned_audio, residual_observation
+        )
+        if residual_correction is None and not backing_decision.get("eligible"):
+            from audio_edit.analyzers.residual_target_subset import inspect_residual_subset
+
+            subset = inspect_residual_subset(ctx, plan, cleaned_audio, duration)
+            add_ctx.params["replacement_residual_subset_decision"] = subset
+            if ctx.params.get("replacement_residual_first_facts") is not None:
+                add_ctx.params["replacement_residual_first_facts"] = deepcopy(
+                    ctx.params["replacement_residual_first_facts"]
+                )
+            if subset.get("eligible"):
+                cleaned_audio, residual_correction = correct_residual(
+                    cleaned_audio, cleaned_audio, subset
+                )
+        if residual_correction is not None:
+            add_ctx.params["replacement_residual_correction"] = residual_correction
+        from audio_edit.tools.complementary_source import retain_music_vocals
+
+        cleaned_audio, backing_execution = retain_music_vocals(
+            ctx.input_audio, cleaned_audio, backing_decision
+        )
+        if backing_execution is not None:
+            add_ctx.params["replacement_music_backing_execution"] = backing_execution
+        add_ctx.input_audio = cleaned_audio
+        add_ctx.params["replacement_reference_path"] = ctx.input_audio
+        add_ctx.params["replacement_plan"] = __import__("dataclasses").asdict(plan)
+        add_ctx.output_audio = None
+
+        from audio_edit.tools.music_timbre import render_replacement
+        from audio_edit.tools.continuous_pitch import render_continuous_replacement
+
+        add_ctx.params["replacement_music_render"] = render_continuous_replacement(
+            ctx, plan, add_ctx.params.get("replacement_reference_asset")
+        )
+        if add_ctx.params["replacement_music_render"].get("status") == "not_applicable":
+            add_ctx.params["replacement_music_render"] = render_replacement(
+                ctx.input_audio, plan, residual_observation
             )
-            if backing_execution is not None:
-                add_ctx.params["replacement_music_backing_execution"] = backing_execution
-            add_ctx.input_audio = cleaned_audio
-            add_ctx.params["replacement_reference_path"] = ctx.input_audio
-            add_ctx.params["replacement_plan"] = __import__("dataclasses").asdict(plan)
-            add_ctx.output_audio = None
+        if add_ctx.params["replacement_music_render"].get("status") == "not_applicable":
+            from audio_edit.tools.music_stem_timbre import render_stem_replacement
 
-            from audio_edit.policies.rendering import material_renderer, prepare_material
+            add_ctx.params["replacement_music_render"] = render_stem_replacement(
+                ctx, plan, add_ctx.params.get("replacement_reference_asset")
+            )
 
-            prepare_material(ctx, plan, add_ctx, residual_observation)
+        from audio_edit.tools.independent_piano import material_renderer
 
-            with material_renderer(self.add_runner, add_ctx, plan):
-                final_ctx = self.add_runner.run(add_ctx, plan.add_plan)
-                child_ctx = final_ctx
+        with material_renderer(self.add_runner, add_ctx, plan):
+            final_ctx = self.add_runner.run(add_ctx, plan.add_plan)
 
-            if not final_ctx.output_audio:
-                raise RuntimeError("Replace failed: add step did not produce output_audio.")
+        if not final_ctx.output_audio:
+            raise RuntimeError("Replace failed: add step did not produce output_audio.")
 
-            if residual_correction is not None:
-                child_stage = "replacement_output_review"
-                from audio_edit.analyzers.replacement_material_guard import (
-                    retain_residual_if_contradicted,
-                )
+        if residual_correction is not None:
+            from audio_edit.analyzers.replacement_material_guard import (
+                retain_residual_if_contradicted,
+            )
 
-                final_ctx = retain_residual_if_contradicted(
-                    final_ctx,
-                    plan,
-                    self.add_runner.mixer,
-                    residual_correction["previous_residual"],
-                    original_instruction=ctx.user_prompt,
-                )
+            final_ctx = retain_residual_if_contradicted(
+                final_ctx,
+                plan,
+                self.add_runner.mixer,
+                residual_correction["previous_residual"],
+                original_instruction=ctx.user_prompt,
+            )
 
-            return final_ctx
-        except Exception:
-            if isinstance(child_ctx, AudioEditContext):
-                if "policy_trace" in child_ctx.params:
-                    ctx.params["policy_trace"] = deepcopy(child_ctx.params["policy_trace"])
-                ctx.params["primary_execution_snapshot"] = {
-                    "stage": child_stage,
-                    "params": deepcopy(
-                        {
-                            key: value
-                            for key, value in child_ctx.params.items()
-                            if key != "primary_execution_snapshot"
-                        }
-                    ),
-                    "warnings": deepcopy(child_ctx.warnings),
-                    "execution_status": child_ctx.execution_status,
-                    "execution_error": child_ctx.execution_error,
-                }
-            raise
+        return final_ctx

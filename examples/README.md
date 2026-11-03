@@ -1,6 +1,6 @@
 # Example requests
 
-The following requests illustrate the four supported operations. Supply your own audio containing the referenced sounds; the planner selects the primary operation from your instruction. No input recordings are bundled with this code branch.
+The following commands illustrate the four supported operations. Supply your own audio containing the referenced sounds; no input recordings are bundled with this code branch.
 
 | Task | Example instruction |
 |---|---|
@@ -13,13 +13,13 @@ The following requests illustrate the four supported operations. Supply your own
 
 ```bash
 python -m harmony run \
+  --task add \
   --input /path/to/input.wav \
   --instruction "Add a short bell sound at 2 seconds." \
-  --output-dir outputs/example-add
+  --output-dir outputs/example-add \
+  --dry-run
 ```
 
-Complete the [model setup](../docs/setup.md) before running. Add `--dry-run` to preview a command without loading models, creating an edit, or calling an API.
-
-Use one primary operation per request. Replace the example instruction with any row above; no task argument is needed. Optionally add `--seed 123` to set the Stable Audio generation seed.
+A dry run does not load models, create an edit, or call an API. Actual inference requires the [model setup](../docs/setup.md) and a Slurm GPU allocation.
 
 For audio comparisons, visit the [project demo](https://christong9.github.io/harmony/).

@@ -545,7 +545,7 @@ class QwenAudioAnalyzer:
                     and ordinal > 1
                     and value.get("reference_text")
                     and value.get("reference_kind") == "audible_event"
-                    and value.get("reference_source") in (None, "audio")
+                    and value.get("reference_source") != "visual"
                 ):
                     found[value["reference_text"]] = value
                 for child in value.values():

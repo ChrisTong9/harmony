@@ -4,6 +4,7 @@ from copy import deepcopy
 from dataclasses import asdict, is_dataclass
 import json
 from audio_edit.analyzers.edit_listening import EDIT_EVIDENCE_RULES
+from pathlib import Path
 
 from audio_edit.plans.add_sound_plan import AddSoundPlan, MediaAnalysis
 from audio_edit.plans.add_intent import ADD_INTENT_PROMPT, validate_intent
@@ -35,13 +36,16 @@ class AddSoundSpecialist:
         self,
         ctx,
         audio_analysis=None,
+        visual_analysis=None,
         temporal_hint=None,
         resolved_placements=None,
     ):
         if not ctx.input_audio:
             raise ValueError("Input media is required for add")
         duration = get_media_duration(ctx.input_audio)
+        source_type = self._infer_source_type(ctx.input_video or ctx.input_audio)
         assign_event_ids(audio_analysis, "audio", duration)
+        assign_event_ids(visual_analysis, "visual", duration)
         shared_windows = None
         if resolved_placements is not None:
             shared_windows = [
@@ -61,11 +65,13 @@ class AddSoundSpecialist:
             user_prompt=ctx.user_prompt,
             planner_subgoal=deepcopy(ctx.params.get("planner_subgoal")),
             media_duration=duration,
+            source_type=source_type,
             audio_analysis=audio_analysis,
+            visual_analysis=visual_analysis,
             shared_replacement_windows=shared_windows,
         )
         ctx.params["add_planning_request"] = dict(
-            system_prompt=self._system_prompt(resolved_placements is not None),
+            system_prompt=self._system_prompt(source_type, resolved_placements is not None),
             payload=deepcopy(payload),
         )
 
@@ -74,7 +80,7 @@ class AddSoundSpecialist:
             messages=[
                 dict(
                     role="system",
-                    content=self._system_prompt(resolved_placements is not None),
+                    content=self._system_prompt(source_type, resolved_placements is not None),
                 ),
                 dict(role="user", content=json.dumps(payload, ensure_ascii=False)),
             ],
@@ -110,8 +116,10 @@ class AddSoundSpecialist:
             ctx.params.setdefault("timing_semantics_audit", []).extend(audit)
         plan = self._to_plan(
             data,
+            source_type,
             ctx.user_prompt,
             audio_analysis,
+            visual_analysis,
             duration,
             temporal_hint,
             resolved_placements,
@@ -237,9 +245,17 @@ class AddSoundSpecialist:
             )
         )
 
-    def _system_prompt(self, shared=False):
+    def _infer_source_type(self, path):
+        suffix = Path(path).suffix.lower()
+        if suffix in {".wav", ".mp3", ".flac", ".ogg", ".m4a", ".aac"}:
+            return "audio"
+        if suffix in {".mp4", ".webm", ".mov", ".mkv"}:
+            return "video"
+        raise ValueError("Unsupported input file type for add: " + str(path))
+
+    def _system_prompt(self, source_type, shared=False):
         return (
-            "You are the add-sound intent planner for audio.\n"
+            f"You are the add-sound intent planner. Source type: {source_type}.\n"
             + ADD_INTENT_PROMPT
             + EDIT_EVIDENCE_RULES
             + (
@@ -265,6 +281,8 @@ class AddSoundSpecialist:
         default = data.get("audio_prompt")
         if default is not None and not isinstance(default, str):
             raise ValueError("audio_prompt must be a string or null")
+        if not isinstance(data.get("is_on_screen"), bool):
+            raise ValueError("is_on_screen must be a boolean")
         if not isinstance(data.get("is_speech"), bool) and not (
             self._modern(data)
             and all(
@@ -331,8 +349,10 @@ class AddSoundSpecialist:
     def _to_plan(
         self,
         data,
+        source_type,
         user_prompt,
         audio_analysis,
+        visual_analysis,
         media_duration,
         temporal_hint=None,
         resolved_placements=None,
@@ -342,7 +362,9 @@ class AddSoundSpecialist:
             data, _ = normalize_replacement_material(data)
         data, entry_audit = self._validate_plan_data(data)
         audio_analysis = deepcopy(audio_analysis)
+        visual_analysis = deepcopy(visual_analysis)
         assign_event_ids(audio_analysis, "audio", media_duration)
+        assign_event_ids(visual_analysis, "visual", media_duration)
         temporal = None
         try:
             if self._modern(data):
@@ -419,6 +441,7 @@ class AddSoundSpecialist:
                 intent = adapt_edits(
                     data,
                     audio_analysis=audio_analysis,
+                    visual_analysis=visual_analysis,
                     duration=media_duration,
                 )
                 if resolved_placements is not None:
@@ -427,12 +450,14 @@ class AddSoundSpecialist:
                         resolved_placements,
                         duration=media_duration,
                         audio_analysis=audio_analysis,
+                        visual_analysis=visual_analysis,
                     )
             else:
                 intent, temporal = adapt_temporal(
                     data,
                     duration=media_duration,
                     audio_analysis=audio_analysis,
+                    visual_analysis=visual_analysis,
                     temporal_hint=temporal_hint,
                     shared_windows=resolved_placements,
                 )
@@ -442,6 +467,7 @@ class AddSoundSpecialist:
                         resolved_placements,
                         duration=media_duration,
                         audio_analysis=audio_analysis,
+                        visual_analysis=visual_analysis,
                     )
             if resolved_placements is None:
                 intent = apply_listening_windows(intent, audio_analysis)
@@ -456,7 +482,9 @@ class AddSoundSpecialist:
             )
         intent.setdefault("compatibility", []).extend(entry_audit)
         plan = AddSoundPlan(
+            source_type=source_type,
             user_prompt=user_prompt,
+            is_on_screen=data["is_on_screen"],
             is_speech=data["is_speech"],
             audio_prompt=data["audio_prompt"],
             duration=None,
@@ -469,7 +497,9 @@ class AddSoundSpecialist:
             speech_text=data.get("speech_text"),
             voice_prompt=data.get("voice_prompt"),
             notes=data.get("notes"),
-            media_analysis=MediaAnalysis(audio_analysis=audio_analysis),
+            media_analysis=MediaAnalysis(
+                audio_analysis=audio_analysis, visual_analysis=visual_analysis
+            ),
             temporal=temporal,
             intent=intent,
             contract_version=2,

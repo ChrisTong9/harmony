@@ -54,9 +54,8 @@ def render_notes(notes, frames, rate, channels, soundfont, program):
 
 
 def main():
-    from harmony.runtime.gpu import require_compute_allocation
-
-    require_compute_allocation()
+    if not os.environ.get("SLURM_JOB_ID"):
+        raise RuntimeError("Model inference requires a scheduled allocation")
     request = json.loads(Path(sys.argv[1]).read_text())
     output = Path(request["output_audio"])
     assert not output.exists(), "Keep the first render; no regeneration"

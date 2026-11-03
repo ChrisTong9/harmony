@@ -197,9 +197,9 @@ def question_bindings(refs, analysis):
             explicit = request.get("question_id")
             if explicit and explicit not in known:
                 raise ValueError("Unknown listening question reference")
-            if request.get("reference_source") not in {None, "audio", "either"}:
+            if request.get("reference_source") == "visual":
                 if explicit:
-                    raise ValueError("A listening question requires an audio reference")
+                    raise ValueError("An audio listening question cannot bind a visual reference")
                 break
             candidates = (
                 [known[explicit]]

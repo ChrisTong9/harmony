@@ -1,22 +1,23 @@
 """Resolve model and resource settings for the complete Harmony pipeline."""
 
+from copy import deepcopy
 import json
 from pathlib import Path
 
-CONFIG_PATH = Path(__file__).parent / "configs/defaults.json"
+TASKS = ("add", "remove", "replace", "volume")
+CONFIG_PATH = Path(__file__).parent / "configs/profiles.json"
 
 
-def load_config(*, qwen_model=None, seed=None):
-    config = json.loads(CONFIG_PATH.read_text())
-    if qwen_model is not None:
-        if not qwen_model.strip():
-            raise ValueError("The Qwen served model name cannot be empty")
-        config["perception"]["model"] = qwen_model.strip()
-    if seed is not None:
-        if isinstance(seed, bool) or not isinstance(seed, int) or not 0 <= seed < 2**31:
-            raise ValueError("The generation seed must be an integer in [0, 2147483647]")
-        config["generation_seed"] = seed
+def load_profile(task):
+    if task not in TASKS:
+        raise ValueError(f"Unsupported task: {task}")
+    settings = json.loads(CONFIG_PATH.read_text())
+    config = deepcopy(settings["defaults"])
+    options = settings["tasks"][task]
+    config["perception"]["model"] = options["perception_model"]
+    config["new_generation_seed"] = options["generation_seed"]
     config.update(
+        task=task,
         preedit_environment={
             "AUDIO_PREEDIT_SPEECH": "1",
             "AUDIO_PREEDIT_SEPARATION": "1",

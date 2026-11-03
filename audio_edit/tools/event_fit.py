@@ -98,6 +98,8 @@ def fit_event_asset(source, destination, available_seconds):
 
 def fit_replacement_assets(plan, placements, assets_by_key, actual_lengths, extent_limits, folder):
     paths, lengths, audit = dict(assets_by_key), dict(actual_lengths), []
+    if plan.is_on_screen:
+        return paths, lengths, audit
     for index, placement in enumerate(placements):
         edit = plan.intent["edits"][placement["edit_index"]]
         limit = extent_limits.get(placement["edit_index"])

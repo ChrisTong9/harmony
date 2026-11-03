@@ -67,6 +67,7 @@ def inspect_sole_instrument(ctx, plan, duration, *, analyzer=None):
     if (
         removal.mode != "text"
         or removal.result_mode != "residual"
+        or removal.use_video_prompt
         or removal.temporal_schema_error
         or removal.temporal_status != "resolved"
         or (removal.temporal is not None and removal.temporal.kind != "unspecified")

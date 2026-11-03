@@ -4,10 +4,14 @@ from pathlib import Path
 import os
 import random
 import runpy
+import subprocess
 import sys
-from harmony.runtime.gpu import require_gpu
 
-require_gpu()
+if not os.environ.get("SLURM_JOB_ID"):
+    raise RuntimeError("Slurm allocation required")
+if not (os.environ.get("SLURM_JOB_GPUS") or os.environ.get("SLURM_STEP_GPUS")):
+    raise RuntimeError("No GPU granted by Slurm to this job/step")
+print(subprocess.check_output(["nvidia-smi"], text=True), flush=True)
 source = Path(os.environ["HARMONY_COMMON_SOURCE"])
 sys.path.insert(0, str(source))
 sys.path.insert(0, str(Path(os.environ["HARMONY_RESOURCE_ROOT"]) / "externals/sam-audio"))

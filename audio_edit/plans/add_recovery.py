@@ -19,7 +19,7 @@ Read the ORIGINAL request to preserve WHAT to add, musical conditioning, event
 count and explicit loudness. Use the supplied observations as uncertain context.
 Do not remove, replace, duck or retime original audio. Do not return an empty edit.
 
-Return compact JSON: {"intent_version":2,"edits":[EDIT]}.
+Return compact JSON: {"intent_version":2,"is_on_screen":false,"edits":[EDIT]}.
 Each EDIT has generator="audio"|"speech", audio_reference=null|"context"|"structure",
 audio_prompt describing only the new sound, layer_role="foreground"|"background",
 relative_level_db=null unless the user specified loudness, timeline_op="overlay",
@@ -439,7 +439,7 @@ def _expand_grouped_singles(data, previous, duration, adaptations):
     return result
 
 
-def recover_plan(ctx, llm, *, duration, analysis, reason, prior_plan=None):
+def recover_plan(ctx, llm, *, duration, analysis, visual_analysis, reason, prior_plan=None):
     """One extra planner call at most; no new listening or rendered candidates."""
     import json
     from audio_edit.specialists.add_sound_specialist import AddSoundSpecialist
@@ -570,7 +570,9 @@ def recover_plan(ctx, llm, *, duration, analysis, reason, prior_plan=None):
                     raise ValueError("Timing recovery cannot change the requested repetition count")
     data, adjustments = fit_data(data, duration)
 
-    plan = specialist._to_plan(data, ctx.user_prompt, None, duration)
+    plan = specialist._to_plan(
+        data, "video" if ctx.input_video else "audio", ctx.user_prompt, None, None, duration
+    )
     plan = mark_plan(
         plan,
         duration,
@@ -637,11 +639,14 @@ def fit_existing_assets(ctx, plan, placements, assets, lengths, duration, reason
         remapped_assets[new_key], remapped_lengths[new_key] = assets[key], lengths[key]
     data = dict(
         intent_version=2,
+        is_on_screen=plan.is_on_screen,
         edits=edits,
         audio_prompt=plan.audio_prompt,
         composer=deepcopy(plan.composer),
     )
-    recovered = AddSoundSpecialist(None)._to_plan(data, ctx.user_prompt, None, duration)
+    recovered = AddSoundSpecialist(None)._to_plan(
+        data, plan.source_type, ctx.user_prompt, None, None, duration
+    )
     recovered = mark_plan(
         recovered,
         duration,

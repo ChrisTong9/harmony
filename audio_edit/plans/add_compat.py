@@ -193,10 +193,12 @@ def _generation(data, edit=None):
     return dict(target_seconds=value, source="system_default", adjustable=False)
 
 
-def adapt_edits(data, *, audio_analysis=None, duration=None):
+def adapt_edits(data, *, audio_analysis=None, visual_analysis=None, duration=None):
     """v1 callers supplied redundant windows/anchors. Normalize exactly once."""
     events = {
-        e["event_id"]: e for a, k in ((audio_analysis, "events"),) for e in (a or {}).get(k, [])
+        e["event_id"]: e
+        for a, k in ((audio_analysis, "events"), (visual_analysis, "visual_events"))
+        for e in (a or {}).get(k, [])
     }
     converted = []
     audits = []
@@ -288,6 +290,7 @@ def adapt_temporal(
     *,
     duration,
     audio_analysis=None,
+    visual_analysis=None,
     temporal_hint=None,
     shared_windows=None,
 ):
@@ -356,6 +359,7 @@ def adapt_temporal(
             media_duration=duration,
             event_duration=d,
             audio_analysis=audio_analysis,
+            visual_analysis=visual_analysis,
         )
         if result.status == "unresolved":
             raise BoundaryEvidenceError(result.reason)
@@ -465,7 +469,9 @@ def shared_intent(data, shared_windows):
     return dict(version=2, revision=1, edits=edits, compatibility=audit)
 
 
-def attach_shared_windows(intent, shared_windows, *, duration, audio_analysis=None):
+def attach_shared_windows(
+    intent, shared_windows, *, duration, audio_analysis=None, visual_analysis=None
+):
     """Compatibility validation for already explicit v1 plans; never overwrite conflicts."""
     spans = [asdict(p) if is_dataclass(p) else deepcopy(p) for p in shared_windows]
     if len(intent["edits"]) != len(spans):
@@ -473,7 +479,9 @@ def attach_shared_windows(intent, shared_windows, *, duration, audio_analysis=No
     from audio_edit.plans.edit_contract import resolve_anchor
 
     events = {
-        e["event_id"]: e for a, k in ((audio_analysis, "events"),) for e in (a or {}).get(k, [])
+        e["event_id"]: e
+        for a, k in ((audio_analysis, "events"), (visual_analysis, "visual_events"))
+        for e in (a or {}).get(k, [])
     }
     for e, sw in zip(intent["edits"], spans):
         region = e["placement"].get("range", e["placement"].get("within"))

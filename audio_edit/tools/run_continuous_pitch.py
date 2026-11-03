@@ -3,6 +3,7 @@
 from pathlib import Path
 import hashlib
 import json
+import os
 import sys
 import numpy as np
 import soundfile as sf
@@ -138,9 +139,9 @@ def render(request, track):
 
 
 if __name__ == "__main__":
-    from harmony.runtime.gpu import require_compute_allocation
-
-    require_compute_allocation()
+    assert os.environ.get("SLURM_JOB_ID"), (
+        "Music analysis/render must run inside a Slurm allocation"
+    )
     request = json.loads(Path(sys.argv[1]).read_text())
     assert sha(request["input_audio"]) == request["input_sha256"]
     track = analyze(request["input_audio"])

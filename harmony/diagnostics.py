@@ -10,7 +10,7 @@ import urllib.error
 import urllib.request
 from urllib.parse import urlparse
 
-from .config import load_config
+from .config import load_profile
 
 PROBE = r"""
 import contextlib, importlib, importlib.metadata, io, json, sys
@@ -56,7 +56,7 @@ def probe_python(path, modules, pythonpath):
 
 
 def inspect(args, root, *, config=None, check_service=False):
-    config = config or load_config(qwen_model=args.qwen_model, seed=getattr(args, "seed", None))
+    config = config or load_profile(args.task)
     resource = args.resource_root.resolve()
     checks = []
 
@@ -98,6 +98,7 @@ def inspect(args, root, *, config=None, check_service=False):
             str(resource / "externals/stable-audio-3"),
         ]
     )
+    generation = args.task in ("add", "replace")
     speech = config["preedit_environment"]["AUDIO_PREEDIT_SPEECH"] == "1"
     environments = [
         (
@@ -112,6 +113,7 @@ def inspect(args, root, *, config=None, check_service=False):
                 "pydantic": "pydantic",
                 "requests": "requests",
                 "httpx": "httpx",
+                "google.genai": "google-genai",
             },
             True,
         ),
@@ -128,7 +130,7 @@ def inspect(args, root, *, config=None, check_service=False):
         (
             "stable-audio-3",
             {"stable_audio_3": "stable_audio_3", "torch": "torch", "torchaudio": "torchaudio"},
-            True,
+            generation,
         ),
         (
             "music-render311",
@@ -196,9 +198,7 @@ def inspect(args, root, *, config=None, check_service=False):
             qwen.rstrip("/") + "/models", headers={"Authorization": f"Bearer {key}"}
         )
         try:
-            # Match the runtime's direct connection to the configured Qwen service.
-            opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
-            with opener.open(request, timeout=10) as response:
+            with urllib.request.urlopen(request, timeout=10) as response:
                 models = [row["id"] for row in json.load(response)["data"]]
             add(
                 "qwen_served_model",
@@ -213,7 +213,7 @@ def inspect(args, root, *, config=None, check_service=False):
             )
 
     return dict(
-        operation_selection="planner",
+        task=args.task,
         resource_root=str(resource),
         checks=checks,
         ready=not any(check["status"] == "error" for check in checks),

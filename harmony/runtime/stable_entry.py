@@ -2,9 +2,13 @@
 
 import os
 import runpy
-from harmony.runtime.gpu import require_gpu
+import subprocess
 
-require_gpu()
+if not os.environ.get("SLURM_JOB_ID"):
+    raise RuntimeError("Slurm allocation required")
+if not (os.environ.get("SLURM_JOB_GPUS") or os.environ.get("SLURM_STEP_GPUS")):
+    raise RuntimeError("No GPU granted by Slurm to this job/step")
+print(subprocess.check_output(["nvidia-smi"], text=True), flush=True)
 from stable_audio_3 import StableAudioModel
 
 original = StableAudioModel.generate

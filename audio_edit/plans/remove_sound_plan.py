@@ -4,7 +4,7 @@ from typing import Literal, get_args
 from audio_edit.plans.temporal import ResolvedPlacement, TemporalConstraint
 
 
-RemoveMode = Literal["text", "span"]
+RemoveMode = Literal["text", "span", "video"]
 Result_mode = Literal["result", "residual"]
 RESULT_MODES = get_args(Result_mode)
 
@@ -30,6 +30,8 @@ class RemoveSoundPlan:
     result_mode: Result_mode
     text_prompt: str
     time_span: list[TimeSpan] | None = None
+    use_video_prompt: bool = False
+    visual_prompt: str | None = None
     notes: str | None = None
     temporal: TemporalConstraint | None = None
     temporal_status: str = "not_requested"
@@ -40,8 +42,6 @@ class RemoveSoundPlan:
     removal_evidence: dict | None = None
 
     def __post_init__(self) -> None:
-        if self.mode not in get_args(RemoveMode):
-            raise ValueError(f"Unsupported remove mode: {self.mode!r}")
         validate_result_mode(self.result_mode)
 
 

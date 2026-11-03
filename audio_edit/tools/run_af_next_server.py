@@ -1,4 +1,4 @@
-"""Small authenticated AF-Next service with checked GPU access."""
+"""Small authenticated AF-Next service; inference is restricted to a GPU allocation."""
 
 import argparse
 import base64
@@ -8,6 +8,7 @@ from io import BytesIO
 import json
 import os
 import secrets
+import subprocess
 import threading
 import time
 
@@ -18,9 +19,9 @@ def main():
     parser.add_argument("--revision", required=True)
     parser.add_argument("--port", type=int, required=True)
     args = parser.parse_args()
-    from harmony.runtime.gpu import require_gpu
-
-    require_gpu()
+    if not os.getenv("SLURM_JOB_ID"):
+        raise RuntimeError("AF-Next inference requires a Slurm GPU allocation")
+    print(subprocess.check_output(["nvidia-smi"], text=True), flush=True)
     import torch
     import librosa
     import soundfile as sf

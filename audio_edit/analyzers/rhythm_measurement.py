@@ -81,10 +81,7 @@ def complete_rhythm_evidence(ctx, analysis, requests, *, max_references=3):
     audits = []
     seen = set()
     for anchor in reference_anchors(requests):
-        if (
-            anchor.get("measurement") != "beat_onsets"
-            or anchor.get("reference_source", "audio") != "audio"
-        ):
+        if anchor.get("measurement") != "beat_onsets" or anchor.get("reference_source") == "visual":
             continue
         try:
             event, _ = select_event(anchor, events, best_effort=False)

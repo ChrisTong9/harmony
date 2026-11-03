@@ -11,6 +11,7 @@ def compile_plan(
     *,
     duration,
     audio_analysis=None,
+    visual_analysis=None,
     bindings=None,
     asset_durations=None,
     adjust_choices=False,
@@ -22,6 +23,8 @@ def compile_plan(
     plan.media_analysis = plan.media_analysis or MediaAnalysis()
     if audio_analysis is not None:
         plan.media_analysis.audio_analysis = deepcopy(audio_analysis)
+    if visual_analysis is not None:
+        plan.media_analysis.visual_analysis = deepcopy(visual_analysis)
     if bindings is not None:
         plan.reference_bindings = deepcopy(bindings)
     plan.execution_placements = []
@@ -38,6 +41,7 @@ def compile_plan(
                 plan.intent,
                 duration=duration,
                 audio_analysis=plan.media_analysis.audio_analysis,
+                visual_analysis=plan.media_analysis.visual_analysis,
                 bindings=plan.reference_bindings,
                 asset_durations=asset_durations,
                 replacement_extent_limits=replacement_extent_limits,
@@ -138,7 +142,7 @@ def compile_plan(
     return plan
 
 
-def estimated_plan(plan, *, audio_analysis, duration, input_audio):
+def estimated_plan(plan, *, audio_analysis, visual_analysis, duration, input_audio):
     """Legacy public name: evidence can be approximate, absent evidence cannot execute.
 
     No RMS phase creation, implicit scene anchor or restoration of a failed plan.
@@ -156,6 +160,7 @@ def estimated_plan(plan, *, audio_analysis, duration, input_audio):
                     audio_prompt=plan.audio_prompt,
                 ),
                 audio_analysis=audio_analysis,
+                visual_analysis=visual_analysis,
                 duration=duration,
             )
         else:
@@ -164,6 +169,7 @@ def estimated_plan(plan, *, audio_analysis, duration, input_audio):
         plan,
         duration=duration,
         audio_analysis=audio_analysis,
+        visual_analysis=visual_analysis,
     )
     if result.temporal_status == "unresolved":
         raise ValueError(result.temporal_reason)
